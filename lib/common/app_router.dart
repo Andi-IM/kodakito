@@ -15,11 +15,11 @@ class AppRouter {
       initialLocation: '/login',
       routes: [
         GoRoute(
-          path: '/story_list',
-          builder: (context, state) => const StoryListPage(title: 'Story List'),
+          path: '/',
+          builder: (context, state) => const HomePage(title: 'Story List'),
         ),
         GoRoute(
-          path: '/story_detail',
+          path: '/',
           builder: (context, state) {
             final story = state.extra as Story;
             return StoryDetailPage(story: story);

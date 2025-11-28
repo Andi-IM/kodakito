@@ -1,17 +1,20 @@
 import 'package:dicoding_story/data/model/story.dart';
+import 'package:dicoding_story/presentation/pages/add_story_page.dart'
+    show AddStoryPage;
 import 'package:dicoding_story/presentation/widgets/story_card.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
-class StoryListPage extends StatefulWidget {
-  const StoryListPage({super.key, required this.title});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key, required this.title});
   final String title;
 
   @override
-  State<StoryListPage> createState() => _StoryListPageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _StoryListPageState extends State<StoryListPage> {
+class _HomePageState extends State<HomePage> {
   final ScrollController _scrollController = ScrollController();
   final List<Story> _dummyStories = [
     Story(
@@ -80,14 +83,47 @@ class _StoryListPageState extends State<StoryListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Navigate to add story page
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Add Story feature coming soon!')),
+          showDialog(
+            context: context,
+            builder: (context) {
+              if (ResponsiveBreakpoints.of(context).largerThan(MOBILE)) {
+                return AlertDialog(
+                  title: const Text('AlertDialog Title'),
+                  content: const SingleChildScrollView(
+                    child: ListBody(
+                      children: <Widget>[
+                        Text('This is a demo alert dialog.'),
+                        Text('Would you like to approve of this message?'),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('Approve'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              } else {
+                return Dialog.fullscreen(child: const AddStoryPage());
+              }
+            },
           );
         },
         tooltip: 'Add Story',
         child: const Icon(Icons.add),
       ),
     );
+  }
+}
+
+class StoryList extends StatelessWidget {
+  const StoryList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }
