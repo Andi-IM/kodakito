@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = View.of(context).platformDispatcher.platformBrightness;
+    // final brightness = View.of(context).platformDispatcher.platformBrightness;
     TextTheme textTheme = createTextTheme(context, "Quicksand", "Quicksand");
 
     MaterialTheme theme = MaterialTheme(textTheme);
@@ -30,7 +30,8 @@ class MyApp extends StatelessWidget {
       ),
       routerConfig: AppRouter.createRouter(),
       title: 'KodaKito',
-      theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+      // theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+      theme: theme.light(),
     );
   }
 }

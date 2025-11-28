@@ -1,3 +1,4 @@
+import 'package:dicoding_story/data/model/story.dart';
 import 'package:dicoding_story/presentation/pages/story_detail.dart';
 import 'package:dicoding_story/presentation/pages/story_list.dart';
 import 'package:dicoding_story/presentation/pages/story_login.dart';
@@ -15,82 +16,19 @@ class AppRouter {
       routes: [
         GoRoute(
           path: '/story_list',
-          pageBuilder: (context, state) {
-            return CustomTransitionPage(
-              key: state.pageKey,
-              child: const StoryListPage(title: 'Story List'),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                    const begin = Offset(0.0, 1.0);
-                    const end = Offset.zero;
-                    const curve = Curves.ease;
-
-                    var tween = Tween(
-                      begin: begin,
-                      end: end,
-                    ).chain(CurveTween(curve: curve));
-
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
-            );
-          },
+          builder: (context, state) => const StoryListPage(title: 'Story List'),
         ),
         GoRoute(
           path: '/story_detail',
-          builder: (context, state) => const StoryDetailPage(),
-        ),
-        GoRoute(
-          path: '/login',
-          pageBuilder: (context, state) {
-            return CustomTransitionPage(
-              key: state.pageKey,
-              child: const LoginPage(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                    const begin = Offset(0.0, 1.0);
-                    const end = Offset.zero;
-                    const curve = Curves.ease;
-
-                    var tween = Tween(
-                      begin: begin,
-                      end: end,
-                    ).chain(CurveTween(curve: curve));
-
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
-            );
+          builder: (context, state) {
+            final story = state.extra as Story;
+            return StoryDetailPage(story: story);
           },
         ),
+        GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
         GoRoute(
           path: '/register',
-          pageBuilder: (context, state) {
-            return CustomTransitionPage(
-              key: state.pageKey,
-              child: const RegisterPage(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                    const begin = Offset(0.0, 1.0);
-                    const end = Offset.zero;
-                    const curve = Curves.ease;
-
-                    var tween = Tween(
-                      begin: begin,
-                      end: end,
-                    ).chain(CurveTween(curve: curve));
-
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
-            );
-          },
+          builder: (context, state) => const RegisterPage(),
         ),
       ],
     );
