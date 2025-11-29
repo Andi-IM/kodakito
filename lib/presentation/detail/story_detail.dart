@@ -1,30 +1,34 @@
 import 'package:dicoding_story/data/model/story.dart';
+import 'package:dicoding_story/presentation/detail/provider/detail_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:palette_generator/palette_generator.dart';
 
-class StoryDetailPage extends StatefulWidget {
-  final Story story;
+class StoryDetailPage extends ConsumerStatefulWidget {
+  final int id;
 
-  const StoryDetailPage({super.key, required this.story});
+  const StoryDetailPage({super.key, required this.id});
 
   @override
-  State<StoryDetailPage> createState() => _StoryDetailPageState();
+  ConsumerState<StoryDetailPage> createState() => _StoryDetailPageState();
 }
 
-class _StoryDetailPageState extends State<StoryDetailPage> {
+class _StoryDetailPageState extends ConsumerState<StoryDetailPage> {
+  Story? _story;
   ColorScheme? _colorScheme;
 
   @override
   void initState() {
     super.initState();
     _generatePalette();
+    _story = ref.watch(detailScreenContentProvider);
   }
 
   Future<void> _generatePalette() async {
     final PaletteGenerator generator = await PaletteGenerator.fromImageProvider(
-      NetworkImage(widget.story.photoUrl),
-      size: const Size(200, 100), 
+      NetworkImage(_story!.photoUrl),
+      size: const Size(200, 100),
     );
 
     if (mounted) {
@@ -67,7 +71,7 @@ class _StoryDetailPageState extends State<StoryDetailPage> {
                     CircleAvatar(
                       backgroundColor: colorScheme.surfaceContainerHighest,
                       child: Text(
-                        widget.story.name[0].toUpperCase(),
+                        _story!.name[0].toUpperCase(),
                         style: GoogleFonts.roboto(
                           fontWeight: FontWeight.w500,
                           color: colorScheme.onSurfaceVariant,
@@ -79,7 +83,7 @@ class _StoryDetailPageState extends State<StoryDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.story.name,
+                          _story!.name,
                           style: GoogleFonts.quicksand(
                             fontSize: 24,
                             fontWeight: FontWeight.normal,
@@ -87,7 +91,7 @@ class _StoryDetailPageState extends State<StoryDetailPage> {
                           ),
                         ),
                         Text(
-                          widget.story.createdAt.toString().split(' ')[0],
+                          _story!.createdAt.toString().split(' ')[0],
                           style: GoogleFonts.quicksand(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -100,9 +104,9 @@ class _StoryDetailPageState extends State<StoryDetailPage> {
                 ),
               ),
               Hero(
-                tag: widget.story.id,
+                tag: _story!.id,
                 child: Image.network(
-                  widget.story.photoUrl,
+                  _story!.photoUrl,
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
@@ -137,7 +141,7 @@ class _StoryDetailPageState extends State<StoryDetailPage> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  widget.story.description,
+                  _story!.description,
                   style: GoogleFonts.quicksand(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,

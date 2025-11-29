@@ -1,12 +1,15 @@
-import 'package:dicoding_story/data/model/story.dart';
-import 'package:dicoding_story/presentation/pages/story_detail.dart';
-import 'package:dicoding_story/presentation/pages/story_list.dart';
-import 'package:dicoding_story/presentation/pages/story_login.dart';
-import 'package:dicoding_story/presentation/pages/story_register.dart';
+import 'package:dicoding_story/presentation/bookmark/bookmark_screen.dart';
+import 'package:dicoding_story/presentation/main/main_screen.dart';
+import 'package:dicoding_story/presentation/detail/story_detail.dart';
+import 'package:dicoding_story/presentation/auth/story_login.dart';
+import 'package:dicoding_story/presentation/auth/story_register.dart';
+import 'package:dicoding_story/presentation/main/widgets/main_navigation.dart';
+import 'package:dicoding_story/presentation/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> _shellKey = GlobalKey<NavigatorState>();
 
 class AppRouter {
   static GoRouter createRouter() {
@@ -15,20 +18,45 @@ class AppRouter {
       initialLocation: '/login',
       routes: [
         GoRoute(
-          path: '/',
-          builder: (context, state) => const HomePage(title: 'Story List'),
+          path: '/login',
+          name: 'login',
+          builder: (context, state) => const LoginPage(),
         ),
-        GoRoute(
-          path: '/',
-          builder: (context, state) {
-            final story = state.extra as Story;
-            return StoryDetailPage(story: story);
-          },
-        ),
-        GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
         GoRoute(
           path: '/register',
+          name: 'register',
           builder: (context, state) => const RegisterPage(),
+        ),
+        ShellRoute(
+          navigatorKey: _shellKey,
+          builder: (context, state, child) => MainNavigation(child: child),
+          routes: [
+            GoRoute(
+              path: '/',
+              name: 'main',
+              builder: (context, state) => const MainScreen(),
+              routes: [
+                GoRoute(
+                  path: 'bookmark',
+                  name: 'bookmark',
+                  builder: (context, state) => const BookmarkScreen(),
+                ),
+                GoRoute(
+                  path: 'profile',
+                  name: 'profile',
+                  builder: (context, state) => const ProfileScreen(),
+                ),
+                GoRoute(
+                  path: ':id',
+                  name: 'detail',
+                  builder: (context, state) {
+                    final id = int.parse(state.pathParameters['id']!);
+                    return StoryDetailPage(id: id);
+                  },
+                ),
+              ],
+            ),
+          ],
         ),
       ],
     );
