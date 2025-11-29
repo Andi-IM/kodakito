@@ -24,7 +24,7 @@ const List<NavigationItem> navigationItems = [
   NavigationItem(
     title: 'Saved',
     icon: Icons.favorite,
-    iconOutlined: Icons.favorite_outlined,
+    iconOutlined: Icons.favorite_border_outlined,
     route: '/bookmark',
   ),
   NavigationItem(

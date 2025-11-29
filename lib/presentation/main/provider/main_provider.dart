@@ -1,19 +1,16 @@
 import 'package:dicoding_story/data/model/story.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'main_provider.g.dart';
 
-@Riverpod(keepAlive: true)
-class IndexNav extends _$IndexNav {
+@Riverpod()
+class NavigationData extends _$NavigationData {
   @override
-  int build() {
-    return 0; // initial state
+  NavigationRailM3EType build() {
+    return NavigationRailM3EType.expanded;
   }
 
-  void setIndex(int val) {
-    if (state != val) {
-      state = val;
-    }
-  }
+  void toggleNavigationRail(NavigationRailM3EType type) => state = type;
 }
 
 final List<Story> _dummyStories = [

@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 import 'package:window_manager/window_manager.dart';
+
 
 Future initLogging() async {
   Logger.root.level = Level.ALL;
@@ -70,7 +72,9 @@ class MyApp extends StatelessWidget {
       routerConfig: AppRouter.createRouter(),
       title: 'KodaKito',
       // theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-      theme: theme.light(),
+      theme: withM3ETheme(theme.light()),
+      darkTheme: withM3ETheme(theme.dark()),
+      themeMode: ThemeMode.light,
     );
   }
 }

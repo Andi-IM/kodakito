@@ -9,51 +9,52 @@ part of 'main_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(IndexNav)
-const indexNavProvider = IndexNavProvider._();
+@ProviderFor(NavigationData)
+const navigationDataProvider = NavigationDataProvider._();
 
-final class IndexNavProvider extends $NotifierProvider<IndexNav, int> {
-  const IndexNavProvider._()
+final class NavigationDataProvider
+    extends $NotifierProvider<NavigationData, NavigationRailM3EType> {
+  const NavigationDataProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'indexNavProvider',
-        isAutoDispose: false,
+        name: r'navigationDataProvider',
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$indexNavHash();
+  String debugGetCreateSourceHash() => _$navigationDataHash();
 
   @$internal
   @override
-  IndexNav create() => IndexNav();
+  NavigationData create() => NavigationData();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(int value) {
+  Override overrideWithValue(NavigationRailM3EType value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<int>(value),
+      providerOverride: $SyncValueProvider<NavigationRailM3EType>(value),
     );
   }
 }
 
-String _$indexNavHash() => r'011e7547cf4543bcc68e929c6e97b21a9ad8398e';
+String _$navigationDataHash() => r'f708886b80830fbf4c27245d926eeb413aa9c24f';
 
-abstract class _$IndexNav extends $Notifier<int> {
-  int build();
+abstract class _$NavigationData extends $Notifier<NavigationRailM3EType> {
+  NavigationRailM3EType build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<int, int>;
+    final ref = this.ref as $Ref<NavigationRailM3EType, NavigationRailM3EType>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<int, int>,
-              int,
+              AnyNotifier<NavigationRailM3EType, NavigationRailM3EType>,
+              NavigationRailM3EType,
               Object?,
               Object?
             >;

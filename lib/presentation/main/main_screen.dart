@@ -24,13 +24,10 @@ class _MainScreenState extends ConsumerState<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-    print(screenSize);
     final widthClass = WindowWidthClass.of(context);
     final stories = ref.watch(mainScreenContentProvider);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.surface,
         title: Text(
           'KodaKito',
           style: Theme.of(
@@ -48,9 +45,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               final story = stories[index];
               return StoryCard(
                 story: story,
-                onTap: () {
-                  context.push('/story_detail', extra: story);
-                },
+                onTap: () => context.push('/${story.id}'),
               );
             }
 

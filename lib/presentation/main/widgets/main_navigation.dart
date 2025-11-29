@@ -1,8 +1,9 @@
 import 'package:dicoding_story/presentation/main/models/navigation_item.dart';
+import 'package:dicoding_story/presentation/main/provider/main_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:navigation_rail_m3e/navigation_rail_m3e.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 import 'package:window_size_classes/window_size_classes.dart';
 
 class MainNavigation extends ConsumerWidget {
@@ -38,6 +39,7 @@ class MainNavigation extends ConsumerWidget {
           ? Row(
               children: [
                 NavigationRailM3E(
+                  type: NavigationRailM3EType.alwaysCollapse,
                   fab: NavigationRailM3EFabSlot(
                     icon: const Icon(Icons.add),
                     label: 'Create',
@@ -70,19 +72,15 @@ class MainNavigation extends ConsumerWidget {
                       );
                     },
                   ),
-                  type: isExpanded
-                      ? NavigationRailM3EType.collapsed
-                      : NavigationRailM3EType.expanded,
-                  modality: NavigationRailM3EModality.standard,
                   sections: [
                     NavigationRailM3ESection(
-                      header: Text('Main'),
                       destinations: navigationItems
                           .map(
                             (item) => NavigationRailM3EDestination(
                               icon: Icon(item.iconOutlined),
                               selectedIcon: Icon(item.icon),
                               label: item.title,
+                              short: true,
                             ),
                           )
                           .toList(),
@@ -92,8 +90,18 @@ class MainNavigation extends ConsumerWidget {
                   onDestinationSelected: (index) =>
                       onDestinationSelected(context, index),
                 ),
-                const VerticalDivider(thickness: 1, width: 1),
-                Expanded(child: child),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 8, right: 8, top: 16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(28),
+                        bottomRight: Radius.circular(28),
+                      ),
+                    ),
+                    child: child,
+                  ),
+                ),
               ],
             )
           : child,
