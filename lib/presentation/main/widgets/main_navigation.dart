@@ -19,21 +19,6 @@ class MainNavigation extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isCompact = WindowWidthClass.of(context) <= WindowWidthClass.compact;
-    // final fullPath = GoRouterState.of(context).fullPath;
-    // final showNavigation = navigationItems.any(
-    //   (element) => fullPath == element.route,
-    // );
-    // final matchedLocation = GoRouterState.of(context).matchedLocation;
-    // final selectedIndex = navigationItems
-    //     .map((item) => matchedLocation == item.route)
-    //     .toList()
-    //     .asMap()
-    //     .entries
-    //     .firstWhere(
-    //       (entry) => entry.value,
-    //       orElse: () => const MapEntry(0, false),
-    //     )
-    //     .key;
     final selectedIndex = navigationShell.currentIndex;
 
     return Scaffold(
