@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dicoding_story/presentation/auth/widget/logo_widget.dart';
 import 'package:dicoding_story/presentation/main/add_story_modal.dart';
 import 'package:dicoding_story/presentation/main/provider/main_provider.dart';
 import 'package:dicoding_story/presentation/main/story_card.dart';
@@ -122,7 +123,10 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               shapeFamily: AppBarM3EShapeFamily.square,
               variant: AppBarM3EVariant.small,
               density: AppBarM3EDensity.regular,
-              titleText: 'KodaKito',
+              title: Padding(
+                padding: const EdgeInsets.only(left: 48.0),
+                child: LogoWidget(maxWidth: 200),
+              ),
               centerTitle: !isMedium,
               pinned: false,
               actions: [

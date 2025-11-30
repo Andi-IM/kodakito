@@ -1,0 +1,25 @@
+{
+    "@@locale": "en",
+    "appTitle" : "KodaKito",
+
+    "@_AUTH_FEATURE" : {},
+    "authBtnLogin" : "Login",
+    "authBtnRegister" : "Register",
+    "authFieldEmailHint" : "Email",
+    "authFieldPasswordHint" : "Password",
+    "authFieldFullNameHint" : "Full Name",
+    "authMsgNoAccount" : "Don't have an account?",
+    "authLinkRegisterNow" : "Register now",
+    "authMsgHaveAccount" : "Already have an account?",
+    "authLinkLoginNow" : "Login",
+    "storyBtnAddSemantic" : "Add new story",
+
+    "@_STORY_FEATURE" : {},
+    "storyDetailTitle" : "Story Detail",
+    "addStoryTitle" : "Add Story",
+    "addStoryBtnPost" : "Post",
+    "addStoryImageLabel" :"Story Photo",
+    "addStoryUploadPlaceholder" :"Upload Image",
+    "addStoryDescriptionLabel" : "Description",
+    "addStoryDescriptionHint" : "Tell your experience..."
+}
