@@ -110,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                   // Login Button
                   ElevatedButton(
                     onPressed: () {
-                      context.go('/');
+                      context.go('/story');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,

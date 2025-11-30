@@ -121,15 +121,10 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               centerTitle: !isMedium,
               pinned: false,
               actions: [
-                IconButton(
-                  onPressed: () => context.pushNamed('bookmark'),
-                  icon: const Icon(Icons.bookmark_outline),
-                  tooltip: 'Bookmark',
-                ),
-                IconButton(
-                  onPressed: () => context.pushNamed('profile'),
-                  icon: const Icon(Icons.person_outline),
-                  tooltip: 'Profile',
+                IconButtonM3E(
+                  onPressed: () {},
+                  icon: const Icon(Icons.settings),
+                  tooltip: 'Settings',
                 ),
               ],
             ),

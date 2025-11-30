@@ -1,4 +1,5 @@
 import 'dart:io' show Platform;
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 import 'package:dicoding_story/common/app_router.dart';
 import 'package:dicoding_story/common/theme.dart';
@@ -10,7 +11,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:m3e_collection/m3e_collection.dart';
 import 'package:window_manager/window_manager.dart';
-
 
 Future initLogging() async {
   Logger.root.level = Level.ALL;
@@ -53,6 +53,7 @@ Future<void> _setupSystemUI() async {
 void main() {
   initLogging();
   WidgetsFlutterBinding.ensureInitialized();
+  usePathUrlStrategy();
   _setupDesktopWindow();
   _setupSystemUI();
   runApp(const ProviderScope(child: MyApp()));
@@ -69,6 +70,7 @@ class MyApp extends StatelessWidget {
     MaterialTheme theme = MaterialTheme(textTheme);
 
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       routerConfig: AppRouter.createRouter(),
       title: 'KodaKito',
       // theme: brightness == Brightness.light ? theme.light() : theme.dark(),
