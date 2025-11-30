@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:dicoding_story/presentation/main/add_story_modal.dart';
 import 'package:dicoding_story/presentation/main/provider/main_provider.dart';
 import 'package:dicoding_story/presentation/main/story_card.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -41,6 +44,18 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               titleText: 'KodaKito',
               centerTitle: !isMedium,
               pinned: false,
+              actions: [
+                IconButton(
+                  onPressed: () => context.pushNamed('bookmark'),
+                  icon: const Icon(Icons.bookmark_outline),
+                  tooltip: 'Bookmark',
+                ),
+                IconButton(
+                  onPressed: () => context.pushNamed('profile'),
+                  icon: const Icon(Icons.person_outline),
+                  tooltip: 'Profile',
+                ),
+              ],
             ),
             if (widthClass >= WindowWidthClass.medium)
               SliverGrid.builder(
@@ -74,9 +89,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
           ],
         ),
       ),
-      floatingActionButton: widthClass >= WindowWidthClass.medium
-          ? null
-          : _buildFloatingActionButton(),
+      floatingActionButton: _buildFloatingActionButton(),
     );
   }
 
@@ -87,7 +100,83 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         showDialog(
           context: context,
           builder: (context) {
-            return Dialog.fullscreen(child: const AddStoryPage());
+            if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+              return Dialog.fullscreen(child: const AddStoryPage());
+            }
+
+            return AlertDialog(
+              title: const Text('Tambah Cerita'),
+              content: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: 400,
+                    maxWidth: 800,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Foto Cerita',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        height: 200,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.image,
+                              size: 50,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Upload Gambar',
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const TextField(
+                        maxLines: 4,
+                        decoration: InputDecoration(
+                          labelText: 'Deskripsi',
+                          hintText: 'Ceritakan pengalamanmu...',
+                          border: OutlineInputBorder(),
+                          floatingLabelBehavior: FloatingLabelBehavior.always,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => context.pop(),
+                  child: const Text('Batal'),
+                ),
+                FilledButton(
+                  onPressed: () => context.pop(),
+                  child: const Text('Bagikan'),
+                ),
+              ],
+            );
           },
         );
       },
