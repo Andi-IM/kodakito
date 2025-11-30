@@ -45,7 +45,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               final story = stories[index];
               return StoryCard(
                 story: story,
-                onTap: () => context.push('/${story.id}'),
+                onTap: () => context.go('/story/${story.id}'),
               );
             }
 

@@ -27,32 +27,58 @@ class AppRouter {
           name: 'register',
           builder: (context, state) => const RegisterPage(),
         ),
-        ShellRoute(
-          navigatorKey: _shellKey,
-          builder: (context, state, child) => MainNavigation(child: child),
-          routes: [
-            GoRoute(
-              path: '/',
-              name: 'main',
-              builder: (context, state) => const MainScreen(),
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) {
+            return MainNavigation(navigationShell: navigationShell);
+          },
+          branches: [
+            StatefulShellBranch(
+              navigatorKey: _shellKey,
+              routes: [
+                GoRoute(
+                  path: '/',
+                  name: 'main',
+                  builder: (context, state) => const MainScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'story/:id',
+                      name: 'detail',
+                      builder: (context, state) {
+                        final id = int.parse(state.pathParameters['id']!);
+                        return StoryDetailPage(id: id);
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
-            GoRoute(
-              path: '/bookmark',
-              name: 'bookmark',
-              builder: (context, state) => const BookmarkScreen(),
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: '/bookmark',
+                  name: 'bookmark',
+                  builder: (context, state) => const BookmarkScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'story/:id',
+                      name: 'bookmark_detail',
+                      builder: (context, state) {
+                        final id = int.parse(state.pathParameters['id']!);
+                        return StoryDetailPage(id: id);
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
-            GoRoute(
-              path: '/profile',
-              name: 'profile',
-              builder: (context, state) => const ProfileScreen(),
-            ),
-            GoRoute(
-              path: '/:id',
-              name: 'detail',
-              builder: (context, state) {
-                final id = int.parse(state.pathParameters['id']!);
-                return StoryDetailPage(id: id);
-              },
+            StatefulShellBranch(
+              routes: [
+                GoRoute(
+                  path: '/profile',
+                  name: 'profile',
+                  builder: (context, state) => const ProfileScreen(),
+                ),
+              ],
             ),
           ],
         ),
