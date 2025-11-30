@@ -29,24 +29,24 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     final isMedium = widthClass >= WindowWidthClass.medium;
     final stories = ref.watch(mainScreenContentProvider);
     return Scaffold(
-      backgroundColor: isMedium
-          ? Theme.of(context).colorScheme.surfaceContainerHigh
-          : null,
       body: Scrollbar(
         controller: _scrollController,
         child: CustomScrollView(
           controller: _scrollController,
           slivers: [
             SliverAppBarM3E(
-              variant: AppBarM3EVariant.large,
+              shapeFamily: AppBarM3EShapeFamily.square,
+              variant: AppBarM3EVariant.small,
+              density: AppBarM3EDensity.regular,
               titleText: 'KodaKito',
               centerTitle: !isMedium,
+              pinned: false,
             ),
             if (widthClass >= WindowWidthClass.medium)
               SliverGrid.builder(
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 400,
-                  mainAxisExtent: 360,
+                  mainAxisExtent: 400,
                   childAspectRatio: 0.75,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,

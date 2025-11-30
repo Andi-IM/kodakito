@@ -41,7 +41,7 @@ final class NavigationDataProvider
   }
 }
 
-String _$navigationDataHash() => r'f708886b80830fbf4c27245d926eeb413aa9c24f';
+String _$navigationDataHash() => r'd302bed9068313f7cbe29f2b456f3b38d7fe16d1';
 
 abstract class _$NavigationData extends $Notifier<NavigationRailM3EType> {
   NavigationRailM3EType build();
@@ -94,7 +94,7 @@ final class MainScreenContentProvider
   }
 }
 
-String _$mainScreenContentHash() => r'58a1f7e29e2e269dd7902f1c301308fa9c0f5490';
+String _$mainScreenContentHash() => r'3a91925a468d9a25f4c10f5fce923990cc029936';
 
 abstract class _$MainScreenContent extends $Notifier<List<Story>> {
   List<Story> build();
