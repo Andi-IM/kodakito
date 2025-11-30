@@ -21,8 +21,8 @@ class _StoryDetailPageState extends ConsumerState<StoryDetailPage> {
   @override
   void initState() {
     super.initState();
+    _story = ref.read(detailScreenContentProvider);
     _generatePalette();
-    _story = ref.watch(detailScreenContentProvider);
   }
 
   Future<void> _generatePalette() async {

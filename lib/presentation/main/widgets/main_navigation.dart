@@ -1,5 +1,4 @@
 import 'package:dicoding_story/presentation/main/models/navigation_item.dart';
-import 'package:dicoding_story/presentation/main/provider/main_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -17,7 +16,6 @@ class MainNavigation extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isCompact = WindowWidthClass.of(context) <= WindowWidthClass.compact;
-    final isExpanded = WindowWidthClass.of(context) >= WindowWidthClass.medium;
     final fullPath = GoRouterState.of(context).fullPath;
     final showNavigation = navigationItems.any(
       (element) => fullPath == element.route,

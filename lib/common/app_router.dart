@@ -35,26 +35,24 @@ class AppRouter {
               path: '/',
               name: 'main',
               builder: (context, state) => const MainScreen(),
-              routes: [
-                GoRoute(
-                  path: 'bookmark',
-                  name: 'bookmark',
-                  builder: (context, state) => const BookmarkScreen(),
-                ),
-                GoRoute(
-                  path: 'profile',
-                  name: 'profile',
-                  builder: (context, state) => const ProfileScreen(),
-                ),
-                GoRoute(
-                  path: ':id',
-                  name: 'detail',
-                  builder: (context, state) {
-                    final id = int.parse(state.pathParameters['id']!);
-                    return StoryDetailPage(id: id);
-                  },
-                ),
-              ],
+            ),
+            GoRoute(
+              path: '/bookmark',
+              name: 'bookmark',
+              builder: (context, state) => const BookmarkScreen(),
+            ),
+            GoRoute(
+              path: '/profile',
+              name: 'profile',
+              builder: (context, state) => const ProfileScreen(),
+            ),
+            GoRoute(
+              path: '/:id',
+              name: 'detail',
+              builder: (context, state) {
+                final id = int.parse(state.pathParameters['id']!);
+                return StoryDetailPage(id: id);
+              },
             ),
           ],
         ),
