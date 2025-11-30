@@ -12,28 +12,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'KodaKito';
 
   @override
+  String get authGreeting => 'Welcome back';
+
+  @override
+  String get authRegisterTitle => 'Create Account';
+
+  @override
   String get authBtnLogin => 'Login';
 
   @override
   String get authBtnRegister => 'Register';
 
   @override
-  String get authFieldEmailHint => 'Email';
+  String get authFieldEmailLabel => 'Email *';
 
   @override
-  String get authFieldPasswordHint => 'Password';
+  String get authFieldEmailHint => 'email@domain.com';
 
   @override
-  String get authFieldFullNameHint => 'Full Name';
+  String get authFieldPasswordLabel => 'Password *';
 
   @override
-  String get authMsgNoAccount => 'Don\'t have an account?';
+  String get authFieldPasswordHint => '********';
+
+  @override
+  String get authFieldFullNameLabel => 'Full Name *';
+
+  @override
+  String get authFieldFullNameHint => 'Enter your name';
+
+  @override
+  String get authMsgNoAccount => 'Don\'t have an account? ';
 
   @override
   String get authLinkRegisterNow => 'Register now';
 
   @override
-  String get authMsgHaveAccount => 'Already have an account?';
+  String get authMsgHaveAccount => 'Already have an account? ';
 
   @override
   String get authLinkLoginNow => 'Login';
@@ -51,6 +66,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addStoryBtnPost => 'Post';
 
   @override
+  String get addStoryBtnCancel => 'Cancel';
+
+  @override
   String get addStoryImageLabel => 'Story Photo';
 
   @override
@@ -61,4 +79,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addStoryDescriptionHint => 'Tell your experience...';
+
+  @override
+  String get addStoryBtnCamera => 'Camera';
+
+  @override
+  String get addStoryBtnGallery => 'Gallery';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsBtnLogout => 'Logout';
 }

@@ -104,6 +104,18 @@ abstract class AppLocalizations {
   /// **'KodaKito'**
   String get appTitle;
 
+  /// No description provided for @authGreeting.
+  ///
+  /// In id, this message translates to:
+  /// **'Selamat Datang'**
+  String get authGreeting;
+
+  /// No description provided for @authRegisterTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Buat Akun'**
+  String get authRegisterTitle;
+
   /// No description provided for @authBtnLogin.
   ///
   /// In id, this message translates to:
@@ -116,28 +128,46 @@ abstract class AppLocalizations {
   /// **'Daftar'**
   String get authBtnRegister;
 
+  /// No description provided for @authFieldEmailLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Email *'**
+  String get authFieldEmailLabel;
+
   /// No description provided for @authFieldEmailHint.
   ///
   /// In id, this message translates to:
-  /// **'Email'**
+  /// **'email@domain.com'**
   String get authFieldEmailHint;
+
+  /// No description provided for @authFieldPasswordLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Kata Sandi *'**
+  String get authFieldPasswordLabel;
 
   /// No description provided for @authFieldPasswordHint.
   ///
   /// In id, this message translates to:
-  /// **'Kata Sandi'**
+  /// **'********'**
   String get authFieldPasswordHint;
+
+  /// No description provided for @authFieldFullNameLabel.
+  ///
+  /// In id, this message translates to:
+  /// **'Nama Lengkap *'**
+  String get authFieldFullNameLabel;
 
   /// No description provided for @authFieldFullNameHint.
   ///
   /// In id, this message translates to:
-  /// **'Nama Lengkap'**
+  /// **'Masukkan nama anda'**
   String get authFieldFullNameHint;
 
   /// No description provided for @authMsgNoAccount.
   ///
   /// In id, this message translates to:
-  /// **'Belum Punya Akun?'**
+  /// **'Belum Punya Akun? '**
   String get authMsgNoAccount;
 
   /// No description provided for @authLinkRegisterNow.
@@ -149,7 +179,7 @@ abstract class AppLocalizations {
   /// No description provided for @authMsgHaveAccount.
   ///
   /// In id, this message translates to:
-  /// **'Sudah Punya Akun?'**
+  /// **'Sudah Punya Akun? '**
   String get authMsgHaveAccount;
 
   /// No description provided for @authLinkLoginNow.
@@ -182,6 +212,12 @@ abstract class AppLocalizations {
   /// **'Posting'**
   String get addStoryBtnPost;
 
+  /// No description provided for @addStoryBtnCancel.
+  ///
+  /// In id, this message translates to:
+  /// **'Batal'**
+  String get addStoryBtnCancel;
+
   /// No description provided for @addStoryImageLabel.
   ///
   /// In id, this message translates to:
@@ -205,6 +241,30 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Ceritakan pengalamanmu...'**
   String get addStoryDescriptionHint;
+
+  /// No description provided for @addStoryBtnCamera.
+  ///
+  /// In id, this message translates to:
+  /// **'Kamera'**
+  String get addStoryBtnCamera;
+
+  /// No description provided for @addStoryBtnGallery.
+  ///
+  /// In id, this message translates to:
+  /// **'Galeri'**
+  String get addStoryBtnGallery;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pengaturan'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsBtnLogout.
+  ///
+  /// In id, this message translates to:
+  /// **'Keluar'**
+  String get settingsBtnLogout;
 }
 
 class _AppLocalizationsDelegate

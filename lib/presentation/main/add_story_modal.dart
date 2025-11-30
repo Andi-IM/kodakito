@@ -1,3 +1,4 @@
+import 'package:dicoding_story/common/localizations.dart';
 import 'package:flutter/material.dart';
 
 class AddStoryPage extends StatefulWidget {
@@ -20,8 +21,8 @@ class _AddStoryPageState extends State<AddStoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Story'),
-        actions: [TextButton(onPressed: () {}, child: const Text('Bagikan'))],
+        title: Text(context.l10n.addStoryTitle),
+        actions: [TextButton(onPressed: () {}, child: Text(context.l10n.addStoryBtnPost))],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -45,13 +46,13 @@ class _AddStoryPageState extends State<AddStoryPage> {
                 ElevatedButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.camera_alt),
-                  label: const Text('Camera'),
+                  label: Text(context.l10n.addStoryBtnCamera),
                 ),
                 const SizedBox(width: 16),
                 ElevatedButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.photo),
-                  label: const Text('Gallery'),
+                  label: Text(context.l10n.addStoryBtnGallery),
                 ),
               ],
             ),
@@ -59,13 +60,13 @@ class _AddStoryPageState extends State<AddStoryPage> {
             TextField(
               controller: _descriptionController,
               maxLines: 5,
-              decoration: const InputDecoration(
-                hintText: 'Enter description',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: context.l10n.addStoryDescriptionHint,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: () {}, child: const Text('Upload')),
+            ElevatedButton(onPressed: () {}, child: Text(context.l10n.addStoryBtnCancel)),
           ],
         ),
       ),

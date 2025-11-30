@@ -12,28 +12,43 @@ class AppLocalizationsId extends AppLocalizations {
   String get appTitle => 'KodaKito';
 
   @override
+  String get authGreeting => 'Selamat Datang';
+
+  @override
+  String get authRegisterTitle => 'Buat Akun';
+
+  @override
   String get authBtnLogin => 'Masuk';
 
   @override
   String get authBtnRegister => 'Daftar';
 
   @override
-  String get authFieldEmailHint => 'Email';
+  String get authFieldEmailLabel => 'Email *';
 
   @override
-  String get authFieldPasswordHint => 'Kata Sandi';
+  String get authFieldEmailHint => 'email@domain.com';
 
   @override
-  String get authFieldFullNameHint => 'Nama Lengkap';
+  String get authFieldPasswordLabel => 'Kata Sandi *';
 
   @override
-  String get authMsgNoAccount => 'Belum Punya Akun?';
+  String get authFieldPasswordHint => '********';
+
+  @override
+  String get authFieldFullNameLabel => 'Nama Lengkap *';
+
+  @override
+  String get authFieldFullNameHint => 'Masukkan nama anda';
+
+  @override
+  String get authMsgNoAccount => 'Belum Punya Akun? ';
 
   @override
   String get authLinkRegisterNow => 'Daftar Sekarang';
 
   @override
-  String get authMsgHaveAccount => 'Sudah Punya Akun?';
+  String get authMsgHaveAccount => 'Sudah Punya Akun? ';
 
   @override
   String get authLinkLoginNow => 'Masuk';
@@ -51,6 +66,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get addStoryBtnPost => 'Posting';
 
   @override
+  String get addStoryBtnCancel => 'Batal';
+
+  @override
   String get addStoryImageLabel => 'Foto Cerita';
 
   @override
@@ -61,4 +79,16 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get addStoryDescriptionHint => 'Ceritakan pengalamanmu...';
+
+  @override
+  String get addStoryBtnCamera => 'Kamera';
+
+  @override
+  String get addStoryBtnGallery => 'Galeri';
+
+  @override
+  String get settingsTitle => 'Pengaturan';
+
+  @override
+  String get settingsBtnLogout => 'Keluar';
 }

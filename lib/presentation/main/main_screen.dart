@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/presentation/auth/widget/logo_widget.dart';
 import 'package:dicoding_story/presentation/main/add_story_modal.dart';
 import 'package:dicoding_story/presentation/main/provider/main_provider.dart';
@@ -40,7 +41,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       }
 
       return AlertDialog(
-        title: const Text('Tambah Cerita'),
+        title: Text(context.l10n.addStoryTitle),
         content: SingleChildScrollView(
           child: ConstrainedBox(
             constraints: const BoxConstraints(minWidth: 400, maxWidth: 800),
@@ -48,8 +49,8 @@ class _MainScreenState extends ConsumerState<MainScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Foto Cerita',
+                Text(
+                  context.l10n.addStoryImageLabel,
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
@@ -72,7 +73,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Upload Gambar',
+                        context.l10n.addStoryUploadPlaceholder,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -81,11 +82,11 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const TextField(
+                TextField(
                   maxLines: 4,
                   decoration: InputDecoration(
-                    labelText: 'Deskripsi',
-                    hintText: 'Ceritakan pengalamanmu...',
+                    labelText: context.l10n.addStoryDescriptionLabel,
+                    hintText: context.l10n.addStoryDescriptionHint,
                     border: OutlineInputBorder(),
                     floatingLabelBehavior: FloatingLabelBehavior.always,
                   ),
@@ -97,11 +98,11 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         actions: [
           TextButton(
             onPressed: () => context.pop(),
-            child: const Text('Batal'),
+            child: Text(context.l10n.addStoryBtnCancel),
           ),
           FilledButton(
             onPressed: () => context.pop(),
-            child: const Text('Bagikan'),
+            child: Text(context.l10n.addStoryBtnPost),
           ),
         ],
       );
@@ -119,21 +120,18 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         child: CustomScrollView(
           controller: _scrollController,
           slivers: [
-            SliverAppBarM3E(
-              shapeFamily: AppBarM3EShapeFamily.square,
-              variant: AppBarM3EVariant.small,
-              density: AppBarM3EDensity.regular,
+            SliverAppBar(
               title: Padding(
                 padding: const EdgeInsets.only(left: 48.0),
                 child: LogoWidget(maxWidth: 200),
               ),
-              centerTitle: !isMedium,
+              centerTitle: true,
               pinned: false,
               actions: [
                 IconButtonM3E(
                   onPressed: () {},
                   icon: const Icon(Icons.settings),
-                  tooltip: 'Settings',
+                  tooltip: context.l10n.settingsTitle,
                 ),
               ],
             ),
@@ -197,7 +195,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       key: const ValueKey('fab_compact'),
       heroTag: 'fab_compact',
       onPressed: () => _showAddStoryDialog(),
-      tooltip: 'Add Story',
+      tooltip: context.l10n.addStoryTitle,
       child: const Icon(Icons.add),
     );
   }
@@ -207,9 +205,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
       key: const ValueKey('fab_extended'),
       heroTag: 'fab_extended',
       onPressed: () => _showAddStoryDialog(),
-      label: const Text('Add Story'),
+      label: Text(context.l10n.addStoryTitle),
       icon: const Icon(Icons.add),
-      tooltip: 'Add Story',
+      tooltip: context.l10n.addStoryTitle,
     );
   }
 }

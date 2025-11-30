@@ -3,14 +3,19 @@
     "appTitle" : "KodaKito",
 
     "@_AUTH_FEATURE" : {},
+    "authGreeting" : "Welcome back",
     "authBtnLogin" : "Login",
+    "authRegisterTitle" : "Create Account",
     "authBtnRegister" : "Register",
-    "authFieldEmailHint" : "Email",
-    "authFieldPasswordHint" : "Password",
-    "authFieldFullNameHint" : "Full Name",
-    "authMsgNoAccount" : "Don't have an account?",
+    "authFieldEmailLabel" : "Email *",
+    "authFieldEmailHint" : "email@domain.com",
+    "authFieldPasswordLabel" : "Password *",
+    "authFieldPasswordHint" : "********",
+    "authFieldFullNameLabel" : "Full Name *",
+    "authFieldFullNameHint" : "Enter your name",
+    "authMsgNoAccount" : "Don't have an account? ",
     "authLinkRegisterNow" : "Register now",
-    "authMsgHaveAccount" : "Already have an account?",
+    "authMsgHaveAccount" : "Already have an account? ",
     "authLinkLoginNow" : "Login",
     "storyBtnAddSemantic" : "Add new story",
 
@@ -20,6 +25,13 @@
     "addStoryBtnPost" : "Post",
     "addStoryImageLabel" :"Story Photo",
     "addStoryUploadPlaceholder" :"Upload Image",
+    "addStoryBtnCamera" : "Camera",
+    "addStoryBtnGallery" : "Gallery",
     "addStoryDescriptionLabel" : "Description",
-    "addStoryDescriptionHint" : "Tell your experience..."
+    "addStoryBtnCancel" : "Cancel",
+    "addStoryDescriptionHint" : "Tell your experience...",
+
+    "@_SETTINGS_FEATURE": {},
+    "settingsTitle": "Settings",
+    "settingsBtnLogout": "Logout"
 }

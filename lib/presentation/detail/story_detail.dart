@@ -1,9 +1,9 @@
+import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/data/model/story.dart';
 import 'package:dicoding_story/presentation/detail/provider/detail_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:m3e_collection/m3e_collection.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:window_size_classes/window_size_classes.dart';
 
@@ -54,13 +54,12 @@ class _StoryDetailPageState extends ConsumerState<StoryDetailPage> {
       data: theme.copyWith(colorScheme: colorScheme),
       child: Scaffold(
         backgroundColor: _colorScheme?.surface,
-        appBar: AppBarM3E(
-          shapeFamily: AppBarM3EShapeFamily.square,
-          density: AppBarM3EDensity.regular,
+        appBar: AppBar(
           title: Text(
-            'Story Detail',
+            context.l10n.storyDetailTitle,
             style: Theme.of(context).textTheme.titleLarge,
           ),
+          centerTitle: true,
         ),
         body: SingleChildScrollView(
           child: Builder(

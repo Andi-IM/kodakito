@@ -1,3 +1,4 @@
+import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/presentation/auth/widget/logo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
@@ -45,18 +46,18 @@ class _RegisterPageState extends State<RegisterPage> {
                   LogoWidget(maxWidth: 600),
                   // Title
                   Text(
-                    'Buat Akun',
+                    context.l10n.authRegisterTitle,
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 32),
 
                   // Name Input
-                  const Text('Nama Lengkap *'),
+                  Text(context.l10n.authFieldFullNameLabel),
                   const SizedBox(height: 8),
                   TextFormField(
-                    decoration: const InputDecoration(
-                      hintText: 'Masukkan nama anda',
+                    decoration: InputDecoration(
+                      hintText: context.l10n.authFieldFullNameHint,
                       prefixIcon: Icon(Icons.person_outline),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -66,11 +67,11 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 16),
 
                   // Email Input
-                  const Text('Email *'),
+                  Text(context.l10n.authFieldEmailLabel),
                   const SizedBox(height: 8),
                   TextFormField(
-                    decoration: const InputDecoration(
-                      hintText: 'email@domain.com',
+                    decoration: InputDecoration(
+                      hintText: context.l10n.authFieldEmailHint,
                       prefixIcon: Icon(Icons.email_outlined),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -80,12 +81,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   const SizedBox(height: 16),
 
                   // Password Input
-                  const Text('Password *'),
+                  Text(context.l10n.authFieldPasswordLabel),
                   const SizedBox(height: 8),
                   TextFormField(
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      hintText: '********',
+                      hintText: context.l10n.authFieldPasswordHint,
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -119,9 +120,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text(
-                      'Daftar',
-                      style: TextStyle(
+                    child: Text(
+                      context.l10n.authBtnRegister,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -133,11 +134,11 @@ class _RegisterPageState extends State<RegisterPage> {
                   Center(
                     child: RichText(
                       text: TextSpan(
-                        text: 'Sudah punya akun? ',
+                        text: context.l10n.authMsgHaveAccount,
                         style: Theme.of(context).textTheme.titleMedium,
                         children: [
                           TextSpan(
-                            text: 'Masuk ke Aplikasi',
+                            text: context.l10n.authLinkLoginNow,
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.bold,

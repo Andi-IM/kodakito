@@ -3,14 +3,20 @@
     "appTitle" : "KodaKito",
 
     "@_AUTH_FEATURE" : {},
+    "authGreeting" : "Selamat Datang",
+    "authRegisterTitle" : "Buat Akun",
+
     "authBtnLogin" : "Masuk",
     "authBtnRegister" : "Daftar",
-    "authFieldEmailHint" : "Email",
-    "authFieldPasswordHint" : "Kata Sandi",
-    "authFieldFullNameHint" : "Nama Lengkap",
-    "authMsgNoAccount" : "Belum Punya Akun?",
+    "authFieldEmailLabel" : "Email *",
+    "authFieldEmailHint" : "email@domain.com",
+    "authFieldPasswordLabel" : "Kata Sandi *",
+    "authFieldPasswordHint" : "********",
+    "authFieldFullNameLabel" : "Nama Lengkap *",
+    "authFieldFullNameHint" : "Masukkan nama anda",
+    "authMsgNoAccount" : "Belum Punya Akun? ",
     "authLinkRegisterNow" : "Daftar Sekarang",
-    "authMsgHaveAccount" : "Sudah Punya Akun?",
+    "authMsgHaveAccount" : "Sudah Punya Akun? ",
     "authLinkLoginNow" : "Masuk",
 
     "@_STORY_FEATURE" : {},
@@ -18,8 +24,15 @@
     "storyDetailTitle" : "Detail Cerita",
     "addStoryTitle" : "Tambah Cerita",
     "addStoryBtnPost" : "Posting",
+    "addStoryBtnCancel" : "Batal",
     "addStoryImageLabel" : "Foto Cerita",
     "addStoryUploadPlaceholder" : "Unggah Gambar",
     "addStoryDescriptionLabel" : "Deskripsi",
-    "addStoryDescriptionHint" : "Ceritakan pengalamanmu..."
+    "addStoryDescriptionHint" : "Ceritakan pengalamanmu...",
+    "addStoryBtnCamera" : "Kamera",
+    "addStoryBtnGallery" : "Galeri",
+
+    "@_SETTINGS_FEATURE": {},
+    "settingsTitle": "Pengaturan",
+    "settingsBtnLogout": "Keluar"
 }

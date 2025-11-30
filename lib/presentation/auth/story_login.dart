@@ -1,3 +1,4 @@
+import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/presentation/auth/widget/logo_widget.dart'
     show LogoWidget;
 import 'package:flutter/material.dart';
@@ -48,21 +49,21 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 24),
 
                   // Title
-                  const Text(
-                    'Selamat Datang',
+                  Text(
+                    context.l10n.authGreeting,
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 32),
 
                   // Email Input
-                  const Text('Email *'),
+                  Text(context.l10n.authFieldEmailLabel),
                   const SizedBox(height: 8),
                   TextFormField(
-                    decoration: const InputDecoration(
-                      hintText: 'email@domain.com',
-                      prefixIcon: Icon(Icons.person_outline),
-                      border: OutlineInputBorder(
+                    decoration: InputDecoration(
+                      hintText: context.l10n.authFieldEmailHint,
+                      prefixIcon: const Icon(Icons.person_outline),
+                      border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(8)),
                       ),
                     ),
@@ -70,12 +71,12 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 16),
 
                   // Password Input
-                  const Text('Password *'),
+                  Text(context.l10n.authFieldPasswordLabel),
                   const SizedBox(height: 8),
                   TextFormField(
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      hintText: '********',
+                      hintText: context.l10n.authFieldPasswordHint,
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -109,9 +110,9 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text(
-                      'Masuk',
-                      style: TextStyle(
+                    child: Text(
+                      context.l10n.authBtnLogin,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -123,11 +124,11 @@ class _LoginPageState extends State<LoginPage> {
                   Center(
                     child: RichText(
                       text: TextSpan(
-                        text: 'Belum punya akun? ',
+                        text: context.l10n.authMsgNoAccount,
                         style: Theme.of(context).textTheme.titleSmall,
                         children: [
                           TextSpan(
-                            text: 'Daftar Sekarang',
+                            text: context.l10n.authLinkRegisterNow,
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.bold,
