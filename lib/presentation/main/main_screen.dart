@@ -29,7 +29,12 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   Future<void> _showAddStoryDialog() async => showDialog(
     context: context,
     builder: (context) {
-      if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+      final widthClass = WindowWidthClass.of(context);
+      final heightClass = WindowHeightClass.of(context);
+      if (!kIsWeb &&
+          (Platform.isAndroid || Platform.isIOS) &&
+          (widthClass < WindowWidthClass.medium ||
+              heightClass < WindowHeightClass.medium)) {
         return Dialog.fullscreen(child: const AddStoryPage());
       }
 
