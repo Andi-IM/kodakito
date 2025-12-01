@@ -83,15 +83,11 @@ class _MainScreenState extends ConsumerState<MainScreen> {
             ),
           ],
           specialItemBuilder: (context, _, __) {
-            return ButtonM3E(
-              onPressed: () => _pickFromWeChatCamera(context),
-              label: FittedBox(
-                child: Text(
-                  InstaAssetPicker.defaultTextDelegate(
-                    context,
-                  ).sActionUseCameraHint,
-                  textAlign: TextAlign.center,
-                ),
+            return Container(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              child: IconButton(
+                onPressed: () => _pickFromWeChatCamera(context),
+                icon: const Icon(Icons.camera_alt),
               ),
             );
           },

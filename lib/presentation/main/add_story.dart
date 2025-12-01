@@ -37,32 +37,34 @@ class _AddStoryPageState extends State<AddStoryPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Center(
-                child: Icon(Icons.image, size: 50, color: Colors.grey),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.camera_alt),
-                  label: Text(context.l10n.addStoryBtnCamera),
-                ),
-                const SizedBox(width: 16),
-                ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.photo),
-                  label: Text(context.l10n.addStoryBtnGallery),
-                ),
-              ],
+            StreamBuilder<InstaAssetsExportDetails>(
+              stream: widget.cropStream,
+              builder: (context, snapshot) {
+                final file = snapshot.data?.data.firstOrNull?.croppedFile;
+                if (file != null) {
+                  return SizedBox(
+                    height: 400,
+                    width: 400,
+                    child: AspectRatio(
+                      aspectRatio: 1,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.file(file, fit: BoxFit.cover),
+                      ),
+                    ),
+                  );
+                }
+                return Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Center(
+                    child: Icon(Icons.image, size: 50, color: Colors.grey),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 16),
             TextField(
