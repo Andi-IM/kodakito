@@ -5,6 +5,7 @@ import 'package:dicoding_story/presentation/main/main_screen.dart';
 import 'package:dicoding_story/presentation/detail/story_detail.dart';
 import 'package:dicoding_story/presentation/auth/story_login.dart';
 import 'package:dicoding_story/presentation/auth/story_register.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
@@ -42,7 +43,7 @@ class AppRouter {
             ),
           ],
         ),
-        if (Platform.isAndroid || Platform.isIOS)
+        if (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
           GoRoute(
             path: '/add-story',
             name: 'add-story',
