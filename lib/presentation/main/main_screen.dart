@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/presentation/auth/widget/logo_widget.dart';
-import 'package:dicoding_story/presentation/main/add_story_modal.dart';
-import 'package:dicoding_story/presentation/main/provider/main_provider.dart';
-import 'package:dicoding_story/presentation/main/story_card.dart';
+import 'package:dicoding_story/presentation/main/providers/main_provider.dart';
+import 'package:dicoding_story/presentation/main/widgets/story_card.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:window_size_classes/window_size_classes.dart';
 import 'package:m3e_collection/m3e_collection.dart';
 
@@ -28,86 +28,94 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     super.dispose();
   }
 
-  Future<void> _showAddStoryDialog() async => showDialog(
-    context: context,
-    builder: (context) {
-      final widthClass = WindowWidthClass.of(context);
-      final heightClass = WindowHeightClass.of(context);
-      if (!kIsWeb &&
-          (Platform.isAndroid || Platform.isIOS) &&
-          (widthClass < WindowWidthClass.medium ||
-              heightClass < WindowHeightClass.medium)) {
-        return Dialog.fullscreen(child: const AddStoryPage());
-      }
+  Future<void> _showAddStoryDialog() async {
+    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+      InstaAssetPicker.pickAssets(
+        context,
+        pickerConfig: InstaAssetPickerConfig(
+          title: context.l10n.addStoryTitle,
+          closeOnComplete: true,
+        ),
+        maxAssets: 1,
+        onCompleted: (Stream<InstaAssetsExportDetails> exportDetails) {},
+      );
+      return;
+    }
 
-      return AlertDialog(
-        title: Text(context.l10n.addStoryTitle),
-        content: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minWidth: 400, maxWidth: 800),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.l10n.addStoryImageLabel,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  height: 200,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
-                    borderRadius: BorderRadius.circular(16),
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(context.l10n.addStoryTitle),
+          content: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 400, maxWidth: 800),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    context.l10n.addStoryImageLabel,
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.image,
-                        size: 50,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  const SizedBox(height: 8),
+                  Container(
+                    height: 200,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline,
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        context.l10n.addStoryUploadPlaceholder,
-                        style: TextStyle(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.image,
+                          size: 50,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Text(
+                          context.l10n.addStoryUploadPlaceholder,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    labelText: context.l10n.addStoryDescriptionLabel,
-                    hintText: context.l10n.addStoryDescriptionHint,
-                    border: OutlineInputBorder(),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  const SizedBox(height: 16),
+                  TextField(
+                    maxLines: 4,
+                    decoration: InputDecoration(
+                      labelText: context.l10n.addStoryDescriptionLabel,
+                      hintText: context.l10n.addStoryDescriptionHint,
+                      border: OutlineInputBorder(),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => context.pop(),
-            child: Text(context.l10n.addStoryBtnCancel),
-          ),
-          FilledButton(
-            onPressed: () => context.pop(),
-            child: Text(context.l10n.addStoryBtnPost),
-          ),
-        ],
-      );
-    },
-  );
+          actions: [
+            TextButton(
+              onPressed: () => context.pop(),
+              child: Text(context.l10n.addStoryBtnCancel),
+            ),
+            FilledButton(
+              onPressed: () => context.pop(),
+              child: Text(context.l10n.addStoryBtnPost),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

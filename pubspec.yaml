@@ -23,6 +23,7 @@ dependencies:
   m3e_collection: ^0.3.7
   dynamic_color: ^1.8.1
   intl: ^0.20.2
+  insta_assets_picker: ^3.4.0
   
 
 dev_dependencies:
