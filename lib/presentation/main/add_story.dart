@@ -1,14 +1,14 @@
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:flutter/material.dart';
 
-class AddStoryModal extends StatefulWidget {
-  const AddStoryModal({super.key});
+class AddStoryPage extends StatefulWidget {
+  const AddStoryPage({super.key});
 
   @override
-  State<AddStoryModal> createState() => _AddStoryModalState();
+  State<AddStoryPage> createState() => _AddStoryPageState();
 }
 
-class _AddStoryModalState extends State<AddStoryModal> {
+class _AddStoryPageState extends State<AddStoryPage> {
   final TextEditingController _descriptionController = TextEditingController();
 
   @override

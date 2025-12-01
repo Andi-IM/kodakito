@@ -35,9 +35,21 @@ class _MainScreenState extends ConsumerState<MainScreen> {
         pickerConfig: InstaAssetPickerConfig(
           title: context.l10n.addStoryTitle,
           closeOnComplete: true,
+          pickerTheme:
+              InstaAssetPicker.themeData(
+                Theme.of(context).colorScheme.primary,
+              ).copyWith(
+                appBarTheme: AppBarTheme(
+                  titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
+              ),
         ),
         maxAssets: 1,
-        onCompleted: (Stream<InstaAssetsExportDetails> exportDetails) {},
+        onCompleted: (Stream<InstaAssetsExportDetails> exportDetails) {
+          context.pushNamed('add-story');
+        },
       );
       return;
     }
