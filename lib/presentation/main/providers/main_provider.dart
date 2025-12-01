@@ -4,7 +4,7 @@ import 'package:dicoding_story/data/model/story.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'main_provider.g.dart';
 
-@Riverpod()
+@riverpod
 class ImageFile extends _$ImageFile {
   @override
   Uint8List? build() {
@@ -16,10 +16,8 @@ class ImageFile extends _$ImageFile {
   }
 }
 
-@Riverpod()
-class MainScreenContent extends _$MainScreenContent {
-  @override
-  List<Story> build() {
-    return dummyStories;
-  }
+@riverpod
+Future<List<Story>> mainScreenContent(Ref ref) async {
+  await Future.delayed(const Duration(seconds: 2));
+  return dummyStories;
 }

@@ -109,72 +109,85 @@ class _MainScreenState extends ConsumerState<MainScreen> {
   Widget build(BuildContext context) {
     final widthClass = WindowWidthClass.of(context);
     final isMedium = widthClass >= WindowWidthClass.medium;
-    final stories = ref.watch(mainScreenContentProvider);
+    final isLarge = widthClass >= WindowWidthClass.large;
+    final storiesAsync = ref.watch(mainScreenContentProvider);
     return Scaffold(
-      body: Scrollbar(
-        controller: _scrollController,
-        child: CustomScrollView(
+      body: storiesAsync.when(
+        data: (stories) => Scrollbar(
           controller: _scrollController,
-          slivers: [
-            SliverAppBar(
-              title: Padding(
-                padding: const EdgeInsets.only(left: 48.0),
-                child: LogoWidget(maxWidth: 200),
-              ),
-              centerTitle: true,
-              pinned: false,
-              actions: [
-                IconButtonM3E(
-                  onPressed: () {},
-                  icon: const Icon(Icons.settings),
-                  tooltip: context.l10n.settingsTitle,
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverAppBar(
+                title: Padding(
+                  padding: const EdgeInsets.only(left: 48.0),
+                  child: LogoWidget(maxWidth: 200),
                 ),
-              ],
-            ),
-            SliverToBoxAdapter(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: widthClass >= WindowWidthClass.medium
-                    ? GridView.builder(
-                        key: const ValueKey('grid'),
-                        padding: EdgeInsets.zero,
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 400,
-                              mainAxisExtent: 400,
-                              childAspectRatio: 0.75,
-                              crossAxisSpacing: 16,
-                              mainAxisSpacing: 16,
-                            ),
-                        itemCount: stories.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          final story = stories[index];
-                          return StoryCard(
-                            story: story,
-                            onTap: () => context.go('/story/${story.id}'),
-                          );
-                        },
-                      )
-                    : ListView.builder(
-                        key: const ValueKey('list'),
-                        padding: EdgeInsets.zero,
-                        itemCount: stories.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          final story = stories[index];
-                          return StoryCard(
-                            story: story,
-                            onTap: () => context.go('/story/${story.id}'),
-                          );
-                        },
-                      ),
+                centerTitle: true,
+                pinned: false,
+                actions: [
+                  IconButtonM3E(
+                    onPressed: () {},
+                    icon: const Icon(Icons.settings),
+                    tooltip: context.l10n.settingsTitle,
+                  ),
+                ],
               ),
-            ),
-          ],
+              SliverToBoxAdapter(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  child: isMedium
+                      ? GridView.builder(
+                          key: const ValueKey('grid'),
+                          padding: EdgeInsets.zero,
+                          gridDelegate:
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 400,
+                                mainAxisExtent: 400,
+                                childAspectRatio: 0.75,
+                                crossAxisSpacing: 16,
+                                mainAxisSpacing: 16,
+                              ),
+                          itemCount: stories.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            final story = stories[index];
+                            return StoryCard(
+                              story: story,
+                              onTap: () => context.go('/story/${story.id}'),
+                            );
+                          },
+                        )
+                      : ListView.builder(
+                          key: const ValueKey('list'),
+                          padding: EdgeInsets.zero,
+                          itemCount: stories.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            final story = stories[index];
+                            return StoryCard(
+                              story: story,
+                              onTap: () => context.go('/story/${story.id}'),
+                            );
+                          },
+                        ),
+                ),
+              ),
+            ],
+          ),
         ),
+        loading: () => Center(
+          child: isMedium
+              ? SizedBox(
+                  width: isLarge ? 240 : 120,
+                  height: isLarge ? 240 : 120,
+                  child: LoadingIndicatorM3E(semanticLabel: 'Loading stories'),
+                )
+              : LoadingIndicatorM3E(semanticLabel: 'Loading stories'),
+        ),
+        error: (error, stack) => Center(child: Text('Error: $error')),
       ),
       floatingActionButton: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),

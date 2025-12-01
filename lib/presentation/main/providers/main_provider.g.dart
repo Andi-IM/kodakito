@@ -40,7 +40,7 @@ final class ImageFileProvider extends $NotifierProvider<ImageFile, Uint8List?> {
   }
 }
 
-String _$imageFileHash() => r'd9e8479cba88f815cc025da1d655b3918992ce90';
+String _$imageFileHash() => r'0b4e745bd2c5a1798f14438d6286ea1e3b4a948c';
 
 abstract class _$ImageFile extends $Notifier<Uint8List?> {
   Uint8List? build();
@@ -61,11 +61,17 @@ abstract class _$ImageFile extends $Notifier<Uint8List?> {
   }
 }
 
-@ProviderFor(MainScreenContent)
+@ProviderFor(mainScreenContent)
 const mainScreenContentProvider = MainScreenContentProvider._();
 
 final class MainScreenContentProvider
-    extends $NotifierProvider<MainScreenContent, List<Story>> {
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Story>>,
+          List<Story>,
+          FutureOr<List<Story>>
+        >
+    with $FutureModifier<List<Story>>, $FutureProvider<List<Story>> {
   const MainScreenContentProvider._()
     : super(
         from: null,
@@ -82,34 +88,14 @@ final class MainScreenContentProvider
 
   @$internal
   @override
-  MainScreenContent create() => MainScreenContent();
+  $FutureProviderElement<List<Story>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(List<Story> value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<List<Story>>(value),
-    );
-  }
-}
-
-String _$mainScreenContentHash() => r'3a91925a468d9a25f4c10f5fce923990cc029936';
-
-abstract class _$MainScreenContent extends $Notifier<List<Story>> {
-  List<Story> build();
-  @$mustCallSuper
   @override
-  void runBuild() {
-    final created = build();
-    final ref = this.ref as $Ref<List<Story>, List<Story>>;
-    final element =
-        ref.element
-            as $ClassProviderElement<
-              AnyNotifier<List<Story>, List<Story>>,
-              List<Story>,
-              Object?,
-              Object?
-            >;
-    element.handleValue(ref, created);
+  FutureOr<List<Story>> create(Ref ref) {
+    return mainScreenContent(ref);
   }
 }
+
+String _$mainScreenContentHash() => r'309bcaf146383153c9b52aa606b03028f3d13d37';
