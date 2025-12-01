@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
+import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 import 'package:window_size_classes/window_size_classes.dart';
 import 'package:m3e_collection/m3e_collection.dart';
 
@@ -28,6 +29,27 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     super.dispose();
   }
 
+  ResolutionPreset get cameraResolutionPreset =>
+      Platform.isAndroid ? ResolutionPreset.high : ResolutionPreset.max;
+
+  Future<void> _pickFromWeChatCamera(BuildContext context) async {
+    Feedback.forTap(context);
+    final AssetEntity? entity = await CameraPicker.pickFromCamera(
+      context,
+      locale: Localizations.maybeLocaleOf(context),
+      pickerConfig: CameraPickerConfig(
+        theme: Theme.of(context),
+        resolutionPreset: cameraResolutionPreset,
+        enableRecording: false,
+      ),
+    );
+    if (entity == null) return;
+
+    if (context.mounted) {
+      await InstaAssetPicker.refreshAndSelectEntity(context, entity);
+    }
+  }
+
   Future<void> _showAddStoryDialog() async {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       InstaAssetPicker.pickAssets(
@@ -40,15 +62,44 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 Theme.of(context).colorScheme.primary,
               ).copyWith(
                 appBarTheme: AppBarTheme(
-                  titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
+                  titleTextStyle: Theme.of(context).textTheme.titleLarge
+                      ?.copyWith(
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
                 ),
               ),
+          actionsBuilder: (context, theme, height, unselectAll) => [
+            InstaPickerCircleIconButton.unselectAll(
+              onTap: unselectAll,
+              theme: theme,
+              size: height,
+            ),
+            const SizedBox(width: 8),
+            InstaPickerCircleIconButton(
+              onTap: () => _pickFromWeChatCamera(context),
+              theme: theme,
+              icon: const Icon(Icons.camera_alt),
+              size: height,
+            ),
+          ],
+          specialItemBuilder: (context, _, __) {
+            return ButtonM3E(
+              onPressed: () => _pickFromWeChatCamera(context),
+              label: FittedBox(
+                child: Text(
+                  InstaAssetPicker.defaultTextDelegate(
+                    context,
+                  ).sActionUseCameraHint,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+          },
+          specialItemPosition: SpecialItemPosition.prepend,
         ),
         maxAssets: 1,
-        onCompleted: (Stream<InstaAssetsExportDetails> exportDetails) {
-          context.pushNamed('add-story');
+        onCompleted: (cropStream) {
+          context.pushNamed('add-story', extra: cropStream);
         },
       );
       return;

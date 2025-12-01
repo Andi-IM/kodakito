@@ -5,6 +5,7 @@ import 'package:dicoding_story/presentation/auth/story_login.dart';
 import 'package:dicoding_story/presentation/auth/story_register.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:insta_assets_picker/insta_assets_picker.dart';
 
 final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
@@ -42,7 +43,10 @@ class AppRouter {
         GoRoute(
           path: '/add-story',
           name: 'add-story',
-          builder: (context, state) => const AddStoryPage(),
+          builder: (context, state) {
+            final cropStream = state.extra as Stream<InstaAssetsExportDetails>;
+            return AddStoryPage(cropStream: cropStream);
+          },
         ),
       ],
     );

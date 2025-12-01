@@ -1,8 +1,11 @@
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:insta_assets_picker/insta_assets_picker.dart';
 
 class AddStoryPage extends StatefulWidget {
-  const AddStoryPage({super.key});
+  const AddStoryPage({super.key, required this.cropStream});
+
+  final Stream<InstaAssetsExportDetails> cropStream;
 
   @override
   State<AddStoryPage> createState() => _AddStoryPageState();
@@ -22,7 +25,12 @@ class _AddStoryPageState extends State<AddStoryPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.addStoryTitle),
-        actions: [TextButton(onPressed: () {}, child: Text(context.l10n.addStoryBtnPost))],
+        actions: [
+          TextButton(
+            onPressed: () {},
+            child: Text(context.l10n.addStoryBtnPost),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -66,7 +74,10 @@ class _AddStoryPageState extends State<AddStoryPage> {
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: () {}, child: Text(context.l10n.addStoryBtnCancel)),
+            ElevatedButton(
+              onPressed: () {},
+              child: Text(context.l10n.addStoryBtnCancel),
+            ),
           ],
         ),
       ),
