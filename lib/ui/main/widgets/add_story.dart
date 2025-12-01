@@ -67,6 +67,10 @@ class _AddStoryPageState extends State<AddStoryPage> {
               },
             ),
             const SizedBox(height: 16),
+            Text(
+              context.l10n.addStoryDescriptionLabel,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
             TextField(
               controller: _descriptionController,
               maxLines: 5,
@@ -74,11 +78,6 @@ class _AddStoryPageState extends State<AddStoryPage> {
                 hintText: context.l10n.addStoryDescriptionHint,
                 border: const OutlineInputBorder(),
               ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text(context.l10n.addStoryBtnCancel),
             ),
           ],
         ),

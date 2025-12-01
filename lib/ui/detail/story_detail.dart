@@ -1,6 +1,6 @@
 import 'package:dicoding_story/common/localizations.dart';
-import 'package:dicoding_story/data/model/story.dart';
-import 'package:dicoding_story/presentation/detail/provider/detail_provider.dart';
+import 'package:dicoding_story/data/services/api/model/story.dart';
+import 'package:dicoding_story/ui/detail/view_models/detail_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';

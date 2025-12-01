@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:dicoding_story/common/localizations.dart';
-import 'package:dicoding_story/presentation/auth/widget/logo_widget.dart';
-import 'package:dicoding_story/presentation/main/add_story_dialog.dart';
-import 'package:dicoding_story/presentation/main/providers/main_provider.dart';
-import 'package:dicoding_story/presentation/main/widgets/story_card.dart';
+import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
+import 'package:dicoding_story/ui/main/widgets/add_story_dialog.dart';
+import 'package:dicoding_story/ui/main/providers/main_provider.dart';
+import 'package:dicoding_story/ui/main/widgets/story_card.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

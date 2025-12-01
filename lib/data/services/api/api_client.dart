@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dicoding_story/data/model/story.dart';
+import 'package:dicoding_story/data/services/api/model/story.dart';
 import 'package:dio/dio.dart';
 
 class StoryApi {

@@ -1,5 +1,5 @@
-import 'package:dicoding_story/data/datasources/story_api.dart';
-import 'package:dicoding_story/data/model/story.dart';
+import 'package:dicoding_story/data/services/api/api_client.dart';
+import 'package:dicoding_story/data/services/api/model/story.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';

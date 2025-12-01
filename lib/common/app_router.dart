@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:dicoding_story/presentation/main/add_story.dart';
-import 'package:dicoding_story/presentation/main/main_screen.dart';
-import 'package:dicoding_story/presentation/detail/story_detail.dart';
-import 'package:dicoding_story/presentation/auth/story_login.dart';
-import 'package:dicoding_story/presentation/auth/story_register.dart';
+import 'package:dicoding_story/ui/main/widgets/add_story.dart';
+import 'package:dicoding_story/ui/main/widgets/main_screen.dart';
+import 'package:dicoding_story/ui/detail/widgets/story_detail.dart';
+import 'package:dicoding_story/ui/auth/widgets/story_login.dart';
+import 'package:dicoding_story/ui/auth/widgets/story_register.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

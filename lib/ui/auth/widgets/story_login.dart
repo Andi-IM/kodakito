@@ -1,17 +1,18 @@
 import 'package:dicoding_story/common/localizations.dart';
-import 'package:dicoding_story/presentation/auth/widget/logo_widget.dart';
+import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart'
+    show LogoWidget;
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:go_router/go_router.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
   late TapGestureRecognizer _tapRecognizer;
 
@@ -20,7 +21,7 @@ class _RegisterPageState extends State<RegisterPage> {
     super.initState();
     _tapRecognizer = TapGestureRecognizer()
       ..onTap = () {
-        context.go('/login');
+        context.go('/register');
       };
   }
 
@@ -38,33 +39,22 @@ class _RegisterPageState extends State<RegisterPage> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 400),
+              constraints: const BoxConstraints(maxWidth: 400),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Logo Placeholder
                   LogoWidget(maxWidth: 600),
+                  const SizedBox(height: 24),
+
                   // Title
                   Text(
-                    context.l10n.authRegisterTitle,
+                    context.l10n.authGreeting,
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 32),
-
-                  // Name Input
-                  Text(context.l10n.authFieldFullNameLabel),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      hintText: context.l10n.authFieldFullNameHint,
-                      prefixIcon: Icon(Icons.person_outline),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
 
                   // Email Input
                   Text(context.l10n.authFieldEmailLabel),
@@ -72,8 +62,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   TextFormField(
                     decoration: InputDecoration(
                       hintText: context.l10n.authFieldEmailHint,
-                      prefixIcon: Icon(Icons.email_outlined),
-                      border: OutlineInputBorder(
+                      prefixIcon: const Icon(Icons.person_outline),
+                      border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(8)),
                       ),
                     ),
@@ -107,10 +97,10 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Register Button
+                  // Login Button
                   ElevatedButton(
                     onPressed: () {
-                      // TODO: Implement register logic
+                      context.go('/story');
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
@@ -121,7 +111,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                     child: Text(
-                      context.l10n.authBtnRegister,
+                      context.l10n.authBtnLogin,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -130,15 +120,15 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // Login Link
+                  // Register Link
                   Center(
                     child: RichText(
                       text: TextSpan(
-                        text: context.l10n.authMsgHaveAccount,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        text: context.l10n.authMsgNoAccount,
+                        style: Theme.of(context).textTheme.titleSmall,
                         children: [
                           TextSpan(
-                            text: context.l10n.authLinkLoginNow,
+                            text: context.l10n.authLinkRegisterNow,
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.bold,
