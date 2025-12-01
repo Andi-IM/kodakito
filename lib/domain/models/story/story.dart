@@ -10,19 +10,19 @@ abstract class Story with _$Story {
 
     /// e.g. 'Dimas'
     required String name,
-    
+
     /// e.g. 'Lorem Ipsum'
     required String description,
-    
+
     /// e.g. 'https://story-api.dicoding.dev/images/stories/photos-1641623658595_dummy-pic.png'
     required String photoUrl,
-    
+
     /// e.g. '2022-01-01T00:00:00.000Z'
     required DateTime createdAt,
-    
+
     /// e.g. 12.5
     required double? lat,
-    
+
     /// e.g. 12.5
     required double? lon,
   }) = _Story;

@@ -1,4 +1,4 @@
-import 'package:dicoding_story/data/services/api/model/story.dart';
+import 'package:dicoding_story/data/services/api/model/story_api_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'detail_provider.g.dart';
 

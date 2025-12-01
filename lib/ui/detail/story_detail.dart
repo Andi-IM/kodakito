@@ -1,5 +1,5 @@
 import 'package:dicoding_story/common/localizations.dart';
-import 'package:dicoding_story/data/services/api/model/story.dart';
+import 'package:dicoding_story/data/services/api/model/story_api_model.dart';
 import 'package:dicoding_story/ui/detail/view_models/detail_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

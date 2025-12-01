@@ -13,11 +13,13 @@ class LogoWidget extends StatelessWidget {
           return ConstrainedBox(
             constraints: BoxConstraints(maxWidth: maxWidth),
             child: Image.asset(
-              brightness == Brightness.light ? 'assets/logo_light.png' : 'assets/logo_dark.png',
+              brightness == Brightness.light
+                  ? 'assets/logo_light.png'
+                  : 'assets/logo_dark.png',
               width: constraints.maxWidth,
             ),
           );
-        }
+        },
       ),
     );
   }
