@@ -9,52 +9,51 @@ part of 'main_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(NavigationData)
-const navigationDataProvider = NavigationDataProvider._();
+@ProviderFor(ImageFile)
+const imageFileProvider = ImageFileProvider._();
 
-final class NavigationDataProvider
-    extends $NotifierProvider<NavigationData, NavigationRailM3EType> {
-  const NavigationDataProvider._()
+final class ImageFileProvider extends $NotifierProvider<ImageFile, Uint8List?> {
+  const ImageFileProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'navigationDataProvider',
+        name: r'imageFileProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$navigationDataHash();
+  String debugGetCreateSourceHash() => _$imageFileHash();
 
   @$internal
   @override
-  NavigationData create() => NavigationData();
+  ImageFile create() => ImageFile();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(NavigationRailM3EType value) {
+  Override overrideWithValue(Uint8List? value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<NavigationRailM3EType>(value),
+      providerOverride: $SyncValueProvider<Uint8List?>(value),
     );
   }
 }
 
-String _$navigationDataHash() => r'd302bed9068313f7cbe29f2b456f3b38d7fe16d1';
+String _$imageFileHash() => r'd9e8479cba88f815cc025da1d655b3918992ce90';
 
-abstract class _$NavigationData extends $Notifier<NavigationRailM3EType> {
-  NavigationRailM3EType build();
+abstract class _$ImageFile extends $Notifier<Uint8List?> {
+  Uint8List? build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<NavigationRailM3EType, NavigationRailM3EType>;
+    final ref = this.ref as $Ref<Uint8List?, Uint8List?>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<NavigationRailM3EType, NavigationRailM3EType>,
-              NavigationRailM3EType,
+              AnyNotifier<Uint8List?, Uint8List?>,
+              Uint8List?,
               Object?,
               Object?
             >;

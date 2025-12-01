@@ -59,7 +59,7 @@ final class DetailScreenContentProvider
 }
 
 String _$detailScreenContentHash() =>
-    r'8d9fbf00fa3c5cf1f3203fc1c0cad3f2a048a686';
+    r'efd2d11722affdf648a24351c64aab7ce81e14f1';
 
 final class DetailScreenContentFamily extends $Family
     with $ClassFamilyOverride<DetailScreenContent, Story, Story, Story, int> {
