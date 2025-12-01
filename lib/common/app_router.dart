@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dicoding_story/presentation/main/add_story.dart';
 import 'package:dicoding_story/presentation/main/main_screen.dart';
 import 'package:dicoding_story/presentation/detail/story_detail.dart';
@@ -40,14 +42,16 @@ class AppRouter {
             ),
           ],
         ),
-        GoRoute(
-          path: '/add-story',
-          name: 'add-story',
-          builder: (context, state) {
-            final cropStream = state.extra as Stream<InstaAssetsExportDetails>;
-            return AddStoryPage(cropStream: cropStream);
-          },
-        ),
+        if (Platform.isAndroid || Platform.isIOS)
+          GoRoute(
+            path: '/add-story',
+            name: 'add-story',
+            builder: (context, state) {
+              final cropStream =
+                  state.extra as Stream<InstaAssetsExportDetails>;
+              return AddStoryPage(cropStream: cropStream);
+            },
+          ),
       ],
     );
   }
