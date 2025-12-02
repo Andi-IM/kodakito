@@ -7,8 +7,8 @@ import 'package:dio/dio.dart';
 typedef AuthHeaderProvider = String? Function();
 
 class StoryApi {
-  final Dio _dio;
-  final String _baseUrl = 'https://story-api.dicoding.dev/v1';
+  
+  
   AuthHeaderProvider? authHeaderProvider;
 
   StoryApi({Dio? dio, this.authHeaderProvider}) : _dio = dio ?? Dio() {

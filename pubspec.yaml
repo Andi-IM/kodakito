@@ -35,6 +35,7 @@ dependencies:
   shared_preferences: ^2.5.3
   envied: ^1.3.2
   dartz: ^0.10.1
+  riverpod_repo: ^4.6.0
   
 
 dev_dependencies:
