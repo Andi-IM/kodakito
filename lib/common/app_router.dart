@@ -37,7 +37,7 @@ class AppRouter {
               path: '/:id',
               name: 'detail',
               builder: (context, state) {
-                final id = int.parse(state.pathParameters['id']!);
+                final id = state.pathParameters['id']!;
                 return StoryDetailPage(id: id);
               },
             ),
