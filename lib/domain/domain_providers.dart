@@ -2,6 +2,9 @@ import 'package:dicoding_story/app/app_env.dart';
 import 'package:dicoding_story/data/repositories/auth/auth_repository.dart';
 import 'package:dicoding_story/data/repositories/auth/auth_repository_dev.dart';
 import 'package:dicoding_story/data/repositories/auth/auth_repository_remote.dart';
+import 'package:dicoding_story/data/repositories/detail/detail_repository.dart';
+import 'package:dicoding_story/data/repositories/detail/detail_repository_local.dart';
+import 'package:dicoding_story/data/repositories/detail/detail_repository_remote.dart';
 import 'package:dicoding_story/data/repositories/list/list_repository.dart';
 import 'package:dicoding_story/data/repositories/list/list_repository_local.dart';
 import 'package:dicoding_story/data/repositories/list/list_repository_remote.dart';
@@ -46,8 +49,7 @@ StoryDataSource storyDataSource(Ref ref) =>
     StoryRemoteDataSource(networkService: ref.read(dioNetworkServiceProvider));
 
 @riverpod
-LocalDataService localDataService(Ref ref) =>
-    LocalDataService();
+LocalDataService localDataService(Ref ref) => LocalDataService();
 
 @riverpod
 ListRepository listRepository(Ref ref) {
@@ -56,7 +58,21 @@ ListRepository listRepository(Ref ref) {
       storyDataSource: ref.read(storyDataSourceProvider),
     );
   } else {
-    return ListRepositoryLocal(localDataService: ref.read(localDataServiceProvider));
+    return ListRepositoryLocal(
+      localDataService: ref.read(localDataServiceProvider),
+    );
   }
 }
 
+@riverpod
+DetailRepository detailRepository(Ref ref) {
+  if (Env.appEnvironment == AppEnvironment.production) {
+    return DetailRepositoryRemote(
+      storyDataSource: ref.read(storyDataSourceProvider),
+    );
+  } else {
+    return DetailRepositoryLocal(
+      localDataService: ref.read(localDataServiceProvider),
+    );
+  }
+}

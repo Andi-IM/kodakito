@@ -1,8 +1,7 @@
 import 'package:dicoding_story/domain/models/story/story.dart';
 
 class LocalDataService {
-  List<Story> getListStories() {
-    return [
+  List<Story> get _stories => [
       Story(
         id: '1',
         name: 'Dimas',
@@ -104,5 +103,10 @@ class LocalDataService {
         lon: -16.002,
       ),
     ];
+  List<Story> getListStories() {
+    return _stories;
+  }
+  Story getDetailStory(String id) {
+    return _stories.firstWhere((element) => element.id == id);
   }
 }
