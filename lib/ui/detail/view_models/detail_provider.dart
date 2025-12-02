@@ -1,11 +1,20 @@
-import 'package:dicoding_story/data/services/api/model/story_api_model.dart';
+import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 part 'detail_provider.g.dart';
 
 @Riverpod()
 class DetailScreenContent extends _$DetailScreenContent {
   @override
   Story build(int id) {
-    return dummyStories.where((element) => element.id == id.toString()).first;
+    return Story(
+      id: id.toString(),
+      name: '',
+      description: '',
+      photoUrl: '',
+      createdAt: DateTime.now(),
+      lat: 0,
+      lon: 0,
+    );
   }
 }

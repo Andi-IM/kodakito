@@ -1,4 +1,28 @@
+import "package:dicoding_story/common/constants.dart";
+import "package:dicoding_story/data/services/local/storage_service.dart";
+import "package:dicoding_story/domain/providers/shared_preferences_storage_service_provider.dart";
 import "package:flutter/material.dart";
+import "package:flutter_riverpod/legacy.dart";
+
+final appThemeProvider = StateNotifierProvider<AppThemeNotifier, ThemeMode>(
+  (ref) => AppThemeNotifier(ref.read(storageServiceProvider)),
+);
+
+class AppThemeNotifier extends StateNotifier<ThemeMode> {
+  final StorageService storageService;
+
+  ThemeMode currentTheme = ThemeMode.light;
+
+  AppThemeNotifier(this.storageService) : super(ThemeMode.light) {
+    getCurrentTheme();
+  }
+
+  void getCurrentTheme() async {
+    final theme = await storageService.get(APP_THEME_STORAGE_KEY);
+    final value = ThemeMode.values.byName('${theme ?? 'light'}');
+    state = value;
+  }
+}
 
 class MaterialTheme {
   final TextTheme textTheme;

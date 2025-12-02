@@ -1,25 +1,27 @@
 import 'dart:io' show Platform;
+import 'package:dicoding_story/app/app.dart';
+import 'package:dicoding_story/app/app_env.dart';
+import 'package:dicoding_story/app/observer.dart';
+import 'package:dicoding_story/env/env.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
-import 'package:dicoding_story/common/app_router.dart';
-import 'package:dicoding_story/common/theme.dart';
-import 'package:dicoding_story/common/util.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:m3e_collection/m3e_collection.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:dicoding_story/common/localizations.dart';
-
-Future initLogging() async {
-  Logger.root.level = Level.ALL;
-}
 
 final logger = Logger('DEBUGLogger');
 
-Future<void> _setupDesktopWindow() async {
+void main() => mainCommon(Env.appEnvironment);
+
+Future<void> mainCommon(AppEnvironment environment) async {
+  WidgetsFlutterBinding.ensureInitialized();
+  EnvInfo.initialize(environment);
+  Logger.root.level = Level.ALL;
+  usePathUrlStrategy();
+
   if (!kIsWeb && Platform.isWindows) {
     await windowManager.ensureInitialized();
     final options = WindowOptions();
@@ -30,9 +32,7 @@ Future<void> _setupDesktopWindow() async {
       await windowManager.focus();
     });
   }
-}
 
-Future<void> _setupSystemUI() async {
   if (kIsWeb) {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -49,37 +49,5 @@ Future<void> _setupSystemUI() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
-}
-
-void main() {
-  initLogging();
-  WidgetsFlutterBinding.ensureInitialized();
-  usePathUrlStrategy();
-  _setupDesktopWindow();
-  _setupSystemUI();
-  runApp(const ProviderScope(child: MyApp()));
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // final brightness = View.of(context).platformDispatcher.platformBrightness;
-    TextTheme textTheme = createTextTheme(context, "Quicksand", "Quicksand");
-
-    MaterialTheme theme = MaterialTheme(textTheme);
-
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      routerConfig: AppRouter.createRouter(),
-      title: 'KodaKito',
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      // theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-      theme: withM3ETheme(theme.light()),
-      darkTheme: withM3ETheme(theme.dark()),
-      themeMode: ThemeMode.light,
-    );
-  }
+  runApp(ProviderScope(observers: [Observer()], child: MyApp()));
 }
