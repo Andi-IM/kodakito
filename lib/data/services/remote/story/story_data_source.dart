@@ -24,9 +24,9 @@ abstract class StoryDataSource {
 }
 
 class StoryRemoteDataSource implements StoryDataSource {
-  final NetworkService _networkService;
+  final NetworkService networkService;
 
-  StoryRemoteDataSource(this._networkService);
+  StoryRemoteDataSource({required this.networkService});
 
   @override
   Future<Either<AppException, Map<String, dynamic>>> addStory(
@@ -42,7 +42,7 @@ class StoryRemoteDataSource implements StoryDataSource {
       if (lon != null) 'lon': lon,
     });
 
-    final response = await _networkService.post('/stories', data: formData);
+    final response = await networkService.post('/stories', data: formData);
     return response.fold((l) => Left(l), (r) {
       final jsonData = r.data;
       if (jsonData == null) {
@@ -64,7 +64,7 @@ class StoryRemoteDataSource implements StoryDataSource {
     int? size,
     int? location,
   }) async {
-    final response = await _networkService.get(
+    final response = await networkService.get(
       '/stories',
       queryParameters: {
         if (page != null) 'page': page,
@@ -90,7 +90,7 @@ class StoryRemoteDataSource implements StoryDataSource {
 
   @override
   Future<Either<AppException, Story>> getStoryDetail(String id) async {
-    final response = await _networkService.get('/stories/$id');
+    final response = await networkService.get('/stories/$id');
 
     return response.fold((l) => Left(l), (r) {
       final jsonData = r.data;

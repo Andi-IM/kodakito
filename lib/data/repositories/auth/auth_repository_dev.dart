@@ -4,9 +4,6 @@ import 'package:dicoding_story/utils/http_exception.dart';
 
 class AuthRepositoryDev extends AuthRepository {
   @override
-  Future<bool> get isAuthenticated => Future.value(true);
-
-  @override
   Future<Either<AppException, void>> register({
     required String email,
     required String password,

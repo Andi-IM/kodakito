@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story_dialog.dart';
-import 'package:dicoding_story/ui/main/providers/main_provider.dart';
+import 'package:dicoding_story/ui/main/view_model/main_provider.dart';
 import 'package:dicoding_story/ui/main/widgets/story_card.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -110,7 +110,7 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     final widthClass = WindowWidthClass.of(context);
     final isMedium = widthClass >= WindowWidthClass.medium;
     final isLarge = widthClass >= WindowWidthClass.large;
-    final storiesAsync = ref.watch(mainScreenContentProvider);
+    final storiesAsync = ref.watch(storiesProvider);
     return Scaffold(
       body: storiesAsync.when(
         data: (stories) => Scrollbar(

@@ -1,29 +1,27 @@
+import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/repositories/list/list_repository.dart';
 import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
-import 'package:dicoding_story/utils/result.dart';
+import 'package:dicoding_story/utils/http_exception.dart';
 
 /// Remote data source for [Story].
 class ListRepositoryRemote implements ListRepository {
-  ListRepositoryRemote({required StoryApi storyApi}) : _storyApi = storyApi;
+  final StoryDataSource _storyDataSource;
 
-  final StoryApi _storyApi;
+  ListRepositoryRemote({required StoryDataSource storyDataSource})
+    : _storyDataSource = storyDataSource;
 
   List<Story>? _cachedListStories;
 
   @override
-  Future<Result<List<Story>>> getListStories() async {
+  Future<Either<AppException, List<Story>>> getListStories() async {
     if (_cachedListStories == null) {
       // No cache, fetch from remote
-      final result = await _storyApi.getAllStories();
-      if (result is Ok<List<Story>>) {
-        // Cache the result
-        _cachedListStories = result.value;
-      }
+      final result = await _storyDataSource.getAllStories();
       return result;
     } else {
       // Cache hit, return cached result
-      return Ok(_cachedListStories!);
+      return Right(_cachedListStories!);
     }
   }
 }
