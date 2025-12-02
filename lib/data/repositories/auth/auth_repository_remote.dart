@@ -1,9 +1,9 @@
 import 'package:dicoding_story/data/repositories/auth/auth_repository.dart';
-import 'package:dicoding_story/data/services/api/model/login_request/login_request.dart';
-import 'package:dicoding_story/data/services/api/model/login_response/login_response.dart';
-import 'package:dicoding_story/data/services/api/model/register_request/register_request.dart';
-import 'package:dicoding_story/data/services/api/story_api.dart';
-import 'package:dicoding_story/data/services/api/story_auth_api.dart';
+import 'package:dicoding_story/data/services/remote/model/login_request/login_request.dart';
+import 'package:dicoding_story/data/services/remote/model/login_response/login_response.dart';
+import 'package:dicoding_story/data/services/remote/model/register_request/register_request.dart';
+import 'package:dicoding_story/data/services/remote/story_api.dart';
+import 'package:dicoding_story/data/services/remote/story_auth_api.dart';
 import 'package:dicoding_story/data/services/shared_preferences_service.dart';
 import 'package:dicoding_story/utils/result.dart';
 import 'package:logging/logging.dart';
@@ -16,8 +16,8 @@ class AuthRepositoryRemote extends AuthRepository {
   }) : _storyApi = storyApi,
        _storyAuthApi = storyAuthApi,
        _sharedPreferencesService = sharedPreferencesService {
-        _storyApi.authHeaderProvider = _authHeaderProvider;
-       }
+    _storyApi.authHeaderProvider = _authHeaderProvider;
+  }
 
   final StoryApi _storyApi;
   final StoryAuthApi _storyAuthApi;

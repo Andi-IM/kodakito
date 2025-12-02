@@ -1,5 +1,5 @@
 import 'package:dicoding_story/data/repositories/list/list_repository.dart';
-import 'package:dicoding_story/data/services/api/story_api.dart';
+import 'package:dicoding_story/data/services/remote/story_api.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/utils/result.dart';
 

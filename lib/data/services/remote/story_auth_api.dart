@@ -1,6 +1,6 @@
-import 'package:dicoding_story/data/services/api/model/login_request/login_request.dart';
-import 'package:dicoding_story/data/services/api/model/login_response/login_response.dart';
-import 'package:dicoding_story/data/services/api/model/register_request/register_request.dart';
+import 'package:dicoding_story/data/services/remote/model/login_request/login_request.dart';
+import 'package:dicoding_story/data/services/remote/model/login_response/login_response.dart';
+import 'package:dicoding_story/data/services/remote/model/register_request/register_request.dart';
 import 'package:dio/dio.dart';
 import 'package:dicoding_story/utils/result.dart';
 
