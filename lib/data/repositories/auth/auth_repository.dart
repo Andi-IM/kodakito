@@ -1,4 +1,5 @@
-import 'package:dicoding_story/utils/result.dart';
+import 'package:dicoding_story/utils/http_exception.dart';
+import 'package:dartz/dartz.dart';
 
 abstract class AuthRepository {
   /// Returns true when user is authenticated
@@ -6,15 +7,15 @@ abstract class AuthRepository {
   Future<bool> get isAuthenticated;
 
   /// Register a new user
-  Future<Result<void>> register({
+  Future<Either<AppException, void>> register({
     required String email,
     required String password,
     required String name,
   });
 
   /// Login a user
-  Future<Result<void>> login({required String email, required String password});
+  Future<Either<AppException, void>> login({required String email, required String password});
 
   /// Logout a user
-  Future<Result<void>> logout();
+  Future<Either<AppException, void>> logout();
 }
