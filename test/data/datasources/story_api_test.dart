@@ -1,4 +1,4 @@
-import 'package:dicoding_story/data/services/remote/story/story_api.dart';
+import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/utils/result.dart' as result_util;
 import 'package:dio/dio.dart';

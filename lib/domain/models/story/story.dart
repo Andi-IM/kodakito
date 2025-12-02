@@ -3,6 +3,18 @@ part 'story.freezed.dart';
 part 'story.g.dart';
 
 @freezed
+abstract class StoryResponse with _$StoryResponse {
+  const factory StoryResponse({
+    required bool error,
+    required String message,
+    required List<Story> listStory,
+  }) = _StoryResponse;
+
+  factory StoryResponse.fromJson(Map<String, dynamic> json) =>
+      _$StoryResponseFromJson(json);
+}
+
+@freezed
 abstract class Story with _$Story {
   const factory Story({
     /// e.g. 'story-FvU4u0Vp2S3PMsFg'

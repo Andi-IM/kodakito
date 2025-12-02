@@ -5,18 +5,27 @@ import 'package:dicoding_story/data/services/remote/network_service.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:dartz/dartz.dart';
 
-class StoryAuthApi {
+abstract class AuthDataSource {
+  Future<Either<AppException, String?>> register({
+    required RegisterRequest registerRequest,
+  });
+
+  Future<Either<AppException, LoginResponse>> login(LoginRequest loginRequest);
+}
+
+class StoryAuthApi implements AuthDataSource {
   final NetworkService networkService;
 
   StoryAuthApi({required this.networkService});
 
+  @override
   Future<Either<AppException, String?>> register({
     required RegisterRequest registerRequest,
   }) async {
     try {
       final response = await networkService.post(
         '/register',
-        body: registerRequest.toJson(),
+        data: registerRequest.toJson(),
       );
 
       return response.fold(
@@ -34,13 +43,14 @@ class StoryAuthApi {
     }
   }
 
+  @override
   Future<Either<AppException, LoginResponse>> login(
     LoginRequest loginRequest,
   ) async {
     try {
       final response = await networkService.post(
         '/login',
-        body: loginRequest.toJson(),
+        data: loginRequest.toJson(),
       );
       return response.fold(
         (error) => Left(error),

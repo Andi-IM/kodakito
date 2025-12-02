@@ -15,6 +15,6 @@ abstract class NetworkService {
 
   Future<Either<AppException, Response>> post(
     String endpoint, {
-    Map<String, dynamic>? body,
+    Object? data,
   });
 }
