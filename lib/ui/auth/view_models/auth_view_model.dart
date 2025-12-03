@@ -13,7 +13,6 @@ class LoginNotifier extends _$LoginNotifier with LogMixin {
   AuthState build() {
     return const AuthState.initial();
   }
-  
 
   Future<void> login({required String email, required String password}) async {
     log.info('Attempting login for user: $email');
@@ -44,8 +43,19 @@ class LoginNotifier extends _$LoginNotifier with LogMixin {
       },
     );
   }
+}
 
-  Future<void> logout() async {}
+@riverpod
+Future<bool> logout(Ref ref) async {
+  final cacheDatasource = ref.read(cacheDatasourceProvider);
+  return await cacheDatasource.deleteToken();
+}
+
+@riverpod
+Future<String?> fetchUserData(Ref ref) async {
+  final cache = ref.read(cacheRepositoryProvider);
+  final result = await cache.getToken();
+  return result.fold((l) => null, (r) => r.userName);
 }
 
 @riverpod

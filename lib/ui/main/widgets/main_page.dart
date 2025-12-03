@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dicoding_story/common/localizations.dart';
+import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story_dialog.dart';
 import 'package:dicoding_story/ui/main/view_model/main_provider.dart';

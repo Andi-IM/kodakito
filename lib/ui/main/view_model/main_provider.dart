@@ -20,12 +20,7 @@ class ImageFile extends _$ImageFile {
   }
 }
 
-@riverpod
-Future<String?> fetchUserData(Ref ref) async {
-  final cache = ref.read(cacheRepositoryProvider);
-  final result = await cache.getToken();
-  return result.fold((l) => null, (r) => r.userName);
-}
+
 
 @riverpod
 class StoriesNotifier extends _$StoriesNotifier with LogMixin {
