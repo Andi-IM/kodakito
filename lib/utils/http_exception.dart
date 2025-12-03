@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/domain/models/response.dart';
+import 'package:equatable/equatable.dart';
 
 class AppException implements Exception {
   final String message;
@@ -18,8 +19,20 @@ class AppException implements Exception {
   }
 }
 
+class CacheFailureException extends Equatable implements AppException {
+  @override
+  String get identifier => 'CacheFailureException';
+
+  @override
+  String get message => 'Unable to save token';
+
+  @override
+  int get statusCode => 100;
+
+  @override
+  List<Object?> get props => [identifier, message, statusCode];
+}
+
 extension HttpExceptionExtension on AppException {
-  Left<AppException, Response> toLeft() {
-    return Left(this);
-  }
+  Left<AppException, Response> toLeft() => Left<AppException, Response>(this);
 }

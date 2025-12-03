@@ -1,4 +1,4 @@
-import 'package:dicoding_story/data/repositories/list/list_repository.dart';
+import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/data/services/local/local_data_service.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/utils/http_exception.dart';

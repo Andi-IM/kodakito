@@ -1,3 +1,4 @@
+import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
 import 'package:dicoding_story/data/services/remote/auth/model/login_request/login_request.dart';
 import 'package:dicoding_story/data/services/remote/auth/model/login_response/login_response.dart';
 import 'package:dicoding_story/data/services/remote/auth/model/register_request/register_request.dart';
@@ -6,7 +7,7 @@ import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:dartz/dartz.dart';
 
 abstract class AuthDataSource {
-  Future<Either<AppException, String?>> register({
+  Future<Either<AppException, DefaultResponse>> register({
     required RegisterRequest registerRequest,
   });
 
@@ -19,7 +20,7 @@ class StoryAuthApi implements AuthDataSource {
   StoryAuthApi({required this.networkService});
 
   @override
-  Future<Either<AppException, String?>> register({
+  Future<Either<AppException, DefaultResponse>> register({
     required RegisterRequest registerRequest,
   }) async {
     try {
@@ -52,10 +53,13 @@ class StoryAuthApi implements AuthDataSource {
         '/login',
         data: loginRequest.toJson(),
       );
-      return response.fold(
-        (error) => Left(error),
-        (response) => Right(response.data),
-      );
+      return response.fold((error) => Left(error), (response) {
+        final loginResponse = LoginResponse.fromJson(response.data);
+        networkService.updateHeader({
+          'Authorization': 'Bearer ${loginResponse.loginResult.token}',
+        });
+        return Right(loginResponse);
+      });
     } catch (e) {
       return Left(
         AppException(

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dicoding_story/domain/models/cache/cache.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'login_response.freezed.dart';
@@ -30,4 +31,8 @@ abstract class LoginResult with _$LoginResult {
 
   factory LoginResult.fromJson(Map<String, dynamic> json) =>
       _$LoginResultFromJson(json);
+}
+
+extension ToCacheModel on LoginResult {
+  Cache toCache() => Cache(userId: userId, userName: name, token: token);
 }

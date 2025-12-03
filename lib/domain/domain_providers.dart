@@ -1,11 +1,12 @@
 import 'package:dicoding_story/app/app_env.dart';
-import 'package:dicoding_story/data/repositories/auth/auth_repository.dart';
+import 'package:dicoding_story/data/services/local/cache_datasource.dart';
+import 'package:dicoding_story/domain/repository/auth_repository.dart';
 import 'package:dicoding_story/data/repositories/auth/auth_repository_dev.dart';
 import 'package:dicoding_story/data/repositories/auth/auth_repository_remote.dart';
-import 'package:dicoding_story/data/repositories/detail/detail_repository.dart';
+import 'package:dicoding_story/domain/repository/detail_repository.dart';
 import 'package:dicoding_story/data/repositories/detail/detail_repository_local.dart';
 import 'package:dicoding_story/data/repositories/detail/detail_repository_remote.dart';
-import 'package:dicoding_story/data/repositories/list/list_repository.dart';
+import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/data/repositories/list/list_repository_local.dart';
 import 'package:dicoding_story/data/repositories/list/list_repository_remote.dart';
 import 'package:dicoding_story/data/services/local/local_data_service.dart';
@@ -43,6 +44,10 @@ AuthRepository authRepository(Ref ref) {
     return AuthRepositoryDev();
   }
 }
+
+@riverpod
+CacheDatasource cacheDatasource(Ref ref) =>
+    CacheDatasourceImpl(storageService: ref.read(storageServiceProvider));
 
 @riverpod
 StoryDataSource storyDataSource(Ref ref) =>

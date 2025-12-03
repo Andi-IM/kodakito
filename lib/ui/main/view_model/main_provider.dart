@@ -1,8 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:dicoding_story/data/repositories/list/list_repository.dart';
+import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
+import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'main_provider.g.dart';
@@ -20,7 +21,7 @@ class ImageFile extends _$ImageFile {
 }
 
 @riverpod
-class StoriesNotifier extends _$StoriesNotifier {
+class StoriesNotifier extends _$StoriesNotifier with LogMixin {
   ListRepository get _repository => ref.read(listRepositoryProvider);
   @override
   StoriesState build() {
@@ -32,14 +33,19 @@ class StoriesNotifier extends _$StoriesNotifier {
   bool get isFetching => state.state != StoriesConcreteState.loading;
 
   Future<void> fetchStories() async {
+    log.info('Fetching stories list');
     state = state.copyWith(state: StoriesConcreteState.loading);
     final result = await _repository.getListStories();
     result.fold(
-      (failure) => state = state.copyWith(
-        state: StoriesConcreteState.failure,
-        message: failure.message,
-      ),
+      (failure) {
+        log.warning('Failed to fetch stories: ${failure.message}');
+        state = state.copyWith(
+          state: StoriesConcreteState.failure,
+          message: failure.message,
+        );
+      },
       (stories) {
+        log.info('Successfully fetched ${stories.length} stories');
         state = state.copyWith(
           state: StoriesConcreteState.loaded,
           stories: stories,
