@@ -46,14 +46,5 @@ void main() {
         expect(r.error, false);
       });
     });
-
-    test('logout returns Right(null)', () async {
-      // Act
-      final result = await authRepository.logout();
-
-      // Assert
-      expect(result.isRight(), true);
-      result.fold((l) => fail('Should not return Left'), (r) {});
-    });
   });
 }

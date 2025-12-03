@@ -37,9 +37,4 @@ class AuthRepositoryRemote extends AuthRepository {
       LoginRequest(email: email, password: password),
     );
   }
-
-  @override
-  Future<Either<AppException, void>> logout() {
-    throw UnimplementedError();
-  }
 }

@@ -50,8 +50,8 @@ class LoginNotifier extends _$LoginNotifier with LogMixin {
 Future<bool> logout(Ref ref) async {
   final log = Logger('LogoutProvider');
   log.info('Attempting logout');
-  final cacheDatasource = ref.read(cacheDatasourceProvider);
-  final result = await cacheDatasource.deleteToken();
+  final cacheRepository = ref.read(cacheRepositoryProvider);
+  final result = await cacheRepository.deleteToken();
   if (result) {
     log.info('Logout successful');
   } else {

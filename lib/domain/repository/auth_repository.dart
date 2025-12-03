@@ -16,7 +16,4 @@ abstract class AuthRepository {
     required String email,
     required String password,
   });
-
-  /// Logout a user
-  Future<Either<AppException, void>> logout();
 }

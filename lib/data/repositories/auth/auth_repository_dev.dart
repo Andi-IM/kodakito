@@ -37,9 +37,4 @@ class AuthRepositoryDev extends AuthRepository {
       ),
     );
   }
-
-  @override
-  Future<Either<AppException, void>> logout() async {
-    return Right(null);
-  }
 }
