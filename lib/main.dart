@@ -20,6 +20,9 @@ Future<void> mainCommon(AppEnvironment environment) async {
   WidgetsFlutterBinding.ensureInitialized();
   EnvInfo.initialize(environment);
   Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    debugPrint('${record.level.name}: ${record.time}: ${record.message}');
+  });
   usePathUrlStrategy();
 
   if (!kIsWeb && Platform.isWindows) {
