@@ -63,7 +63,7 @@ void main() {
         verify(
           () => mockNetworkService.post(
             '/register',
-            data: tRegisterRequest.toJson(),
+            data: registerRequestToJson(tRegisterRequest),
           ),
         ).called(1);
       });
@@ -89,7 +89,7 @@ void main() {
         verify(
           () => mockNetworkService.post(
             '/register',
-            data: tRegisterRequest.toJson(),
+            data: registerRequestToJson(tRegisterRequest),
           ),
         ).called(1);
       });
@@ -141,8 +141,10 @@ void main() {
           // Assert
           expect(result, isA<Right<AppException, LoginResponse>>());
           verify(
-            () =>
-                mockNetworkService.post('/login', data: tLoginRequest.toJson()),
+            () => mockNetworkService.post(
+              '/login',
+              data: loginRequestToJson(tLoginRequest),
+            ),
           ).called(1);
           verify(
             () => mockNetworkService.updateHeader({
@@ -169,7 +171,10 @@ void main() {
         // Assert
         expect(result, isA<Left<AppException, LoginResponse>>());
         verify(
-          () => mockNetworkService.post('/login', data: tLoginRequest.toJson()),
+          () => mockNetworkService.post(
+            '/login',
+            data: loginRequestToJson(tLoginRequest),
+          ),
         ).called(1);
         verifyNever(() => mockNetworkService.updateHeader(any()));
       });

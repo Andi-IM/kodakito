@@ -26,7 +26,7 @@ class StoryAuthApi implements AuthDataSource {
     try {
       final response = await networkService.post(
         '/register',
-        data: registerRequest.toJson(),
+        data: registerRequestToJson(registerRequest),
       );
 
       return response.fold(
@@ -51,7 +51,7 @@ class StoryAuthApi implements AuthDataSource {
     try {
       final response = await networkService.post(
         '/login',
-        data: loginRequest.toJson(),
+        data: loginRequestToJson(loginRequest),
       );
       return response.fold((error) => Left(error), (response) {
         final loginResponse = LoginResponse.fromJson(response.data);
