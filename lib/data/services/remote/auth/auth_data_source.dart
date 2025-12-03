@@ -31,7 +31,7 @@ class StoryAuthApi implements AuthDataSource {
 
       return response.fold(
         (error) => Left(error),
-        (response) => Right(response.data),
+        (response) => Right(DefaultResponse.fromJson(response.data)),
       );
     } catch (e) {
       return Left(
