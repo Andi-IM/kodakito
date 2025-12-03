@@ -9,6 +9,7 @@ class AuthRepositoryDev extends AuthRepository {
     required String password,
     required String name,
   }) async {
+    await Future.delayed(const Duration(seconds: 2));
     return Right(null);
   }
 
@@ -17,6 +18,7 @@ class AuthRepositoryDev extends AuthRepository {
     required String email,
     required String password,
   }) async {
+    await Future.delayed(const Duration(seconds: 2));
     return Right(null);
   }
 

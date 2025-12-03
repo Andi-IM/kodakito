@@ -1,28 +1,32 @@
 import 'package:dicoding_story/common/localizations.dart';
+import 'package:dicoding_story/ui/auth/view_models/auth_state.dart';
+import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart'
     show LogoWidget;
+import 'package:dicoding_story/ui/auth/widgets/auth_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends ConsumerState<LoginPage> {
   bool _obscurePassword = true;
   late TapGestureRecognizer _tapRecognizer;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _tapRecognizer = TapGestureRecognizer()
-      ..onTap = () {
-        context.go('/register');
-      };
+      ..onTap = () => context.go('/register');
   }
 
   @override
@@ -33,6 +37,17 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final state = ref.watch(loginProvider);
+    ref.listen(loginProvider.select((value) => value), ((previous, next) {
+      // show snackbar on error
+      if (next is Failure) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.exception.message)));
+      } else if (next is Loaded) {
+        context.pushReplacementNamed('main');
+      }
+    }));
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -60,6 +75,7 @@ class _LoginPageState extends State<LoginPage> {
                   Text(context.l10n.authFieldEmailLabel),
                   const SizedBox(height: 8),
                   TextFormField(
+                    controller: _emailController,
                     decoration: InputDecoration(
                       hintText: context.l10n.authFieldEmailHint,
                       prefixIcon: const Icon(Icons.person_outline),
@@ -74,6 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                   Text(context.l10n.authFieldPasswordLabel),
                   const SizedBox(height: 8),
                   TextFormField(
+                    controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       hintText: context.l10n.authFieldPasswordHint,
@@ -98,25 +115,17 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 32),
 
                   // Login Button
-                  ElevatedButton(
+                  AuthButton(
+                    label: context.l10n.authBtnLogin,
+                    isLoading: state is Loading,
                     onPressed: () {
-                      context.go('/story');
+                      ref
+                          .read(loginProvider.notifier)
+                          .login(
+                            email: _emailController.text,
+                            password: _passwordController.text,
+                          );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: Text(
-                      context.l10n.authBtnLogin,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                   ),
                   const SizedBox(height: 24),
 

@@ -21,7 +21,7 @@ class LoginNotifier extends _$LoginNotifier {
     );
     await response.fold(
       (failure) async {
-        state = AuthState.failure(failure.message);
+        state = AuthState.failure(failure);
       },
       (r) async {
         state = const AuthState.loaded();
@@ -54,7 +54,7 @@ class RegisterNotifier extends _$RegisterNotifier {
     );
     await response.fold(
       (failure) async {
-        state = AuthState.failure(failure.message);
+        state = AuthState.failure(failure);
       },
       (r) async {
         state = const AuthState.loaded();
