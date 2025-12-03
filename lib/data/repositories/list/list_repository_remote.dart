@@ -18,6 +18,7 @@ class ListRepositoryRemote implements ListRepository {
     if (_cachedListStories == null) {
       // No cache, fetch from remote
       final result = await _storyDataSource.getAllStories();
+      result.fold((l) {}, (r) => _cachedListStories = r);
       return result;
     } else {
       // Cache hit, return cached result
