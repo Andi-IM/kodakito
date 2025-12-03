@@ -8,4 +8,3 @@ abstract class CacheRepository {
   Future<bool> deleteToken();
   Future<bool> hasToken();
 }
-

@@ -1,40 +1,20 @@
 import 'package:dicoding_story/app/app_env.dart';
-import 'package:dicoding_story/data/repositories/cache/cache_repository_local.dart';
-import 'package:dicoding_story/data/services/local/cache_datasource.dart';
-import 'package:dicoding_story/domain/repository/auth_repository.dart';
+import 'package:dicoding_story/data/data_providers.dart';
 import 'package:dicoding_story/data/repositories/auth/auth_repository_dev.dart';
 import 'package:dicoding_story/data/repositories/auth/auth_repository_remote.dart';
-import 'package:dicoding_story/domain/repository/cache_repository.dart';
-import 'package:dicoding_story/domain/repository/detail_repository.dart';
+import 'package:dicoding_story/data/repositories/cache/cache_repository_local.dart';
 import 'package:dicoding_story/data/repositories/detail/detail_repository_local.dart';
 import 'package:dicoding_story/data/repositories/detail/detail_repository_remote.dart';
-import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/data/repositories/list/list_repository_local.dart';
 import 'package:dicoding_story/data/repositories/list/list_repository_remote.dart';
-import 'package:dicoding_story/data/services/local/local_data_service.dart';
-import 'package:dicoding_story/data/services/local/shared_prefs_storage_service.dart';
-import 'package:dicoding_story/data/services/remote/auth/auth_data_source.dart';
-import 'package:dicoding_story/data/services/remote/dio_netowork_service.dart';
-import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
+import 'package:dicoding_story/domain/repository/auth_repository.dart';
+import 'package:dicoding_story/domain/repository/cache_repository.dart';
+import 'package:dicoding_story/domain/repository/detail_repository.dart';
+import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/env/env.dart';
-import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'domain_providers.g.dart';
-
-@riverpod
-SharedPrefsService storageService(Ref ref) {
-  final prefsService = SharedPrefsService();
-  prefsService.init();
-  return prefsService;
-}
-
-@riverpod
-DioNetworkService dioNetworkService(Ref ref) => DioNetworkService(Dio());
-
-@riverpod
-AuthDataSource authDataSource(Ref ref) =>
-    StoryAuthApi(networkService: ref.read(dioNetworkServiceProvider));
 
 @riverpod
 AuthRepository authRepository(Ref ref) {
@@ -48,19 +28,8 @@ AuthRepository authRepository(Ref ref) {
 }
 
 @riverpod
-CacheDatasource cacheDatasource(Ref ref) =>
-    CacheDatasourceImpl(storageService: ref.read(storageServiceProvider));
-
-@riverpod
 CacheRepository cacheRepository(Ref ref) =>
     CacheRepositoryImpl(datasource: ref.read(cacheDatasourceProvider));
-
-@riverpod
-StoryDataSource storyDataSource(Ref ref) =>
-    StoryRemoteDataSource(networkService: ref.read(dioNetworkServiceProvider));
-
-@riverpod
-LocalDataService localDataService(Ref ref) => LocalDataService();
 
 @riverpod
 ListRepository listRepository(Ref ref) {

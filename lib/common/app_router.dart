@@ -8,7 +8,6 @@ import 'package:dicoding_story/ui/auth/widgets/login_page.dart';
 import 'package:dicoding_story/ui/auth/widgets/register_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

@@ -11,7 +11,9 @@ class SharedPrefsService implements StorageService {
 
   @override
   void init() {
-    initCompleter.complete(SharedPreferences.getInstance());
+    final future = SharedPreferences.getInstance();
+    initCompleter.complete(future);
+    future.then((value) => prefs = value);
   }
 
   @override

@@ -12,6 +12,9 @@ class DetailRepositoryLocal implements DetailRepository {
 
   @override
   Future<Either<AppException, Story>> getDetailStory(String id) {
-    return Future.value(Right(_localDataService.getDetailStory(id)));
+    return Future.delayed(
+      const Duration(seconds: 2),
+      () => Right(_localDataService.getDetailStory(id)),
+    );
   }
 }

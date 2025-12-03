@@ -1,6 +1,6 @@
 import "package:dicoding_story/common/globals.dart";
+import "package:dicoding_story/data/data_providers.dart";
 import "package:dicoding_story/data/services/local/storage_service.dart";
-import "package:dicoding_story/domain/domain_providers.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/legacy.dart";
 

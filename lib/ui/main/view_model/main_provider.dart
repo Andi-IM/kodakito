@@ -20,8 +20,6 @@ class ImageFile extends _$ImageFile {
   }
 }
 
-
-
 @riverpod
 class StoriesNotifier extends _$StoriesNotifier with LogMixin {
   ListRepository get _repository => ref.read(listRepositoryProvider);

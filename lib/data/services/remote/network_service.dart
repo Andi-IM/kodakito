@@ -13,8 +13,5 @@ abstract class NetworkService {
     Map<String, dynamic>? queryParameters,
   });
 
-  Future<Either<AppException, Response>> post(
-    String endpoint, {
-    Object? data,
-  });
+  Future<Either<AppException, Response>> post(String endpoint, {Object? data});
 }
