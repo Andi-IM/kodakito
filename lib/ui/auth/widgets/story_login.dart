@@ -71,60 +71,76 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
                   const SizedBox(height: 32),
 
-                  // Email Input
-                  Text(context.l10n.authFieldEmailLabel),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      hintText: context.l10n.authFieldEmailHint,
-                      prefixIcon: const Icon(Icons.person_outline),
-                      border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isLoading = state is Loading;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Email Input
+                          Text(context.l10n.authFieldEmailLabel),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _emailController,
+                            enabled: !isLoading,
+                            decoration: InputDecoration(
+                              hintText: context.l10n.authFieldEmailHint,
+                              prefixIcon: const Icon(Icons.person_outline),
+                              border: const OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
 
-                  // Password Input
-                  Text(context.l10n.authFieldPasswordLabel),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      hintText: context.l10n.authFieldPasswordHint,
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                      border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
+                          // Password Input
+                          Text(context.l10n.authFieldPasswordLabel),
+                          const SizedBox(height: 8),
+                          TextFormField(
+                            controller: _passwordController,
+                            obscureText: _obscurePassword,
+                            enabled: !isLoading,
+                            decoration: InputDecoration(
+                              hintText: context.l10n.authFieldPasswordHint,
+                              prefixIcon: const Icon(Icons.lock_outline),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                              border: const OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 32),
 
-                  // Login Button
-                  AuthButton(
-                    label: context.l10n.authBtnLogin,
-                    isLoading: state is Loading,
-                    onPressed: () {
-                      ref
-                          .read(loginProvider.notifier)
-                          .login(
-                            email: _emailController.text,
-                            password: _passwordController.text,
-                          );
+                          // Login Button
+                          AuthButton(
+                            label: context.l10n.authBtnLogin,
+                            isLoading: isLoading,
+                            onPressed: () {
+                              ref
+                                  .read(loginProvider.notifier)
+                                  .login(
+                                    email: _emailController.text,
+                                    password: _passwordController.text,
+                                  );
+                            },
+                          ),
+                        ],
+                      );
                     },
                   ),
                   const SizedBox(height: 24),
