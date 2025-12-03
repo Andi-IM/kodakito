@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:dicoding_story/ui/main/widgets/add_story.dart';
-import 'package:dicoding_story/ui/main/widgets/main_screen.dart';
+import 'package:dicoding_story/ui/main/widgets/main_page.dart';
 import 'package:dicoding_story/ui/detail/widgets/story_detail.dart';
-import 'package:dicoding_story/ui/auth/widgets/story_login.dart';
-import 'package:dicoding_story/ui/auth/widgets/story_register.dart';
+import 'package:dicoding_story/ui/auth/widgets/login_page.dart';
+import 'package:dicoding_story/ui/auth/widgets/register_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -31,7 +31,7 @@ class AppRouter {
         GoRoute(
           path: '/story',
           name: 'main',
-          builder: (context, state) => const MainScreen(),
+          builder: (context, state) => const MainPage(),
           routes: [
             GoRoute(
               path: '/:id',

@@ -13,6 +13,7 @@ class LoginNotifier extends _$LoginNotifier with LogMixin {
   AuthState build() {
     return const AuthState.initial();
   }
+  
 
   Future<void> login({required String email, required String password}) async {
     log.info('Attempting login for user: $email');

@@ -4,6 +4,7 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story_dialog.dart';
 import 'package:dicoding_story/ui/main/view_model/main_provider.dart';
+import 'package:dicoding_story/ui/main/widgets/settings_dialog.dart';
 import 'package:dicoding_story/ui/main/widgets/story_card.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,14 +15,14 @@ import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 import 'package:window_size_classes/window_size_classes.dart';
 import 'package:m3e_collection/m3e_collection.dart';
 
-class MainScreen extends ConsumerStatefulWidget {
-  const MainScreen({super.key});
+class MainPage extends ConsumerStatefulWidget {
+  const MainPage({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends ConsumerState<MainScreen> {
+class _MainScreenState extends ConsumerState<MainPage> {
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -110,7 +111,9 @@ class _MainScreenState extends ConsumerState<MainScreen> {
     final widthClass = WindowWidthClass.of(context);
     final isMedium = widthClass >= WindowWidthClass.medium;
     final isLarge = widthClass >= WindowWidthClass.large;
+
     final storiesAsync = ref.watch(storiesProvider);
+    final userAsync = ref.watch(fetchUserDataProvider);
     return Scaffold(
       body: storiesAsync.when(
         data: (stories) => Scrollbar(
@@ -127,8 +130,28 @@ class _MainScreenState extends ConsumerState<MainScreen> {
                 pinned: false,
                 actions: [
                   IconButtonM3E(
-                    onPressed: () {},
-                    icon: const Icon(Icons.settings),
+                    onPressed: () => showDialog(
+                      context: context,
+                      builder: (context) {
+                        return SettingsDialog();
+                      },
+                    ),
+                    icon: userAsync.when(
+                      data: (name) => CircleAvatar(
+                        radius: 16,
+                        child: Text(
+                          (name != null && name.isNotEmpty)
+                              ? name[0].toUpperCase()
+                              : '?',
+                        ),
+                      ),
+                      error: (_, __) => const Icon(Icons.account_circle),
+                      loading: () => const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
                     tooltip: context.l10n.settingsTitle,
                   ),
                 ],

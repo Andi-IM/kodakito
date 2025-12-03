@@ -21,6 +21,13 @@ class ImageFile extends _$ImageFile {
 }
 
 @riverpod
+Future<String?> fetchUserData(Ref ref) async {
+  final cache = ref.read(cacheRepositoryProvider);
+  final result = await cache.getToken();
+  return result.fold((l) => null, (r) => r.userName);
+}
+
+@riverpod
 class StoriesNotifier extends _$StoriesNotifier with LogMixin {
   ListRepository get _repository => ref.read(listRepositoryProvider);
   @override
@@ -29,8 +36,6 @@ class StoriesNotifier extends _$StoriesNotifier with LogMixin {
     Future.microtask(() => fetchStories());
     return const StoriesState.initial();
   }
-
-  bool get isFetching => state.state != StoriesConcreteState.loading;
 
   Future<void> fetchStories() async {
     log.info('Fetching stories list');

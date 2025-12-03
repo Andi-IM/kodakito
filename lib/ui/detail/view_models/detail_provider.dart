@@ -16,8 +16,6 @@ class DetailScreenContent extends _$DetailScreenContent with LogMixin {
     return const StoryState.initial();
   }
 
-  bool get isFetching => state.state == StoryStateType.loading;
-
   Future<void> fetchDetailStory(String id) async {
     log.info('Fetching detail for story: $id');
     state = state.copyWith(state: StoryStateType.loading);

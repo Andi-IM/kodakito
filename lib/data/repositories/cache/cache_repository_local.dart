@@ -1,26 +1,24 @@
+import 'package:dicoding_story/data/services/local/cache_datasource.dart';
 import 'package:dicoding_story/domain/models/cache/cache.dart';
 import 'package:dicoding_story/domain/repository/cache_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 
 class CacheRepositoryImpl implements CacheRepository {
-  @override
-  Future<void> saveToken({required Cache cache}) {
-    throw UnimplementedError();
-  }
+  final CacheDatasource _datasource;
+  CacheRepositoryImpl({required CacheDatasource datasource})
+    : _datasource = datasource;
 
   @override
-  Future<Either<AppException, Cache>> getToken() {
-    throw UnimplementedError();
-  }
+  Future<void> saveToken({required Cache cache}) =>
+      _datasource.saveToken(cache: cache);
 
   @override
-  Future<bool> deleteToken() {
-    throw UnimplementedError();
-  }
+  Future<Either<AppException, Cache>> getToken() => _datasource.getToken();
 
   @override
-  Future<bool> hasToken() {
-    throw UnimplementedError();
-  }
+  Future<bool> deleteToken() => _datasource.deleteToken();
+
+  @override
+  Future<bool> hasToken() => _datasource.hasToken();
 }
