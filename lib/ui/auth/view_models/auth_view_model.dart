@@ -2,6 +2,7 @@ import 'package:dicoding_story/data/services/remote/auth/model/login_response/lo
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_state.dart';
 import 'package:dicoding_story/utils/logger_mixin.dart';
+import 'package:logging/logging.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -47,15 +48,33 @@ class LoginNotifier extends _$LoginNotifier with LogMixin {
 
 @riverpod
 Future<bool> logout(Ref ref) async {
+  final log = Logger('LogoutProvider');
+  log.info('Attempting logout');
   final cacheDatasource = ref.read(cacheDatasourceProvider);
-  return await cacheDatasource.deleteToken();
+  final result = await cacheDatasource.deleteToken();
+  if (result) {
+    log.info('Logout successful');
+  } else {
+    log.severe('Logout failed');
+  }
+  return result;
 }
 
 @riverpod
 Future<String?> fetchUserData(Ref ref) async {
+  final log = Logger('FetchUserDataProvider');
   final cache = ref.read(cacheRepositoryProvider);
   final result = await cache.getToken();
-  return result.fold((l) => null, (r) => r.userName);
+  return result.fold(
+    (l) {
+      log.warning('Failed to fetch user data: $l');
+      return null;
+    },
+    (r) {
+      log.info('User data fetched: ${r.userName}');
+      return r.userName;
+    },
+  );
 }
 
 @riverpod
