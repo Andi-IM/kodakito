@@ -1,0 +1,96 @@
+{
+    "error": false,
+    "message": "Stories fetched successfully",
+    "listStory": [
+        {
+            "id": "story-ljnqA0i34-bxTOkN",
+            "name": "sandetesting",
+            "description": "wi wok de tok",
+            "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1764772364657_73554116001fa183d98a.jpg",
+            "createdAt": "2025-12-03T14:32:44.674Z",
+            "lat": null,
+            "lon": null
+        },
+        {
+            "id": "story-KFPZ5cHHndHf7tG6",
+            "name": "Bahlil Etanol",
+            "description": "TEST NOTIF BERHASIL",
+            "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1764769082157_4a27bbe9a728a017b7b6.jpg",
+            "createdAt": "2025-12-03T13:38:02.174Z",
+            "lat": -2.9659346088136576,
+            "lon": 115.70486589543198
+        },
+        {
+            "id": "story-AufROUbLUIAe5R8x",
+            "name": "ini",
+            "description": "iyaa",
+            "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1764769059845_d754b869addf2656cc62.jpg",
+            "createdAt": "2025-12-03T13:37:39.853Z",
+            "lat": -9.52852237888775,
+            "lon": 101.5706596295502
+        },
+        {
+            "id": "story-7mfN-FIH4d-dSoZZ",
+            "name": "Bahlil Etanol",
+            "description": "testtttt",
+            "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1764769051110_d931a7a79945b63be05b.jpg",
+            "createdAt": "2025-12-03T13:37:31.122Z",
+            "lat": -7.461887361766862,
+            "lon": 112.44699074639617
+        },
+        {
+            "id": "story-8GXvHhN4YS-cfg6R",
+            "name": "today",
+            "description": "alkdjadjaslasd",
+            "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1764756246958_2f7c4e8873ac65ca3b8b.jpg",
+            "createdAt": "2025-12-03T10:04:06.970Z",
+            "lat": -6.191689923393707,
+            "lon": 106.80238723754884
+        },
+        {
+            "id": "story-zlTKG204A1eNktb0",
+            "name": "tirtha",
+            "description": "hello",
+            "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1764752564232_d70c66643d294108df18.jpg",
+            "createdAt": "2025-12-03T09:02:44.252Z",
+            "lat": null,
+            "lon": null
+        },
+        {
+            "id": "story-QdgQL9CDBflqEbmA",
+            "name": "jule safri",
+            "description": "haiiiii tesss",
+            "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1764749491232_6f1e06ed12324f860eed.jpg",
+            "createdAt": "2025-12-03T08:11:31.241Z",
+            "lat": -7.851365400973354,
+            "lon": 109.99512064217544
+        },
+        {
+            "id": "story-TALFnVZy5kWTH-E3",
+            "name": "jule safri",
+            "description": "soreee gesss",
+            "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1764749194377_626f1c9be3baec00ab46.jpg",
+            "createdAt": "2025-12-03T08:06:34.386Z",
+            "lat": 0.9087372277666199,
+            "lon": 114.80200184474302
+        },
+        {
+            "id": "story-nyHVfojMc5nKhvVM",
+            "name": "sandetesting",
+            "description": " ",
+            "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1764748116202_feeae0d91d8823e409e3.jpg",
+            "createdAt": "2025-12-03T07:48:36.212Z",
+            "lat": null,
+            "lon": null
+        },
+        {
+            "id": "story-_IpAGBgOnFkk39zq",
+            "name": "sandetesting",
+            "description": " ",
+            "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1764748091438_eba662b1cbba011b30e7.jpg",
+            "createdAt": "2025-12-03T07:48:11.446Z",
+            "lat": null,
+            "lon": null
+        }
+    ]
+}

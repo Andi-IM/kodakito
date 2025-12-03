@@ -12,7 +12,18 @@ class ListRepositoryLocal implements ListRepository {
   final LocalDataService _localDataService;
 
   @override
-  Future<Either<AppException, List<Story>>> getListStories() {
-    return Future.value(Right(_localDataService.getListStories()));
+  Future<Either<AppException, List<Story>>> getListStories() async {
+    try {
+      final stories = await _localDataService.getListStories();
+      return Right(stories);
+    } catch (e) {
+      return Left(
+        AppException(
+          message: e.toString(),
+          statusCode: 500,
+          identifier: 'getListStories',
+        ),
+      );
+    }
   }
 }

@@ -61,5 +61,6 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/stories.json
     - assets/logo_light.png
     - assets/logo_dark.png
