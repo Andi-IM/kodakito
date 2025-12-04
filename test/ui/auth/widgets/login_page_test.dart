@@ -9,24 +9,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 void main() {
-  Widget createWidgetUnderTest() {
-    return ProviderScope(
-      overrides: [loginProvider.overrideWith(() => LoginMock())],
-      child: const MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: LoginPage(),
+  testWidgets('renders LoginPage correctly', (WidgetTester tester) async {
+    final mockNotifier = LoginMock();
+    when(() => mockNotifier.build()).thenReturn(const AuthState.initial());
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [loginProvider.overrideWith(() => mockNotifier)],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: LoginPage(),
+        ),
       ),
     );
-  }
-
-  testWidgets('renders LoginPage correctly', (WidgetTester tester) async {
-    final container = tester.container();
-    // Arrange
-    when(() => container.read(loginProvider)).thenReturn(const AuthState.initial());
-
-    // Act
-    await tester.pumpWidget(createWidgetUnderTest());
     await tester.pumpAndSettle();
 
     // Assert
@@ -36,10 +32,19 @@ void main() {
   });
 
   testWidgets('enters email and password', (WidgetTester tester) async {
-    final container = tester.container();
-    // Arrange
-    when(() => container.read(loginProvider)).thenReturn(const AuthState.initial());
-    await tester.pumpWidget(createWidgetUnderTest());
+    final mockNotifier = LoginMock();
+    when(() => mockNotifier.build()).thenReturn(const AuthState.initial());
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [loginProvider.overrideWith(() => mockNotifier)],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: LoginPage(),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
     // Act
@@ -57,17 +62,25 @@ void main() {
   testWidgets('calls login when button is pressed', (
     WidgetTester tester,
   ) async {
-    final container = tester.container();
-    // Arrange
-    when(() => container.read(loginProvider)).thenReturn(const AuthState.initial());
+    final mockNotifier = LoginMock();
+    when(() => mockNotifier.build()).thenReturn(const AuthState.initial());
     when(
-      () => container.read(loginProvider.notifier).login(
+      () => mockNotifier.login(
         email: any(named: 'email'),
         password: any(named: 'password'),
       ),
     ).thenAnswer((_) async {});
 
-    await tester.pumpWidget(createWidgetUnderTest());
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [loginProvider.overrideWith(() => mockNotifier)],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: LoginPage(),
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
     // Act
@@ -81,7 +94,7 @@ void main() {
 
     // Assert
     verify(
-      () => container.read(loginProvider.notifier).login(
+      () => mockNotifier.login(
         email: 'test@example.com',
         password: 'password123',
       ),
