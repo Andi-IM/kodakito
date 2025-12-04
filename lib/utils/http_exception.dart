@@ -39,5 +39,6 @@ extension HttpExceptionExtension on AppException {
 }
 
 extension LoginExceptionExtension on AppException {
-  Left<AppException, LoginResponse> loginToLeft() => Left<AppException, LoginResponse>(this);
-} 
+  Left<AppException, LoginResponse> loginToLeft() =>
+      Left<AppException, LoginResponse>(this);
+}

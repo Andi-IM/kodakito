@@ -6,10 +6,7 @@ String loginRequestToJson(LoginRequest instance) =>
     json.encode(instance.toJson());
 
 class LoginRequest extends Equatable {
-  const LoginRequest({
-    required this.email,
-    required this.password,
-  });
+  const LoginRequest({required this.email, required this.password});
 
   final String email;
   final String password;

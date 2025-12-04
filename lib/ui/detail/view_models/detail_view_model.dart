@@ -48,10 +48,7 @@ class MockDetailContent extends _$DetailScreenContent
     implements DetailScreenContent {}
 
 @riverpod
-Future<ColorScheme?> storyColorScheme(
-  Ref ref,
-  String imageUrl,
-) async {
+Future<ColorScheme?> storyColorScheme(Ref ref, String imageUrl) async {
   if (imageUrl.isEmpty) return null;
 
   try {
