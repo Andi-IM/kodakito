@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class StoryCard extends StatelessWidget {
   final Story story;
@@ -23,23 +25,25 @@ class StoryCard extends StatelessWidget {
               tag: story.id,
               child: AspectRatio(
                 aspectRatio: 16 / 9,
-                child: Image.network(
-                  story.photoUrl,
+                child: CachedNetworkImage(
+                  imageUrl: story.photoUrl,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
+                  cacheManager: CacheManager(
+                    Config(
+                      'customCacheKey',
+                      stalePeriod: const Duration(minutes: 10),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) {
                     return Container(
                       color: Colors.grey[300],
                       child: const Icon(Icons.broken_image, size: 50),
                     );
                   },
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
+                  progressIndicatorBuilder: (context, url, downloadProgress) {
                     return Center(
                       child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                            : null,
+                        value: downloadProgress.progress,
                       ),
                     );
                   },
