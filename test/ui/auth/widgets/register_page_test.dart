@@ -127,4 +127,43 @@ void main() {
       ),
     ).called(1);
   });
+  testWidgets('toggles password visibility icon when clicked', (
+    WidgetTester tester,
+  ) async {
+    final mockNotifier = RegisterMock();
+    when(() => mockNotifier.build()).thenReturn(const AuthState.initial());
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [registerProvider.overrideWith(() => mockNotifier)],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: RegisterPage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Initial state: obscure = true, icon = visibility_outlined
+    final iconFinder = find.byIcon(Icons.visibility_outlined);
+    expect(iconFinder, findsOneWidget);
+
+    // Act: Tap toggle button
+    await tester.ensureVisible(iconFinder);
+    await tester.tap(iconFinder);
+    await tester.pump();
+
+    // Assert: icon changed to visibility_off_outlined
+    expect(find.byIcon(Icons.visibility_off_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.visibility_outlined), findsNothing);
+
+    // Act: Tap again
+    await tester.tap(find.byIcon(Icons.visibility_off_outlined));
+    await tester.pump();
+
+    // Assert: icon changed back to visibility_outlined
+    expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.visibility_off_outlined), findsNothing);
+  });
 }
