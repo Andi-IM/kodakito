@@ -49,13 +49,23 @@ To run this project locally, follow these steps:
     flutter pub get
     ```
 
-3.  **Generate Code**:
+3.  **Configure Environment Variables**:
+    Create a `.env` file in the root directory and add the following variables:
+    ```env
+    STORY_URL=https://story-api.dicoding.dev/v1
+    STORY_ENV=development
+    TEST_EMAIL=test@example.com
+    TEST_PASSWORD=password
+    ```
+    *Note: `TEST_EMAIL` and `TEST_PASSWORD` are used for integration tests.*
+
+4.  **Generate Code**:
     This project uses code generation for Riverpod, JSON serialization, and GoRouter. You must run the build runner to generate the necessary `.g.dart` files.
     ```bash
     dart run build_runner build -d
     ```
 
-4.  **Run the application**:
+5.  **Run the application**:
     ```bash
     flutter run
     ```

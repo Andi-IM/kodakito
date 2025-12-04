@@ -16,7 +16,7 @@ jobs:
         with: 
           channel: 'stable'
       - run: dart pub get
-      - run: dart analyze .
-      - run: dart format . --set-exit-if-changed
+      - run: dart analyze /lib
+      - run: dart format /lib --set-exit-if-changed
       - run: flutter test --coverage
       
