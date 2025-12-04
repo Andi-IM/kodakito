@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
 import 'package:dicoding_story/data/services/remote/network_service.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:dio/dio.dart';
 
 abstract class StoryDataSource {
-  Future<Either<AppException, Map<String, dynamic>>> addStory(
+  Future<Either<AppException, DefaultResponse>> addStory(
     String description,
     File photo, {
     double? lat,
@@ -29,7 +30,7 @@ class StoryRemoteDataSource implements StoryDataSource {
   StoryRemoteDataSource({required this.networkService});
 
   @override
-  Future<Either<AppException, Map<String, dynamic>>> addStory(
+  Future<Either<AppException, DefaultResponse>> addStory(
     String description,
     File photo, {
     double? lat,
@@ -54,7 +55,7 @@ class StoryRemoteDataSource implements StoryDataSource {
           ),
         );
       }
-      return Right(jsonData);
+      return Right(DefaultResponse.fromJson(jsonData));
     });
   }
 

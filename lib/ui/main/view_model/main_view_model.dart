@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
+import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
 import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
 import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:mocktail/mocktail.dart';
@@ -67,4 +70,43 @@ class MockStories extends _$StoriesNotifier
 Future<String?> version(Ref ref) async {
   final packageInfo = await PackageInfo.fromPlatform();
   return '${packageInfo.version}+${packageInfo.buildNumber}';
+}
+
+@Riverpod()
+class AddStoryNotifier extends _$AddStoryNotifier with LogMixin {
+  AddStoryRepository get _repository => ref.read(addStoryRepositoryProvider);
+  @override
+  AddStoryState build() {
+    return const AddStoryState.initial();
+  }
+
+  Future<void> addStory({
+    required String description,
+    required File photo,
+    double? lat,
+    double? lon,
+  }) async {
+    log.info('Adding story: $description');
+    state = AddStoryState.loading();
+    final result = await _repository.addStory(
+      description,
+      photo,
+      lat: lat,
+      lon: lon,
+    );
+    result.fold(
+      (failure) {
+        log.warning('Failed to add story: ${failure.message}');
+        state = AddStoryState.failure(failure);
+      },
+      (story) {
+        log.info('Successfully added story');
+        state = AddStoryState.success();
+      },
+    );
+  }
+
+  void resetState() {
+    state = const AddStoryState.initial();
+  }
 }

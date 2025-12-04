@@ -1,5 +1,7 @@
 import 'package:dicoding_story/app/app_env.dart';
 import 'package:dicoding_story/data/data_providers.dart';
+import 'package:dicoding_story/data/repositories/add/add_story_repositopry_local.dart';
+import 'package:dicoding_story/data/repositories/add/add_story_repository_remote.dart';
 import 'package:dicoding_story/data/repositories/auth/auth_repository_dev.dart';
 import 'package:dicoding_story/data/repositories/auth/auth_repository_remote.dart';
 import 'package:dicoding_story/data/repositories/cache/cache_repository_local.dart';
@@ -7,6 +9,7 @@ import 'package:dicoding_story/data/repositories/detail/detail_repository_local.
 import 'package:dicoding_story/data/repositories/detail/detail_repository_remote.dart';
 import 'package:dicoding_story/data/repositories/list/list_repository_local.dart';
 import 'package:dicoding_story/data/repositories/list/list_repository_remote.dart';
+import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/domain/repository/auth_repository.dart';
 import 'package:dicoding_story/domain/repository/cache_repository.dart';
 import 'package:dicoding_story/domain/repository/detail_repository.dart';
@@ -58,6 +61,20 @@ DetailRepository detailRepository(Ref ref) {
     );
   } else {
     return DetailRepositoryLocal(
+      localDataService: ref.read(localDataServiceProvider),
+    );
+  }
+}
+
+@riverpod
+AddStoryRepository addStoryRepository(Ref ref) {
+  final env = ref.watch(appEnvironmentProvider);
+  if (env == AppEnvironment.production) {
+    return AddStoryRepositoryRemote(
+      storyDataSource: ref.read(storyDataSourceProvider),
+    );
+  } else {
+    return AddStoryRepositoryLocal(
       localDataService: ref.read(localDataServiceProvider),
     );
   }
