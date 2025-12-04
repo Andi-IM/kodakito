@@ -1,8 +1,6 @@
 import 'dart:convert';
 
-import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/domain/models/cache/cache.dart';
-import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'login_response.freezed.dart';
@@ -37,8 +35,4 @@ abstract class LoginResult with _$LoginResult {
 
 extension ToCacheModel on LoginResult {
   Cache toCache() => Cache(userId: userId, userName: name, token: token);
-}
-
-extension LoginResponseExtension on LoginResponse {
-  Right<AppException, LoginResponse> get toRight => Right(this);
 }

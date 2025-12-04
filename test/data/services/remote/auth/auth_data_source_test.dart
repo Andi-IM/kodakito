@@ -63,7 +63,10 @@ void main() {
         verify(
           () => mockNetworkService.post(
             '/register',
-            data: registerRequestToJson(tRegisterRequest),
+            data: any(
+              named: 'data',
+              that: equals(registerRequestToJson(tRegisterRequest)),
+            ),
           ),
         ).called(1);
       });
@@ -89,7 +92,10 @@ void main() {
         verify(
           () => mockNetworkService.post(
             '/register',
-            data: registerRequestToJson(tRegisterRequest),
+            data: any(
+              named: 'data',
+              that: equals(registerRequestToJson(tRegisterRequest)),
+            ),
           ),
         ).called(1);
       });
@@ -133,7 +139,7 @@ void main() {
               response.Response(data: tLoginResponseData, statusCode: 200),
             ),
           );
-          when(() => mockNetworkService.updateHeader(any())).thenReturn({});
+          when(() => mockNetworkService.updateHeader(any())).thenReturn(null);
 
           // Act
           final result = await dataSource.login(tLoginRequest);
@@ -143,13 +149,16 @@ void main() {
           verify(
             () => mockNetworkService.post(
               '/login',
-              data: loginRequestToJson(tLoginRequest),
+              data: any(
+                named: 'data',
+                that: equals(loginRequestToJson(tLoginRequest)),
+              ),
             ),
           ).called(1);
           verify(
-            () => mockNetworkService.updateHeader({
-              'Authorization': 'Bearer token',
-            }),
+            () => mockNetworkService.updateHeader(
+              any(that: equals({'Authorization': 'Bearer token'})),
+            ),
           ).called(1);
         },
       );
@@ -173,7 +182,10 @@ void main() {
         verify(
           () => mockNetworkService.post(
             '/login',
-            data: loginRequestToJson(tLoginRequest),
+            data: any(
+              named: 'data',
+              that: equals(loginRequestToJson(tLoginRequest)),
+            ),
           ),
         ).called(1);
         verifyNever(() => mockNetworkService.updateHeader(any()));
