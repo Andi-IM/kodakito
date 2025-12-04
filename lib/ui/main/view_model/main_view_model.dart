@@ -4,9 +4,10 @@ import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
 import 'package:dicoding_story/utils/logger_mixin.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'main_provider.g.dart';
+part 'main_view_model.g.dart';
 
 @riverpod
 class ImageFile extends _$ImageFile {
@@ -25,8 +26,6 @@ class StoriesNotifier extends _$StoriesNotifier with LogMixin {
   ListRepository get _repository => ref.read(listRepositoryProvider);
   @override
   StoriesState build() {
-    // Initialization and fetching
-    Future.microtask(() => fetchStories());
     return const StoriesState.initial();
   }
 
@@ -56,3 +55,9 @@ class StoriesNotifier extends _$StoriesNotifier with LogMixin {
     state = const StoriesState.initial();
   }
 }
+
+class MockImageFile extends _$ImageFile with Mock implements ImageFile {}
+
+class MockStories extends _$StoriesNotifier
+    with Mock
+    implements StoriesNotifier {}

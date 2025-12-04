@@ -4,7 +4,7 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story_dialog.dart';
-import 'package:dicoding_story/ui/main/view_model/main_provider.dart';
+import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/widgets/settings_dialog.dart';
 import 'package:dicoding_story/ui/main/widgets/story_card.dart';
 import 'package:flutter/foundation.dart';
@@ -25,6 +25,12 @@ class MainPage extends ConsumerStatefulWidget {
 
 class _MainScreenState extends ConsumerState<MainPage> {
   final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    ref.read(storiesProvider.notifier).fetchStories();
+  }
 
   @override
   void dispose() {

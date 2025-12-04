@@ -4,7 +4,7 @@ import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
 import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'detail_provider.g.dart';
+part 'detail_view_model.g.dart';
 
 @Riverpod()
 class DetailScreenContent extends _$DetailScreenContent with LogMixin {
