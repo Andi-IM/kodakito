@@ -106,7 +106,7 @@ class SettingsDialog extends ConsumerWidget {
 
               // Logout Option
               _buildOptionItem(
-                key: const Key('logout'),
+                key: const ValueKey('logoutButton'),
                 context: context,
                 icon: Icons.logout,
                 title: context.l10n.settingsBtnLogout,

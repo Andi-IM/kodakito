@@ -85,6 +85,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           Text(context.l10n.authFieldFullNameLabel),
                           const SizedBox(height: 8),
                           TextFormField(
+                            key: const ValueKey('nameField'),
                             controller: _nameController,
                             enabled: !isLoading,
                             decoration: InputDecoration(
@@ -103,6 +104,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           Text(context.l10n.authFieldEmailLabel),
                           const SizedBox(height: 8),
                           TextFormField(
+                            key: const ValueKey('emailField'),
                             controller: _emailController,
                             enabled: !isLoading,
                             decoration: InputDecoration(
@@ -121,6 +123,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           Text(context.l10n.authFieldPasswordLabel),
                           const SizedBox(height: 8),
                           TextFormField(
+                            key: const ValueKey('passwordField'),
                             controller: _passwordController,
                             obscureText: obscurePassword,
                             enabled: !isLoading,
@@ -150,6 +153,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
                           // Register Button
                           AuthButton(
+                            key: const ValueKey('registerButton'),
                             label: context.l10n.authBtnRegister,
                             isLoading: isLoading,
                             onPressed: () {

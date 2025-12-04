@@ -139,7 +139,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
                 pinned: false,
                 actions: [
                   IconButtonM3E(
-                    key: const Key('settings'),
+                    key: const ValueKey('avatarButton'),
                     onPressed: () => showDialog(
                       context: context,
                       builder: (context) {

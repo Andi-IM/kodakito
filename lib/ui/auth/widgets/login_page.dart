@@ -81,6 +81,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           Text(context.l10n.authFieldEmailLabel),
                           const SizedBox(height: 8),
                           TextFormField(
+                            key: const ValueKey('emailField'),
                             controller: _emailController,
                             enabled: !isLoading,
                             decoration: InputDecoration(
@@ -99,6 +100,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           Text(context.l10n.authFieldPasswordLabel),
                           const SizedBox(height: 8),
                           TextFormField(
+                            key: const ValueKey('passwordField'),
                             controller: _passwordController,
                             obscureText: obscurePassword,
                             enabled: !isLoading,
@@ -128,6 +130,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                           // Login Button
                           AuthButton(
+                            key: const ValueKey('loginButton'),
                             label: context.l10n.authBtnLogin,
                             isLoading: isLoading,
                             onPressed: () {
