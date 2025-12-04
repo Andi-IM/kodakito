@@ -30,6 +30,9 @@
     "addStoryDescriptionLabel" : "Description",
     "addStoryBtnCancel" : "Cancel",
     "addStoryDescriptionHint" : "Tell your experience...",
+    "addStorySuccessMessage" : "Story posted successfully!",
+    "addStoryErrorEmptyDescription" : "Please enter a description",
+    "addStoryErrorEmptyImage" : "Please select an image",
 
     "@_SETTINGS_FEATURE": {},
     "settingsTitle": "Settings",

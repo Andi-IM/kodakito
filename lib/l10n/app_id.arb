@@ -31,6 +31,9 @@
     "addStoryDescriptionHint" : "Ceritakan pengalamanmu...",
     "addStoryBtnCamera" : "Kamera",
     "addStoryBtnGallery" : "Galeri",
+    "addStorySuccessMessage" : "Cerita berhasil diposting!",
+    "addStoryErrorEmptyDescription" : "Silakan masukkan deskripsi",
+    "addStoryErrorEmptyImage" : "Silakan pilih gambar",
 
     "@_SETTINGS_FEATURE": {},
     "settingsTitle": "Pengaturan",

@@ -254,6 +254,24 @@ abstract class AppLocalizations {
   /// **'Galeri'**
   String get addStoryBtnGallery;
 
+  /// No description provided for @addStorySuccessMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Cerita berhasil diposting!'**
+  String get addStorySuccessMessage;
+
+  /// No description provided for @addStoryErrorEmptyDescription.
+  ///
+  /// In id, this message translates to:
+  /// **'Silakan masukkan deskripsi'**
+  String get addStoryErrorEmptyDescription;
+
+  /// No description provided for @addStoryErrorEmptyImage.
+  ///
+  /// In id, this message translates to:
+  /// **'Silakan pilih gambar'**
+  String get addStoryErrorEmptyImage;
+
   /// No description provided for @settingsTitle.
   ///
   /// In id, this message translates to:

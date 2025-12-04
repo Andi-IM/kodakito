@@ -87,6 +87,15 @@ class AppLocalizationsId extends AppLocalizations {
   String get addStoryBtnGallery => 'Galeri';
 
   @override
+  String get addStorySuccessMessage => 'Cerita berhasil diposting!';
+
+  @override
+  String get addStoryErrorEmptyDescription => 'Silakan masukkan deskripsi';
+
+  @override
+  String get addStoryErrorEmptyImage => 'Silakan pilih gambar';
+
+  @override
   String get settingsTitle => 'Pengaturan';
 
   @override

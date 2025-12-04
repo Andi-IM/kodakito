@@ -87,6 +87,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addStoryBtnGallery => 'Gallery';
 
   @override
+  String get addStorySuccessMessage => 'Story posted successfully!';
+
+  @override
+  String get addStoryErrorEmptyDescription => 'Please enter a description';
+
+  @override
+  String get addStoryErrorEmptyImage => 'Please select an image';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override

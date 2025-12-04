@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:dicoding_story/common/localizations.dart';
+import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AddStoryDialog extends ConsumerStatefulWidget {
   const AddStoryDialog({super.key});
@@ -15,9 +19,48 @@ class AddStoryDialog extends ConsumerStatefulWidget {
 
 class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
   final cropController = CropController();
+  final descriptionController = TextEditingController();
+
+  @override
+  void dispose() {
+    descriptionController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final imageFile = ref.watch(imageFileProvider);
+    final addStoryState = ref.watch(addStoryProvider);
+    final isLoading = addStoryState.maybeWhen(
+      loading: () => true,
+      orElse: () => false,
+    );
+
+    ref.listen(addStoryProvider, (previous, next) {
+      next.when(
+        initial: () {},
+        loading: () {},
+        success: () {
+          // Clear the description
+          descriptionController.clear();
+          // Close the dialog
+          context.pop();
+          // Show success message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.addStorySuccessMessage)),
+          );
+          // Refresh stories list
+          ref.read(storiesProvider.notifier).fetchStories();
+        },
+        failure: (failure) {
+          // Show error message
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(failure.message)));
+        },
+      );
+    });
+
     return AlertDialog(
       title: Text(context.l10n.addStoryTitle),
       content: SingleChildScrollView(
@@ -126,6 +169,8 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
               ),
               const SizedBox(height: 16),
               TextField(
+                controller: descriptionController,
+                enabled: !isLoading,
                 maxLines: 4,
                 decoration: InputDecoration(
                   labelText: context.l10n.addStoryDescriptionLabel,
@@ -140,12 +185,56 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => context.pop(),
+          onPressed: isLoading ? null : () => context.pop(),
           child: Text(context.l10n.addStoryBtnCancel),
         ),
         FilledButton(
-          onPressed: () => context.pop(),
-          child: Text(context.l10n.addStoryBtnPost),
+          onPressed: isLoading
+              ? null
+              : () async {
+                  final description = descriptionController.text.trim();
+                  if (description.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          context.l10n.addStoryErrorEmptyDescription,
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+                  if (imageFile == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(context.l10n.addStoryErrorEmptyImage),
+                      ),
+                    );
+                    return;
+                  }
+
+                  // Convert Uint8List to File
+                  final tempDir = await getTemporaryDirectory();
+                  final timestamp = DateTime.now().millisecondsSinceEpoch;
+                  final file = File('${tempDir.path}/story_$timestamp.jpg');
+                  await file.writeAsBytes(imageFile);
+
+                  // Call addStory
+                  await ref
+                      .read(addStoryProvider.notifier)
+                      .addStory(description: description, photo: file);
+                },
+          child: isLoading
+              ? SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                )
+              : Text(context.l10n.addStoryBtnPost),
         ),
       ],
     );
