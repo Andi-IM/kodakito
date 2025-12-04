@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
 import 'package:dicoding_story/data/services/remote/network_service.dart';
 import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
 import 'package:dicoding_story/domain/models/response.dart';
@@ -233,7 +234,7 @@ void main() {
         }
       });
 
-      test('should return Right(Map) when successful', () async {
+      test('should return Right(DefaultResponse) when successful', () async {
         // Arrange
         when(
           () => mockNetworkService.post(any(), data: any(named: 'data')),
@@ -253,7 +254,7 @@ void main() {
         );
 
         // Assert
-        expect(result, isA<Right<AppException, Map<String, dynamic>>>());
+        expect(result, isA<Right<AppException, DefaultResponse>>());
         verify(
           () => mockNetworkService.post('/stories', data: any(named: 'data')),
         ).called(1);
@@ -276,7 +277,7 @@ void main() {
         );
 
         // Assert
-        expect(result, isA<Left<AppException, Map<String, dynamic>>>());
+        expect(result, isA<Left<AppException, DefaultResponse>>());
         result.fold((l) {
           expect(l.message, 'The data is not in the valid format.');
           expect(l.identifier, 'postStoryData');

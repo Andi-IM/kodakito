@@ -1,16 +1,35 @@
 import 'dart:convert';
-import 'dart:typed_data';
-
+import 'dart:io';
 import 'package:dicoding_story/data/services/local/local_data_service.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   late LocalDataService service;
+  late Directory tempDir;
 
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
     service = LocalDataService();
+    tempDir = Directory.systemTemp.createTempSync();
+
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          const MethodChannel('plugins.flutter.io/path_provider'),
+          (MethodCall methodCall) async {
+            if (methodCall.method == 'getApplicationDocumentsDirectory') {
+              return tempDir.path;
+            }
+            return null;
+          },
+        );
+  });
+
+  tearDown(() {
+    if (tempDir.existsSync()) {
+      tempDir.deleteSync(recursive: true);
+    }
   });
 
   const tStoryJson = {
