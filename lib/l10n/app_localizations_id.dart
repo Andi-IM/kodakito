@@ -91,4 +91,37 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get settingsBtnLogout => 'Keluar';
+
+  @override
+  String get settingsBtnLogoutPrompt => 'Logout dari aplikasi';
+
+  @override
+  String get settingsBtnLanguage => 'Bahasa';
+
+  @override
+  String get settingsBtnLanguagePrompt => 'Pilih Bahasa';
+
+  @override
+  String get settingsBtnLanguageDefault => 'System';
+
+  @override
+  String get settingsBtnLanguageID => 'Bahasa Indonesia';
+
+  @override
+  String get settingsBtnLanguageEN => 'Bahasa Inggris';
+
+  @override
+  String get settingsBtnCancel => 'Batal';
+
+  @override
+  String get settingsBtnTheme => 'Tema';
+
+  @override
+  String get settingsBtnThemePrompt => 'Pilih tema aplikasi';
+
+  @override
+  String get settingsBtnThemeLight => 'Tema Terang';
+
+  @override
+  String get settingsBtnThemeDark => 'Tema Gelap';
 }

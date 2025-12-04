@@ -29,7 +29,9 @@ class _MainScreenState extends ConsumerState<MainPage> {
   @override
   void initState() {
     super.initState();
-    ref.read(storiesProvider.notifier).fetchStories();
+    Future.microtask(() {
+      ref.read(storiesProvider.notifier).fetchStories();
+    });
   }
 
   @override

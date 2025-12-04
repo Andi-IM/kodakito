@@ -15,6 +15,7 @@ class MyApp extends ConsumerWidget {
 
     MaterialTheme theme = MaterialTheme(textTheme);
     final themeMode = ref.watch(appThemeProvider);
+    final locale = ref.watch(appLanguageProvider);
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
@@ -22,6 +23,7 @@ class MyApp extends ConsumerWidget {
       title: 'KodaKito',
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      locale: locale,
       theme: withM3ETheme(theme.light()),
       darkTheme: withM3ETheme(theme.dark()),
       themeMode: themeMode,

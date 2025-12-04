@@ -91,4 +91,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsBtnLogout => 'Logout';
+
+  @override
+  String get settingsBtnLogoutPrompt => 'Logout from app';
+
+  @override
+  String get settingsBtnLanguage => 'Language';
+
+  @override
+  String get settingsBtnLanguagePrompt => 'Select Language';
+
+  @override
+  String get settingsBtnLanguageDefault => 'System';
+
+  @override
+  String get settingsBtnLanguageID => 'Indonesian';
+
+  @override
+  String get settingsBtnLanguageEN => 'English';
+
+  @override
+  String get settingsBtnCancel => 'Cancel';
+
+  @override
+  String get settingsBtnTheme => 'Theme';
+
+  @override
+  String get settingsBtnThemePrompt => 'Choose app theme';
+
+  @override
+  String get settingsBtnThemeLight => 'Dark';
+
+  @override
+  String get settingsBtnThemeDark => 'Light';
 }

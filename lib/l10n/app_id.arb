@@ -34,5 +34,16 @@
 
     "@_SETTINGS_FEATURE": {},
     "settingsTitle": "Pengaturan",
-    "settingsBtnLogout": "Keluar"
+    "settingsBtnLogout": "Keluar",
+    "settingsBtnLogoutPrompt": "Logout dari aplikasi",
+    "settingsBtnLanguage": "Bahasa",
+    "settingsBtnLanguagePrompt": "Pilih Bahasa",
+    "settingsBtnLanguageDefault": "System",
+    "settingsBtnLanguageID": "Bahasa Indonesia",
+    "settingsBtnLanguageEN": "Bahasa Inggris",
+    "settingsBtnCancel": "Batal",
+    "settingsBtnTheme": "Tema",
+    "settingsBtnThemePrompt": "Pilih tema aplikasi",
+    "settingsBtnThemeLight": "Tema Terang",
+    "settingsBtnThemeDark": "Tema Gelap"
 }

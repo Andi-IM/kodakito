@@ -265,6 +265,72 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Keluar'**
   String get settingsBtnLogout;
+
+  /// No description provided for @settingsBtnLogoutPrompt.
+  ///
+  /// In id, this message translates to:
+  /// **'Logout dari aplikasi'**
+  String get settingsBtnLogoutPrompt;
+
+  /// No description provided for @settingsBtnLanguage.
+  ///
+  /// In id, this message translates to:
+  /// **'Bahasa'**
+  String get settingsBtnLanguage;
+
+  /// No description provided for @settingsBtnLanguagePrompt.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Bahasa'**
+  String get settingsBtnLanguagePrompt;
+
+  /// No description provided for @settingsBtnLanguageDefault.
+  ///
+  /// In id, this message translates to:
+  /// **'System'**
+  String get settingsBtnLanguageDefault;
+
+  /// No description provided for @settingsBtnLanguageID.
+  ///
+  /// In id, this message translates to:
+  /// **'Bahasa Indonesia'**
+  String get settingsBtnLanguageID;
+
+  /// No description provided for @settingsBtnLanguageEN.
+  ///
+  /// In id, this message translates to:
+  /// **'Bahasa Inggris'**
+  String get settingsBtnLanguageEN;
+
+  /// No description provided for @settingsBtnCancel.
+  ///
+  /// In id, this message translates to:
+  /// **'Batal'**
+  String get settingsBtnCancel;
+
+  /// No description provided for @settingsBtnTheme.
+  ///
+  /// In id, this message translates to:
+  /// **'Tema'**
+  String get settingsBtnTheme;
+
+  /// No description provided for @settingsBtnThemePrompt.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih tema aplikasi'**
+  String get settingsBtnThemePrompt;
+
+  /// No description provided for @settingsBtnThemeLight.
+  ///
+  /// In id, this message translates to:
+  /// **'Tema Terang'**
+  String get settingsBtnThemeLight;
+
+  /// No description provided for @settingsBtnThemeDark.
+  ///
+  /// In id, this message translates to:
+  /// **'Tema Gelap'**
+  String get settingsBtnThemeDark;
 }
 
 class _AppLocalizationsDelegate

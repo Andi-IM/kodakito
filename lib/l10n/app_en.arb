@@ -33,5 +33,16 @@
 
     "@_SETTINGS_FEATURE": {},
     "settingsTitle": "Settings",
-    "settingsBtnLogout": "Logout"
+    "settingsBtnLogout": "Logout",
+    "settingsBtnLogoutPrompt": "Logout from app",
+    "settingsBtnLanguage": "Language",
+    "settingsBtnLanguagePrompt": "Select Language",
+    "settingsBtnLanguageDefault": "System",
+    "settingsBtnLanguageID": "Indonesian",
+    "settingsBtnLanguageEN": "English",
+    "settingsBtnCancel": "Cancel",
+    "settingsBtnTheme": "Theme",
+    "settingsBtnThemePrompt": "Choose app theme",
+    "settingsBtnThemeLight": "Dark",
+    "settingsBtnThemeDark": "Light"
 }

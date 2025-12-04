@@ -4,6 +4,39 @@ import "package:dicoding_story/data/services/local/storage_service.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/legacy.dart";
 
+// Language Provider
+final appLanguageProvider = StateNotifierProvider<AppLanguageNotifier, Locale?>(
+  (ref) => AppLanguageNotifier(ref.read(storageServiceProvider)),
+);
+
+class AppLanguageNotifier extends StateNotifier<Locale?> {
+  final StorageService storageService;
+
+  AppLanguageNotifier(this.storageService) : super(null) {
+    getCurrentLanguage();
+  }
+
+  void changeLanguage(Locale? locale) async {
+    state = locale;
+    if (locale == null) {
+      // System preferred
+      await storageService.set(APP_LANGUAGE_STORAGE_KEY, 'system');
+    } else {
+      await storageService.set(APP_LANGUAGE_STORAGE_KEY, locale.languageCode);
+    }
+  }
+
+  void getCurrentLanguage() async {
+    final language = await storageService.get(APP_LANGUAGE_STORAGE_KEY);
+    if (language == null || language == 'system') {
+      state = null; // System preferred
+    } else {
+      state = Locale(language.toString());
+    }
+  }
+}
+
+// Theme Provider
 final appThemeProvider = StateNotifierProvider<AppThemeNotifier, ThemeMode>(
   (ref) => AppThemeNotifier(ref.read(storageServiceProvider)),
 );
@@ -15,6 +48,11 @@ class AppThemeNotifier extends StateNotifier<ThemeMode> {
 
   AppThemeNotifier(this.storageService) : super(ThemeMode.light) {
     getCurrentTheme();
+  }
+
+  void changeTheme(ThemeMode theme) async {
+    state = theme;
+    await storageService.set(APP_THEME_STORAGE_KEY, theme.name);
   }
 
   void getCurrentTheme() async {
