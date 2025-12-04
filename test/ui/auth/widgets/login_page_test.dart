@@ -100,4 +100,41 @@ void main() {
       ),
     ).called(1);
   });
+
+  testWidgets('toggles password visibility', (WidgetTester tester) async {
+    final mockNotifier = LoginMock();
+    when(() => mockNotifier.build()).thenReturn(const AuthState.initial());
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [loginProvider.overrideWith(() => mockNotifier)],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: LoginPage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Find password field (TextField inside TextFormField)
+    final passwordFieldFinder = find.descendant(
+      of: find.byType(TextFormField).last,
+      matching: find.byType(TextField),
+    );
+    final passwordField = tester.widget<TextField>(passwordFieldFinder);
+
+    // Initial state: obscureText should be true
+    expect(passwordField.obscureText, isTrue);
+    expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
+
+    // Tap the visibility toggle button
+    await tester.tap(find.byIcon(Icons.visibility_outlined));
+    await tester.pump();
+
+    // Verify state changed: obscureText should be false
+    final passwordFieldAfterTap = tester.widget<TextField>(passwordFieldFinder);
+    expect(passwordFieldAfterTap.obscureText, isFalse);
+    expect(find.byIcon(Icons.visibility_off_outlined), findsOneWidget);
+  });
 }
