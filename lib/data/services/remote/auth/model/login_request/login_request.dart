@@ -1,23 +1,21 @@
 import 'dart:convert' show json;
 
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'login_request.g.dart';
-part 'login_request.freezed.dart';
+import 'package:equatable/equatable.dart';
 
 String loginRequestToJson(LoginRequest instance) =>
     json.encode(instance.toJson());
 
-@freezed
-abstract class LoginRequest with _$LoginRequest {
-  const factory LoginRequest({
-    /// Email address.
-    required String email,
+class LoginRequest extends Equatable {
+  const LoginRequest({
+    required this.email,
+    required this.password,
+  });
 
-    /// Plain text password.
-    required String password,
-  }) = _LoginRequest;
+  final String email;
+  final String password;
 
-  factory LoginRequest.fromJson(Map<String, Object?> json) =>
-      _$LoginRequestFromJson(json);
+  Map<String, dynamic> toJson() => {'email': email, 'password': password};
+
+  @override
+  List<Object?> get props => [email, password];
 }

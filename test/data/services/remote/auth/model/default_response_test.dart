@@ -14,5 +14,17 @@ void main() {
       expect(result.error, false);
       expect(result.message, 'success');
     });
+
+    test('toJson should return a valid map', () {
+      // Arrange
+      const model = DefaultResponse(error: false, message: 'success');
+      final expectedJson = {'error': false, 'message': 'success'};
+
+      // Act
+      final result = model.toJson();
+
+      // Assert
+      expect(result, expectedJson);
+    });
   });
 }

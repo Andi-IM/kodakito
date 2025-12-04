@@ -1,21 +1,27 @@
 import 'dart:convert';
 
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'register_request.freezed.dart';
-part 'register_request.g.dart';
+import 'package:equatable/equatable.dart';
 
 String registerRequestToJson(RegisterRequest instance) =>
     json.encode(instance.toJson());
 
-@freezed
-abstract class RegisterRequest with _$RegisterRequest {
-  const factory RegisterRequest({
-    required String name,
-    required String email,
-    required String password,
-  }) = _RegisterRequest;
+class RegisterRequest extends Equatable {
+  const RegisterRequest({
+    required this.name,
+    required this.email,
+    required this.password,
+  });
 
-  factory RegisterRequest.fromJson(Map<String, dynamic> json) =>
-      _$RegisterRequestFromJson(json);
+  final String name;
+  final String email;
+  final String password;
+
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'email': email,
+    'password': password,
+  };
+
+  @override
+  List<Object?> get props => [name, email, password];
 }

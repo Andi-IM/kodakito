@@ -1,13 +1,8 @@
-import 'dart:convert';
-
 import 'package:dicoding_story/domain/models/cache/cache.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'login_response.freezed.dart';
 part 'login_response.g.dart';
-
-LoginResponse loginResponseFromJson(String str) =>
-    LoginResponse.fromJson(json.decode(str));
 
 @freezed
 abstract class LoginResponse with _$LoginResponse {
