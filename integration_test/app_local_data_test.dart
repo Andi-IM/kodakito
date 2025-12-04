@@ -6,11 +6,13 @@ import 'package:dicoding_story/domain/models/cache/cache.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:mocktail_image_network/mocktail_image_network.dart';
 
-import 'fake/fake_cahce_repository.dart';
+import 'fake/fake_cache_repository.dart';
 import 'robot/login_robot.dart';
 import 'robot/logout_robot.dart';
 import 'robot/register_robot.dart';
+import 'robot/view_story_robot.dart';
 
 /// This Integration Test launches the app with the local configuration
 /// Make sure to set the environment variable to 'development' before running this test
@@ -80,7 +82,9 @@ void main() {
       await logoutRobot.checkLogoutResult();
     });
 
-    testWidgets('Register', (tester) async {
+    testWidgets('Register - user can register and navigate to login page', (
+      tester,
+    ) async {
       final registerRobot = RegisterRobot(tester);
       await registerRobot.loadUI(
         ProviderScope(
@@ -102,5 +106,40 @@ void main() {
       await registerRobot.checkSnackbar();
       await registerRobot.checkLoginPage();
     });
+
+    testWidgets(
+      'View Story - user can view story and navigate to detail page',
+      (tester) async {
+        await mockNetworkImages(() async {
+          final viewStoryRobot = ViewStoryRobot(tester);
+          final repo = FakeCacheRepository();
+          repo.saveToken(
+            cache: Cache(
+              token: 'token',
+              userName: 'username',
+              userId: 'userid',
+            ),
+          );
+
+          await viewStoryRobot.loadUI(
+            ProviderScope(
+              overrides: [
+                appEnvironmentProvider.overrideWithValue(
+                  AppEnvironment.development,
+                ),
+                cacheRepositoryProvider.overrideWithValue(repo),
+              ],
+              observers: [Observer()],
+              child: MyApp(),
+            ),
+          );
+
+          viewStoryRobot.verifyPageIsLoading();
+          await viewStoryRobot.verifyStoryCardIsDisplayed();
+          final story = await viewStoryRobot.tapStoryCard(0);
+          await viewStoryRobot.verifyStoryDetailIsDisplayedWithStory(story);
+        });
+      },
+    );
   });
 }

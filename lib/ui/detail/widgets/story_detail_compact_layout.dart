@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -31,11 +32,12 @@ class StoryDetailCompactLayout extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(24),
                 ),
-                child: Image.network(
-                  story.photoUrl,
+                child: CachedNetworkImage(
+                  key: ValueKey('image_${story.id}'),
+                  imageUrl: story.photoUrl,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
+                  errorWidget: (context, url, error) {
                     return Container(
                       height: 200,
                       color: colorScheme.surfaceContainerHighest,
@@ -48,16 +50,12 @@ class StoryDetailCompactLayout extends StatelessWidget {
                       ),
                     );
                   },
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
+                  progressIndicatorBuilder: (context, url, downloadProgress) {
                     return SizedBox(
                       height: 200,
                       child: Center(
                         child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
-                              : null,
+                          value: downloadProgress.progress,
                         ),
                       ),
                     );

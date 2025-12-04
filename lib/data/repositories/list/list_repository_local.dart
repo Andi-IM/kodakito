@@ -14,6 +14,7 @@ class ListRepositoryLocal implements ListRepository {
   @override
   Future<Either<AppException, List<Story>>> getListStories() async {
     try {
+      await Future.delayed(const Duration(seconds: 1));
       final stories = await _localDataService.getListStories();
       return Right(stories);
     } catch (e) {

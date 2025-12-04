@@ -201,6 +201,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
                           itemBuilder: (context, index) {
                             final story = stories[index];
                             return StoryCard(
+                              key: ValueKey('StoryCard_${story.id}'),
                               story: story,
                               onTap: () => context.go('/story/${story.id}'),
                             );
@@ -216,9 +217,15 @@ class _MainScreenState extends ConsumerState<MainPage> {
               ? SizedBox(
                   width: isLarge ? 240 : 120,
                   height: isLarge ? 240 : 120,
-                  child: LoadingIndicatorM3E(semanticLabel: 'Loading stories'),
+                  child: LoadingIndicatorM3E(
+                    key: const ValueKey('loadingIndicator'),
+                    semanticLabel: 'loading_stories',
+                  ),
                 )
-              : LoadingIndicatorM3E(semanticLabel: 'Loading stories'),
+              : LoadingIndicatorM3E(
+                  key: const ValueKey('loadingIndicator'),
+                  semanticLabel: 'loading_stories',
+                ),
         ),
         error: (error, stack) => Center(child: Text('Error: $error')),
       ),
