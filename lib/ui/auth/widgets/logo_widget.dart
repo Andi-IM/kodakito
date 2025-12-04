@@ -6,7 +6,7 @@ class LogoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = View.of(context).platformDispatcher.platformBrightness;
+    final brightness = Theme.of(context).brightness;
     return Center(
       child: LayoutBuilder(
         builder: (context, constraints) {
