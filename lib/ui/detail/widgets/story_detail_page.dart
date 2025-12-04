@@ -5,56 +5,35 @@ import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:palette_generator/palette_generator.dart';
 import 'package:window_size_classes/window_size_classes.dart';
 
-class StoryDetailPage extends ConsumerStatefulWidget {
+class StoryDetailPage extends ConsumerWidget {
   final String id;
 
   const StoryDetailPage({super.key, required this.id});
 
   @override
-  ConsumerState<StoryDetailPage> createState() => _StoryDetailPageState();
-}
-
-class _StoryDetailPageState extends ConsumerState<StoryDetailPage> {
-  ColorScheme? _colorScheme;
-
-  Future<void> _generatePalette(Story story) async {
-    final PaletteGenerator generator = await PaletteGenerator.fromImageProvider(
-      NetworkImage(story.photoUrl),
-      size: const Size(200, 100),
-    );
-
-    if (mounted) {
-      setState(() {
-        if (generator.dominantColor != null) {
-          _colorScheme = ColorScheme.fromSeed(
-            seedColor: generator.dominantColor!.color,
-            brightness: Theme.of(context).brightness,
-          );
-        }
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final storyState = ref.watch(detailScreenContentProvider(widget.id));
-
-    ref.listen(detailScreenContentProvider(widget.id), (previous, next) {
-      if (next.story != null && previous?.story != next.story) {
-        _generatePalette(next.story!);
-      }
-    });
-
+  Widget build(BuildContext context, WidgetRef ref) {
+    final storyState = ref.watch(detailScreenContentProvider(id));
     final theme = Theme.of(context);
-    final colorScheme = _colorScheme ?? theme.colorScheme;
+
+    // Watch the color scheme provider based on the story's photo URL
+    final colorSchemeAsync = storyState.story != null
+        ? ref.watch(storyColorSchemeProvider(storyState.story!.photoUrl))
+        : const AsyncValue<ColorScheme?>.data(null);
+
+    // Get the color scheme, falling back to theme default
+    final colorScheme = colorSchemeAsync.when(
+      data: (scheme) =>
+          scheme?.copyWith(brightness: theme.brightness) ?? theme.colorScheme,
+      loading: () => theme.colorScheme,
+      error: (_, __) => theme.colorScheme,
+    );
 
     return Theme(
       data: theme.copyWith(colorScheme: colorScheme),
       child: Scaffold(
-        backgroundColor: _colorScheme?.surface,
+        backgroundColor: colorScheme.surface,
         appBar: AppBar(
           title: Text(
             context.l10n.storyDetailTitle,

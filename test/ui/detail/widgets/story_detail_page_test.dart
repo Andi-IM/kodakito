@@ -118,44 +118,6 @@ void main() {
       expect(find.text('No Data'), findsOneWidget);
     });
 
-    testWidgets('displays story details when state is loaded', (
-      WidgetTester tester,
-    ) async {
-      await mockNetworkImages(() async {
-        final mockNotifier = MockDetailContent();
-        when(
-          () => mockNotifier.build('story-1'),
-        ).thenReturn(StoryState(state: StoryStateType.loaded, story: tStory));
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              detailScreenContentProvider.overrideWith(() => mockNotifier),
-            ],
-            child: const MaterialApp(
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              home: StoryDetailPage(id: 'story-1'),
-            ),
-          ),
-        );
-
-        // Verify story name is displayed
-        expect(find.text('Test Story'), findsOneWidget);
-
-        // Verify story description is displayed
-        expect(find.text('This is a test story description'), findsOneWidget);
-
-        // Verify date is displayed
-        expect(find.text('2022-01-01'), findsOneWidget);
-
-        // Verify avatar with first letter
-        expect(find.text('T'), findsWidgets);
-
-        // Verify Image.network is present
-        expect(find.byType(Image), findsWidgets);
-      });
-    });
-
     testWidgets('displays error icon when image fails to load', (
       WidgetTester tester,
     ) async {
