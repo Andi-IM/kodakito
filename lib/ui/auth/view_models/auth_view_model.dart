@@ -4,6 +4,7 @@ import 'package:dicoding_story/ui/auth/view_models/auth_state.dart';
 import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:logging/logging.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_view_model.g.dart';
@@ -45,6 +46,8 @@ class Login extends _$Login with LogMixin {
     );
   }
 }
+
+class LoginMock extends _$Login with Mock implements Login {}
 
 @riverpod
 Future<bool> logout(Ref ref) async {
