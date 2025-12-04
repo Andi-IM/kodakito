@@ -52,5 +52,6 @@ Future<void> mainCommon(AppEnvironment environment) async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
+
   runApp(ProviderScope(observers: [Observer()], child: MyApp()));
 }

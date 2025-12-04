@@ -9,6 +9,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:mocktail_image_network/mocktail_image_network.dart';
 
 import 'fake/fake_cache_repository.dart';
+import 'robot/add_story_robot.dart';
 import 'robot/login_robot.dart';
 import 'robot/logout_robot.dart';
 import 'robot/register_robot.dart';
@@ -19,15 +20,15 @@ import 'robot/view_story_robot.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
+  final overrideEnv = appEnvironmentProvider.overrideWithValue(
+    AppEnvironment.development,
+  );
+
   group('end-to-end test with local data', () {
     testWidgets('should load app', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            appEnvironmentProvider.overrideWithValue(
-              AppEnvironment.development,
-            ),
-          ],
+          overrides: [overrideEnv],
           observers: [Observer()],
           child: MyApp(),
         ),
@@ -40,11 +41,7 @@ void main() {
       final loginRobot = LoginRobot(tester);
       await loginRobot.loadUI(
         ProviderScope(
-          overrides: [
-            appEnvironmentProvider.overrideWithValue(
-              AppEnvironment.development,
-            ),
-          ],
+          overrides: [overrideEnv],
           observers: [Observer()],
           child: MyApp(),
         ),
@@ -64,14 +61,10 @@ void main() {
       repo.saveToken(
         cache: Cache(token: 'token', userName: 'username', userId: 'userid'),
       );
+      final overrideCache = cacheRepositoryProvider.overrideWithValue(repo);
       await logoutRobot.loadUI(
         ProviderScope(
-          overrides: [
-            cacheRepositoryProvider.overrideWithValue(repo),
-            appEnvironmentProvider.overrideWithValue(
-              AppEnvironment.development,
-            ),
-          ],
+          overrides: [overrideCache, overrideEnv],
           observers: [Observer()],
           child: MyApp(),
         ),
@@ -88,11 +81,7 @@ void main() {
       final registerRobot = RegisterRobot(tester);
       await registerRobot.loadUI(
         ProviderScope(
-          overrides: [
-            appEnvironmentProvider.overrideWithValue(
-              AppEnvironment.development,
-            ),
-          ],
+          overrides: [overrideEnv],
           observers: [Observer()],
           child: MyApp(),
         ),
@@ -121,14 +110,11 @@ void main() {
             ),
           );
 
+          final overrideCache = cacheRepositoryProvider.overrideWithValue(repo);
+
           await viewStoryRobot.loadUI(
             ProviderScope(
-              overrides: [
-                appEnvironmentProvider.overrideWithValue(
-                  AppEnvironment.development,
-                ),
-                cacheRepositoryProvider.overrideWithValue(repo),
-              ],
+              overrides: [overrideEnv, overrideCache],
               observers: [Observer()],
               child: MyApp(),
             ),
@@ -141,5 +127,31 @@ void main() {
         });
       },
     );
+
+    testWidgets('Add Story - user can add story and verify story is added', (
+      tester,
+    ) async {
+      final addStoryRobot = AddStoryRobot(tester);
+      final repo = FakeCacheRepository();
+      repo.saveToken(
+        cache: Cache(token: 'token', userName: 'username', userId: 'userid'),
+      );
+
+      final overrideCache = cacheRepositoryProvider.overrideWithValue(repo);
+
+      await addStoryRobot.grantPermission();
+
+      await addStoryRobot.loadUI(
+        ProviderScope(
+          overrides: [overrideEnv, overrideCache],
+          observers: [Observer()],
+          child: MyApp(),
+        ),
+      );
+
+      await addStoryRobot.tapAddStoryButton();
+    
+      await addStoryRobot.revokePermission();
+    });
   });
 }
