@@ -98,6 +98,7 @@ class SettingsDialog extends ConsumerWidget {
 
               // Language Option
               _buildOptionItem(
+                key: const Key('language'),
                 icon: Icons.language,
                 title: 'Bahasa',
                 subtitle: 'Indonesia',
@@ -110,6 +111,7 @@ class SettingsDialog extends ConsumerWidget {
 
               // Logout Option
               _buildOptionItem(
+                key: const Key('logout'),
                 icon: Icons.logout,
                 title: 'Keluar',
                 subtitle: 'Logout dari aplikasi',
@@ -140,6 +142,7 @@ class SettingsDialog extends ConsumerWidget {
   }
 
   Widget _buildOptionItem({
+    Key? key,
     required IconData icon,
     required String title,
     required String subtitle,
@@ -158,6 +161,7 @@ class SettingsDialog extends ConsumerWidget {
         ],
       ),
       child: ListTile(
+        key: key,
         leading: Icon(icon, color: Colors.black87),
         title: Text(
           title,

@@ -159,6 +159,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                               fontWeight: FontWeight.bold,
                             ),
                             recognizer: _tapRecognizer,
+                            semanticsIdentifier: 'to_register_button',
+                            semanticsLabel: 'Show Register',
                           ),
                         ],
                       ),

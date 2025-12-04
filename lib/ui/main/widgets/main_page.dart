@@ -131,6 +131,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
                 pinned: false,
                 actions: [
                   IconButtonM3E(
+                    key: const Key('settings'),
                     onPressed: () => showDialog(
                       context: context,
                       builder: (context) {
