@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/services/remote/network_service.dart';
 import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
-import 'package:dicoding_story/domain/models/response.dart' as response;
+import 'package:dicoding_story/domain/models/response.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -70,9 +70,8 @@ void main() {
             queryParameters: any(named: 'queryParameters'),
           ),
         ).thenAnswer(
-          (_) async => Right(
-            response.Response(data: tStoryResponseData, statusCode: 200),
-          ),
+          (_) async =>
+              Response(data: tStoryResponseData, statusCode: 200).toRight,
         );
 
         // Act
@@ -97,9 +96,8 @@ void main() {
             queryParameters: any(named: 'queryParameters'),
           ),
         ).thenAnswer(
-          (_) async => Right(
-            response.Response(data: tStoryResponseData, statusCode: 200),
-          ),
+          (_) async =>
+              Response(data: tStoryResponseData, statusCode: 200).toRight,
         );
 
         // Act
@@ -122,7 +120,7 @@ void main() {
             queryParameters: any(named: 'queryParameters'),
           ),
         ).thenAnswer(
-          (_) async => Right(response.Response(data: null, statusCode: 200)),
+          (_) async => Response(data: null, statusCode: 200).toRight,
         );
 
         // Act
@@ -165,9 +163,8 @@ void main() {
       test('should return Right(Story) when successful', () async {
         // Arrange
         when(() => mockNetworkService.get(any())).thenAnswer(
-          (_) async => Right(
-            response.Response(data: tStoryDetailResponseData, statusCode: 200),
-          ),
+          (_) async =>
+              Response(data: tStoryDetailResponseData, statusCode: 200).toRight,
         );
 
         // Act
@@ -184,7 +181,7 @@ void main() {
       test('should return Left(AppException) when data is null', () async {
         // Arrange
         when(() => mockNetworkService.get(any())).thenAnswer(
-          (_) async => Right(response.Response(data: null, statusCode: 200)),
+          (_) async => Response(data: null, statusCode: 200).toRight,
         );
 
         // Act
@@ -241,12 +238,10 @@ void main() {
         when(
           () => mockNetworkService.post(any(), data: any(named: 'data')),
         ).thenAnswer(
-          (_) async => Right(
-            response.Response(
-              data: {'error': false, 'message': 'success'},
-              statusCode: 201,
-            ),
-          ),
+          (_) async => Response(
+            data: {'error': false, 'message': 'success'},
+            statusCode: 201,
+          ).toRight,
         );
 
         // Act
@@ -269,7 +264,7 @@ void main() {
         when(
           () => mockNetworkService.post(any(), data: any(named: 'data')),
         ).thenAnswer(
-          (_) async => Right(response.Response(data: null, statusCode: 200)),
+          (_) async => Response(data: null, statusCode: 200).toRight,
         );
 
         // Act

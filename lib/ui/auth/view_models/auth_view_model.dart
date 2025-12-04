@@ -1,4 +1,3 @@
-import 'package:dicoding_story/data/data_providers.dart';
 import 'package:dicoding_story/data/services/remote/auth/model/login_response/login_response.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_state.dart';
@@ -10,7 +9,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'auth_view_model.g.dart';
 
 @riverpod
-class LoginNotifier extends _$LoginNotifier with LogMixin {
+class Login extends _$Login with LogMixin {
   @override
   AuthState build() {
     return const AuthState.initial();
@@ -19,7 +18,7 @@ class LoginNotifier extends _$LoginNotifier with LogMixin {
   Future<void> login({required String email, required String password}) async {
     log.info('Attempting login for user: $email');
     final authRepository = ref.read(authRepositoryProvider);
-    final cacheDatasource = ref.read(cacheDatasourceProvider);
+    final cacheRepository = ref.read(cacheRepositoryProvider);
     state = const AuthState.loading();
 
     final response = await authRepository.login(
@@ -32,7 +31,7 @@ class LoginNotifier extends _$LoginNotifier with LogMixin {
       },
       (r) async {
         log.info('Login successful, saving token');
-        final hasToken = await cacheDatasource.saveToken(
+        final hasToken = await cacheRepository.saveToken(
           cache: r.loginResult.toCache(),
         );
         if (hasToken) {
@@ -79,7 +78,7 @@ Future<String?> fetchUserData(Ref ref) async {
 }
 
 @riverpod
-class RegisterNotifier extends _$RegisterNotifier with LogMixin {
+class Register extends _$Register with LogMixin {
   @override
   AuthState build() {
     return const AuthState.initial();

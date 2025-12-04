@@ -10,7 +10,7 @@ class CacheRepositoryImpl implements CacheRepository {
     : _datasource = datasource;
 
   @override
-  Future<void> saveToken({required Cache cache}) =>
+  Future<bool> saveToken({required Cache cache}) =>
       _datasource.saveToken(cache: cache);
 
   @override

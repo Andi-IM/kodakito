@@ -11,7 +11,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    TextTheme textTheme = createTextTheme(context, "Quicksand", "Quicksand");
+    TextTheme textTheme = createTextTheme(context, "Mulish", "Quicksand");
 
     MaterialTheme theme = MaterialTheme(textTheme);
     final themeMode = ref.watch(appThemeProvider);

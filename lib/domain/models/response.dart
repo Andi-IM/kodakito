@@ -7,11 +7,6 @@ class Response {
   final dynamic data;
 
   Response({required this.statusCode, this.message, this.data = const {}});
-
-  @override
-  String toString() {
-    return 'Response(statusCode: $statusCode, message: $message, data: $data)';
-  }
 }
 
 extension ResponseExtension on Response {

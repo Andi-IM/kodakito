@@ -32,7 +32,7 @@ class SharedPrefsService implements StorageService {
   }
 
   @override
-  Future<bool> set(String key, Object data) async {
+  Future<bool> set(String key, data) async {
     prefs = await initCompleter.future;
     return prefs!.setString(key, data.toString());
   }

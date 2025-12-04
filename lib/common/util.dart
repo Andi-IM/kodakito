@@ -13,7 +13,14 @@ TextTheme createTextTheme(
   );
   TextTheme displayTextTheme = GoogleFonts.getTextTheme(
     displayFontString,
-    baseTextTheme,
+    baseTextTheme.copyWith(
+      displayLarge: TextStyle(fontWeight: FontWeight.bold),
+      displayMedium: TextStyle(fontWeight: FontWeight.w600),
+      displaySmall: TextStyle(fontWeight: FontWeight.w600),
+      headlineLarge: TextStyle(fontWeight: FontWeight.w500),
+      headlineMedium: TextStyle(fontWeight: FontWeight.w500),
+      headlineSmall: TextStyle(fontWeight: FontWeight.w500),
+    ),
   );
   TextTheme textTheme = displayTextTheme.copyWith(
     bodyLarge: bodyTextTheme.bodyLarge,
