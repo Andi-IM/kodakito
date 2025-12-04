@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:dicoding_story/data/services/remote/dio_netowork_service.dart';
+import 'package:dicoding_story/data/services/remote/dio_network_service.dart';
 import 'package:dicoding_story/domain/models/response.dart' as response;
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:dio/dio.dart';

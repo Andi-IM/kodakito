@@ -28,7 +28,7 @@ class AddStoryRepositoryLocal extends AddStoryRepository {
           name: 'Andi Irham',
           description: description,
           photoUrl:
-              'https://awsimages.detik.net.id/community/media/visual/2025/11/28/presiden-ke-ri-joko-widodo-di-rumahnya-di-sumber-banjarsari-solo-jumat-28112025-1764314423059_169.jpeg?w=600&q=90',
+              'https://cdn0-production-images-kly.akamaized.net/7u_FXVyv4CdFdIBlp9BLNwkMcD8=/1200x675/smart/filters:quality(75):strip_icc():format(jpeg)/kly-media-production/medias/1152505/original/082492200_1456312684-singkarak.jpg',
           createdAt: DateTime.now(),
           lat: lat,
           lon: lon,

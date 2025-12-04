@@ -1,6 +1,6 @@
 import 'package:dicoding_story/app/app_env.dart';
 import 'package:dicoding_story/data/data_providers.dart';
-import 'package:dicoding_story/data/repositories/add/add_story_repositopry_local.dart';
+import 'package:dicoding_story/data/repositories/add/add_story_repository_local.dart';
 import 'package:dicoding_story/data/repositories/add/add_story_repository_remote.dart';
 import 'package:dicoding_story/data/repositories/auth/auth_repository_dev.dart';
 import 'package:dicoding_story/data/repositories/auth/auth_repository_remote.dart';
