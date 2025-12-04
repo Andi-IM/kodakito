@@ -29,7 +29,9 @@ void main() {
   group('getDetailStory', () {
     test('should return Story when local data service returns data', () async {
       // Arrange
-      when(() => mockLocalDataService.getDetailStory(any())).thenReturn(tStory);
+      when(
+        () => mockLocalDataService.getDetailStory(any()),
+      ).thenAnswer((_) async => tStory);
 
       // Act
       final result = await repository.getDetailStory('story-1');

@@ -11,10 +11,9 @@ class DetailRepositoryLocal implements DetailRepository {
   final LocalDataService _localDataService;
 
   @override
-  Future<Either<AppException, Story>> getDetailStory(String id) {
-    return Future.delayed(
-      const Duration(seconds: 2),
-      () => Right(_localDataService.getDetailStory(id)),
-    );
+  Future<Either<AppException, Story>> getDetailStory(String id) async {
+    await Future.delayed(const Duration(seconds: 2));
+    final story = await _localDataService.getDetailStory(id);
+    return Right(story);
   }
 }

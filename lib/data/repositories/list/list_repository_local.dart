@@ -26,4 +26,9 @@ class ListRepositoryLocal implements ListRepository {
       );
     }
   }
+
+  @override
+  void invalidateCache() {
+    // No-op for local repository as it doesn't cache
+  }
 }

@@ -68,7 +68,7 @@ void main() {
       await service.getListStories();
 
       // Act
-      final result = service.getDetailStory('story-1');
+      final result = await service.getDetailStory('story-1');
 
       // Assert
       expect(result, isA<Story>());
@@ -77,7 +77,7 @@ void main() {
   });
 
   group('addStory', () {
-    test('should add story to the list', () {
+    test('should add story to the list', () async {
       // Arrange
       final tStory = Story(
         id: 'story-2',
@@ -90,10 +90,10 @@ void main() {
       );
 
       // Act
-      service.addStory(tStory);
+      await service.addStory(tStory);
 
       // Assert
-      final result = service.getDetailStory('story-2');
+      final result = await service.getDetailStory('story-2');
       expect(result, tStory);
     });
   });

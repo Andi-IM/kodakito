@@ -25,4 +25,9 @@ class ListRepositoryRemote implements ListRepository {
       return Right(_cachedListStories!);
     }
   }
+
+  @override
+  void invalidateCache() {
+    _cachedListStories = null;
+  }
 }
