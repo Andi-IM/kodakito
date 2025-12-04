@@ -55,9 +55,7 @@ class StoryAuthApi implements AuthDataSource {
       );
       return response.fold((error) => Left(error), (response) {
         final loginResponse = LoginResponse.fromJson(response.data);
-        networkService.updateHeader({
-          'Authorization': 'Bearer ${loginResponse.loginResult.token}',
-        });
+
         return Right(loginResponse);
       });
     } catch (e) {

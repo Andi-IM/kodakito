@@ -11,6 +11,12 @@ abstract class Env {
   @EnviedField(varName: 'STORY_ENV')
   static final String storyEnv = _Env.storyEnv;
 
+  @EnviedField(varName: 'TEST_EMAIL')
+  static final String testEmail = _Env.testEmail;
+
+  @EnviedField(varName: 'TEST_PASSWORD')
+  static final String testPassword = _Env.testPassword;
+
   static AppEnvironment get appEnvironment => AppEnvironment.values.firstWhere(
     (e) => e.name == storyEnv,
     orElse: () => AppEnvironment.development,

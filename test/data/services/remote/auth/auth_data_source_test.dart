@@ -128,40 +128,31 @@ void main() {
     });
 
     group('login', () {
-      test(
-        'should return Right(LoginResponse) and update header when successful',
-        () async {
-          // Arrange
-          when(
-            () => mockNetworkService.post(any(), data: any(named: 'data')),
-          ).thenAnswer(
-            (_) async => Right(
-              response.Response(data: tLoginResponseData, statusCode: 200),
-            ),
-          );
-          when(() => mockNetworkService.updateHeader(any())).thenReturn(null);
+      test('should return Right(LoginResponse) when successful', () async {
+        // Arrange
+        when(
+          () => mockNetworkService.post(any(), data: any(named: 'data')),
+        ).thenAnswer(
+          (_) async => Right(
+            response.Response(data: tLoginResponseData, statusCode: 200),
+          ),
+        );
 
-          // Act
-          final result = await dataSource.login(tLoginRequest);
+        // Act
+        final result = await dataSource.login(tLoginRequest);
 
-          // Assert
-          expect(result, isA<Right<AppException, LoginResponse>>());
-          verify(
-            () => mockNetworkService.post(
-              '/login',
-              data: any(
-                named: 'data',
-                that: equals(loginRequestToJson(tLoginRequest)),
-              ),
+        // Assert
+        expect(result, isA<Right<AppException, LoginResponse>>());
+        verify(
+          () => mockNetworkService.post(
+            '/login',
+            data: any(
+              named: 'data',
+              that: equals(loginRequestToJson(tLoginRequest)),
             ),
-          ).called(1);
-          verify(
-            () => mockNetworkService.updateHeader(
-              any(that: equals({'Authorization': 'Bearer token'})),
-            ),
-          ).called(1);
-        },
-      );
+          ),
+        ).called(1);
+      });
 
       test('should return Left(AppException) when failed', () async {
         // Arrange

@@ -6,15 +6,21 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:dicoding_story/data/services/remote/auth/auth_interceptor.dart';
+
 class MockDio extends Mock implements Dio {}
+
+class MockAuthInterceptor extends Mock implements AuthInterceptor {}
 
 void main() {
   late DioNetworkService dioNetworkService;
   late MockDio mockDio;
+  late MockAuthInterceptor mockAuthInterceptor;
 
   setUp(() {
     mockDio = MockDio();
-    dioNetworkService = DioNetworkService(mockDio);
+    mockAuthInterceptor = MockAuthInterceptor();
+    dioNetworkService = DioNetworkService(mockDio, mockAuthInterceptor);
   });
 
   group('DioNetworkService', () {

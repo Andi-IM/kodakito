@@ -8,12 +8,16 @@ import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import 'package:dicoding_story/data/services/remote/auth/auth_interceptor.dart';
+
 class DioNetworkService extends NetworkService with ExceptionHandlerMixin {
   final Dio dio;
+  final AuthInterceptor authInterceptor;
 
-  DioNetworkService(this.dio) {
+  DioNetworkService(this.dio, this.authInterceptor) {
     if (!kTestMode) {
       dio.options = dioBaseOptions;
+      dio.interceptors.add(authInterceptor);
       if (kDebugMode) {
         dio.interceptors.add(
           LogInterceptor(requestBody: true, responseBody: true),
