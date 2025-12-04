@@ -17,8 +17,12 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'domain_providers.g.dart';
 
 @riverpod
+AppEnvironment appEnvironment(Ref ref) => Env.appEnvironment;
+
+@riverpod
 AuthRepository authRepository(Ref ref) {
-  if (Env.appEnvironment == AppEnvironment.production) {
+  final env = ref.watch(appEnvironmentProvider);
+  if (env == AppEnvironment.production) {
     return AuthRepositoryRemote(
       authDataSource: ref.read(authDataSourceProvider),
     );
@@ -33,7 +37,8 @@ CacheRepository cacheRepository(Ref ref) =>
 
 @riverpod
 ListRepository listRepository(Ref ref) {
-  if (Env.appEnvironment == AppEnvironment.production) {
+  final env = ref.watch(appEnvironmentProvider);
+  if (env == AppEnvironment.production) {
     return ListRepositoryRemote(
       storyDataSource: ref.read(storyDataSourceProvider),
     );
@@ -46,7 +51,8 @@ ListRepository listRepository(Ref ref) {
 
 @riverpod
 DetailRepository detailRepository(Ref ref) {
-  if (Env.appEnvironment == AppEnvironment.production) {
+  final env = ref.watch(appEnvironmentProvider);
+  if (env == AppEnvironment.production) {
     return DetailRepositoryRemote(
       storyDataSource: ref.read(storyDataSourceProvider),
     );
