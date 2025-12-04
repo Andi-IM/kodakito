@@ -284,11 +284,11 @@ abstract class AppLocalizations {
   /// **'Pilih Bahasa'**
   String get settingsBtnLanguagePrompt;
 
-  /// No description provided for @settingsBtnLanguageDefault.
+  /// No description provided for @settingsBtnDefault.
   ///
   /// In id, this message translates to:
   /// **'System'**
-  String get settingsBtnLanguageDefault;
+  String get settingsBtnDefault;
 
   /// No description provided for @settingsBtnLanguageID.
   ///
@@ -331,6 +331,12 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Tema Gelap'**
   String get settingsBtnThemeDark;
+
+  /// Version text in settings dialog
+  ///
+  /// In id, this message translates to:
+  /// **'versi {version}'**
+  String settingsTextVersion(String version);
 }
 
 class _AppLocalizationsDelegate

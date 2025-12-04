@@ -102,7 +102,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get settingsBtnLanguagePrompt => 'Pilih Bahasa';
 
   @override
-  String get settingsBtnLanguageDefault => 'System';
+  String get settingsBtnDefault => 'System';
 
   @override
   String get settingsBtnLanguageID => 'Bahasa Indonesia';
@@ -124,4 +124,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get settingsBtnThemeDark => 'Tema Gelap';
+
+  @override
+  String settingsTextVersion(String version) {
+    return 'versi $version';
+  }
 }

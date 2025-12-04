@@ -38,12 +38,21 @@
     "settingsBtnLogoutPrompt": "Logout dari aplikasi",
     "settingsBtnLanguage": "Bahasa",
     "settingsBtnLanguagePrompt": "Pilih Bahasa",
-    "settingsBtnLanguageDefault": "System",
+    "settingsBtnDefault": "System",
     "settingsBtnLanguageID": "Bahasa Indonesia",
     "settingsBtnLanguageEN": "Bahasa Inggris",
     "settingsBtnCancel": "Batal",
     "settingsBtnTheme": "Tema",
     "settingsBtnThemePrompt": "Pilih tema aplikasi",
     "settingsBtnThemeLight": "Tema Terang",
-    "settingsBtnThemeDark": "Tema Gelap"
+    "settingsBtnThemeDark": "Tema Gelap",
+    "settingsTextVersion": "versi {version}",
+    "@settingsTextVersion": {
+      "description": "Version text in settings dialog",
+      "placeholders": {
+        "version": {
+          "type": "String"
+        }
+      }
+    }
 }

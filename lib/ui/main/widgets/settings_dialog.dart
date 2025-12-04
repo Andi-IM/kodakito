@@ -127,7 +127,7 @@ class SettingsDialog extends ConsumerWidget {
 
               // Version
               Text(
-                'versi ${versionAsync.value}',
+                context.l10n.settingsTextVersion('${versionAsync.value}'),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -146,11 +146,11 @@ class SettingsDialog extends ConsumerWidget {
     String getThemeLabel(ThemeMode mode) {
       switch (mode) {
         case ThemeMode.light:
-          return 'Terang';
+          return context.l10n.settingsBtnThemeLight;
         case ThemeMode.dark:
-          return 'Gelap';
+          return context.l10n.settingsBtnThemeDark;
         case ThemeMode.system:
-          return 'Sistem';
+          return context.l10n.settingsBtnDefault;
       }
     }
 
@@ -170,19 +170,23 @@ class SettingsDialog extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Row(
           children: [
-            Icon(Icons.brightness_6, color: theme.colorScheme.onSurface),
+            Icon(Icons.brightness_6, color: theme.colorScheme.onSurfaceVariant),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Tema',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  Text(
+                    context.l10n.settingsBtnTheme,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                    ),
                   ),
                   Text(
-                    'Pilih tema aplikasi',
-                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    context.l10n.settingsBtnThemePrompt,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -254,7 +258,7 @@ class SettingsDialog extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 RadioListTile<Locale?>(
-                  title: Text(context.l10n.settingsBtnLanguageDefault),
+                  title: Text(context.l10n.settingsBtnDefault),
                   value: null,
                 ),
                 RadioListTile<Locale?>(

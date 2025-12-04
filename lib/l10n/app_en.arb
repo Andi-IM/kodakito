@@ -37,12 +37,21 @@
     "settingsBtnLogoutPrompt": "Logout from app",
     "settingsBtnLanguage": "Language",
     "settingsBtnLanguagePrompt": "Select Language",
-    "settingsBtnLanguageDefault": "System",
+    "settingsBtnDefault": "System",
     "settingsBtnLanguageID": "Indonesian",
     "settingsBtnLanguageEN": "English",
     "settingsBtnCancel": "Cancel",
     "settingsBtnTheme": "Theme",
     "settingsBtnThemePrompt": "Choose app theme",
-    "settingsBtnThemeLight": "Dark",
-    "settingsBtnThemeDark": "Light"
+    "settingsBtnThemeLight": "Light",
+    "settingsBtnThemeDark": "Dark",
+    "settingsTextVersion": "version {version}",
+    "@settingsTextVersion": {
+      "description": "Version text in settings dialog",
+      "placeholders": {
+        "version": {
+          "type": "String"
+        }
+      }
+    }
 }
