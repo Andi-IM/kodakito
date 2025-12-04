@@ -16,7 +16,6 @@ class RegisterPage extends ConsumerStatefulWidget {
 }
 
 class _RegisterPageState extends ConsumerState<RegisterPage> {
-  bool _obscurePassword = true;
   late TapGestureRecognizer _tapRecognizer;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -43,6 +42,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(registerProvider);
+    final obscurePassword = ref.watch(obscurePasswordProvider);
     ref.listen(registerProvider.select((value) => value), ((previous, next) {
       if (next is Failure) {
         ScaffoldMessenger.of(
@@ -122,21 +122,21 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           const SizedBox(height: 8),
                           TextFormField(
                             controller: _passwordController,
-                            obscureText: _obscurePassword,
+                            obscureText: obscurePassword,
                             enabled: !isLoading,
                             decoration: InputDecoration(
                               hintText: context.l10n.authFieldPasswordHint,
                               prefixIcon: const Icon(Icons.lock_outline),
                               suffixIcon: IconButton(
                                 icon: Icon(
-                                  _obscurePassword
+                                  obscurePassword
                                       ? Icons.visibility_outlined
                                       : Icons.visibility_off_outlined,
                                 ),
                                 onPressed: () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
+                                  ref
+                                      .read(obscurePasswordProvider.notifier)
+                                      .toggle();
                                 },
                               ),
                               border: const OutlineInputBorder(

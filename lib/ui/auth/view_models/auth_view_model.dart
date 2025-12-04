@@ -113,3 +113,19 @@ class Register extends _$Register with LogMixin {
     );
   }
 }
+
+class RegisterMock extends _$Register with Mock implements Register {}
+
+@riverpod
+class ObscurePassword extends _$ObscurePassword {
+  @override
+  bool build() => true;
+
+  void toggle() {
+    state = !state;
+  }
+}
+
+class ObscurePasswordMock extends _$ObscurePassword
+    with Mock
+    implements ObscurePassword {}
