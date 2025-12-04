@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story.dart';
 import 'package:dicoding_story/ui/main/widgets/main_page.dart';
-import 'package:dicoding_story/ui/detail/widgets/story_detail.dart';
+import 'package:dicoding_story/ui/detail/widgets/story_detail_page.dart';
 import 'package:dicoding_story/ui/auth/widgets/login_page.dart';
 import 'package:dicoding_story/ui/auth/widgets/register_page.dart';
 import 'package:flutter/foundation.dart';

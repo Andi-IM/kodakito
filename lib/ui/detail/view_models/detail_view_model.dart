@@ -2,6 +2,7 @@ import 'package:dicoding_story/domain/repository/detail_repository.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
 import 'package:dicoding_story/utils/logger_mixin.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'detail_view_model.g.dart';
@@ -39,3 +40,5 @@ class DetailScreenContent extends _$DetailScreenContent with LogMixin {
     state = const StoryState.initial();
   }
 }
+
+class MockDetailContent extends _$DetailScreenContent with Mock implements DetailScreenContent {}
