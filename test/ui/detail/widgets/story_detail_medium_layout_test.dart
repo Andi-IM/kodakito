@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/detail/widgets/story_detail_medium_layout.dart';
 import 'package:flutter/material.dart';
@@ -45,5 +46,10 @@ void main() {
     expect(find.byType(Hero), findsOneWidget);
     final hero = tester.widget<Hero>(find.byType(Hero));
     expect(hero.tag, 'id-test1');
+
+    final cachedImage = tester.widget<CachedNetworkImage>(
+      find.byType(CachedNetworkImage),
+    );
+    expect(cachedImage.cacheKey, 'storyDetailKey_id-test1');
   });
 }

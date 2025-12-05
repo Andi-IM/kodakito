@@ -1,19 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+
 import 'package:google_fonts/google_fonts.dart' hide Config;
 
 class StoryDetailCompactLayout extends StatelessWidget {
   final ColorScheme colorScheme;
   final Story story;
-  final BaseCacheManager? cacheManager;
-
   const StoryDetailCompactLayout({
     super.key,
     required this.colorScheme,
     required this.story,
-    this.cacheManager,
   });
 
   @override
@@ -42,27 +39,7 @@ class StoryDetailCompactLayout extends StatelessWidget {
                     imageUrl: story.photoUrl,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    cacheManager:
-                        cacheManager ??
-                        CacheManager(
-                          Config(
-                            'storyDetailKey',
-                            stalePeriod: const Duration(minutes: 60),
-                          ),
-                        ),
-                    errorWidget: (context, url, error) {
-                      return Container(
-                        height: 200,
-                        color: colorScheme.surfaceContainerHighest,
-                        child: Center(
-                          child: Icon(
-                            Icons.broken_image,
-                            size: 50,
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      );
-                    },
+                    cacheKey: 'storyDetailKey_${story.id}',
                     progressIndicatorBuilder: (context, url, downloadProgress) {
                       return SizedBox(
                         height: 200,

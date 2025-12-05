@@ -30,7 +30,7 @@ class StoryCard extends StatelessWidget {
                   fit: BoxFit.cover,
                   cacheManager: CacheManager(
                     Config(
-                      'storyCardKey',
+                      'storyCardKey_${story.id}',
                       stalePeriod: const Duration(minutes: 60),
                     ),
                   ),
