@@ -150,7 +150,7 @@ void main() {
       );
 
       await addStoryRobot.tapAddStoryButton();
-    
+
       await addStoryRobot.revokePermission();
     });
   });

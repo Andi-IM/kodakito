@@ -22,7 +22,9 @@ part 'domain_providers.g.dart';
 @riverpod
 AppEnvironment appEnvironment(Ref ref) {
   final env = dotenv.get("APP_ENV", fallback: "development");
-  return (env == "production") ? AppEnvironment.production : AppEnvironment.development;
+  return (env == "production")
+      ? AppEnvironment.production
+      : AppEnvironment.development;
 }
 
 @riverpod
