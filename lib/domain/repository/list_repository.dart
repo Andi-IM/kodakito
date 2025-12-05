@@ -8,9 +8,6 @@ abstract class ListRepository {
   Future<Either<AppException, List<Story>>> getListStories();
 }
 
-abstract class ListRepositoryRemote extends ListRepository {
-  @override
-  Future<Either<AppException, List<Story>>> getListStories();
-
+abstract class CacheInterface {
   void invalidateCache();
 }

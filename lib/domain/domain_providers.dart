@@ -47,7 +47,7 @@ CacheRepository cacheRepository(Ref ref) =>
 ListRepository listRepository(Ref ref) {
   final env = ref.watch(appEnvironmentProvider);
   if (env == AppEnvironment.production) {
-    return ListRepositoryRemoteImpl(
+    return ListRepositoryRemote(
       storyDataSource: ref.read(storyDataSourceProvider),
     );
   } else {
@@ -73,10 +73,12 @@ DetailRepository detailRepository(Ref ref) {
 
 @riverpod
 AddStoryRepository addStoryRepository(Ref ref) {
+  final remoteListRepository = ref.read(listRepositoryProvider);
   final env = ref.watch(appEnvironmentProvider);
   if (env == AppEnvironment.production) {
     return AddStoryRepositoryRemote(
       storyDataSource: ref.read(storyDataSourceProvider),
+      cacheInterface: remoteListRepository as ListRepositoryRemote,
     );
   } else {
     return AddStoryRepositoryLocal(

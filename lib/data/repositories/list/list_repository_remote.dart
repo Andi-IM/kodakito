@@ -5,10 +5,10 @@ import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 
 /// Remote data source for [Story].
-class ListRepositoryRemoteImpl implements ListRepositoryRemote {
+class ListRepositoryRemote implements ListRepository, CacheInterface {
   final StoryDataSource _storyDataSource;
 
-  ListRepositoryRemoteImpl({required StoryDataSource storyDataSource})
+  ListRepositoryRemote({required StoryDataSource storyDataSource})
     : _storyDataSource = storyDataSource;
 
   List<Story>? _cachedListStories;

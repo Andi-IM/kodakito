@@ -27,11 +27,11 @@ class LocalDataService {
     }
 
     // Start loading and cache the future
-    _loadingFuture = _loadStories();
+    _loadingFuture = loadStories();
     return _loadingFuture;
   }
 
-  Future<void> _loadStories() async {
+  Future<void> loadStories() async {
     try {
       final localPath = await _localFilePath;
       final localFile = File(localPath);

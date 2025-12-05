@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:dicoding_story/common/localizations.dart';
-import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:flutter/material.dart';
@@ -50,8 +49,6 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.l10n.addStorySuccessMessage)),
           );
-          // Invalidate cache and refresh stories list
-          ref.read(listRepositoryProvider).invalidateCache();
           ref.read(storiesProvider.notifier).fetchStories();
         },
         failure: (failure) {

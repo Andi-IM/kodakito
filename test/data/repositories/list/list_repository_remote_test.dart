@@ -21,7 +21,7 @@ void main() {
 
   setUp(() {
     mockStoryDataSource = MockStoryDataSource();
-    repository = ListRepositoryRemoteImpl(storyDataSource: mockStoryDataSource);
+    repository = ListRepositoryRemote(storyDataSource: mockStoryDataSource);
   });
 
   group('ListRepositoryRemote', () {
@@ -36,6 +36,10 @@ void main() {
         lon: null,
       ),
     ];
+
+    test('should implement CacheInterface', () {
+      expect(repository, isA<CacheInterface>());
+    });
 
     test(
       'should return Right(List<Story>) when getListStories is successful',
