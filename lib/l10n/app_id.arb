@@ -56,6 +56,17 @@
         "version": {
           "type": "String"
         }
-      }
+    }
+    },
+    "validatorRequired": "Tidak boleh kosong",
+    "validatorEmailInvalid": "Masukkan alamat email yang valid",
+    "validatorMinLength": "Password harus terdiri dari minimal {length} karakter",
+    "@validatorMinLength": {
+        "description": "Validation message for minimum length",
+        "placeholders": {
+            "length": {
+                "type": "int"
+            }
+        }
     }
 }

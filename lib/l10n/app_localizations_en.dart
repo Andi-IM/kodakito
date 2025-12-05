@@ -138,4 +138,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String settingsTextVersion(String version) {
     return 'version $version';
   }
+
+  @override
+  String get validatorRequired => 'This field cannot be empty';
+
+  @override
+  String get validatorEmailInvalid => 'Please enter a valid email address';
+
+  @override
+  String validatorMinLength(int length) {
+    return 'Password must be at least $length characters long';
+  }
 }

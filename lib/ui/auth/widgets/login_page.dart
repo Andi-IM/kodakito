@@ -4,6 +4,7 @@ import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart'
     show LogoWidget;
 import 'package:dicoding_story/ui/auth/widgets/auth_button.dart';
+import 'package:dicoding_story/ui/auth/widgets/auth_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +21,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   late TapGestureRecognizer _tapRecognizer;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -37,7 +39,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(loginProvider);
-    final obscurePassword = ref.watch(obscurePasswordProvider);
     ref.listen(loginProvider.select((value) => value), ((previous, next) {
       // show snackbar on error
       if (next is Failure) {
@@ -74,75 +75,43 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   LayoutBuilder(
                     builder: (context, constraints) {
                       final isLoading = state is Loading;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Email Input
-                          Text(context.l10n.authFieldEmailLabel),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            key: const ValueKey('emailField'),
-                            controller: _emailController,
-                            enabled: !isLoading,
-                            decoration: InputDecoration(
-                              hintText: context.l10n.authFieldEmailHint,
-                              prefixIcon: const Icon(Icons.person_outline),
-                              border: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(8),
-                                ),
-                              ),
+                      return Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Email Input
+                            EmailWidget(
+                              controller: _emailController,
+                              isLoading: isLoading,
                             ),
-                          ),
-                          const SizedBox(height: 16),
+                            const SizedBox(height: 16),
 
-                          // Password Input
-                          Text(context.l10n.authFieldPasswordLabel),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            key: const ValueKey('passwordField'),
-                            controller: _passwordController,
-                            obscureText: obscurePassword,
-                            enabled: !isLoading,
-                            decoration: InputDecoration(
-                              hintText: context.l10n.authFieldPasswordHint,
-                              prefixIcon: const Icon(Icons.lock_outline),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  obscurePassword
-                                      ? Icons.visibility_outlined
-                                      : Icons.visibility_off_outlined,
-                                ),
-                                onPressed: () {
+                            // Password Input
+                            PasswordWidget(
+                              controller: _passwordController,
+                              isLoading: isLoading,
+                            ),
+                            const SizedBox(height: 32),
+
+                            // Login Button
+                            AuthButton(
+                              key: const ValueKey('loginButton'),
+                              label: context.l10n.authBtnLogin,
+                              isLoading: isLoading,
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
                                   ref
-                                      .read(obscurePasswordProvider.notifier)
-                                      .toggle();
-                                },
-                              ),
-                              border: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(8),
-                                ),
-                              ),
+                                      .read(loginProvider.notifier)
+                                      .login(
+                                        email: _emailController.text,
+                                        password: _passwordController.text,
+                                      );
+                                }
+                              },
                             ),
-                          ),
-                          const SizedBox(height: 32),
-
-                          // Login Button
-                          AuthButton(
-                            key: const ValueKey('loginButton'),
-                            label: context.l10n.authBtnLogin,
-                            isLoading: isLoading,
-                            onPressed: () {
-                              ref
-                                  .read(loginProvider.notifier)
-                                  .login(
-                                    email: _emailController.text,
-                                    password: _passwordController.text,
-                                  );
-                            },
-                          ),
-                        ],
+                          ],
+                        ),
                       );
                     },
                   ),

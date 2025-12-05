@@ -138,4 +138,15 @@ class AppLocalizationsId extends AppLocalizations {
   String settingsTextVersion(String version) {
     return 'versi $version';
   }
+
+  @override
+  String get validatorRequired => 'Tidak boleh kosong';
+
+  @override
+  String get validatorEmailInvalid => 'Masukkan alamat email yang valid';
+
+  @override
+  String validatorMinLength(int length) {
+    return 'Password harus terdiri dari minimal $length karakter';
+  }
 }

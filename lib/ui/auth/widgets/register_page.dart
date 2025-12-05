@@ -2,6 +2,7 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_state.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/auth_button.dart';
+import 'package:dicoding_story/ui/auth/widgets/auth_fields.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
@@ -20,6 +21,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -42,7 +44,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(registerProvider);
-    final obscurePassword = ref.watch(obscurePasswordProvider);
     ref.listen(registerProvider.select((value) => value), ((previous, next) {
       if (next is Failure) {
         ScaffoldMessenger.of(
@@ -78,95 +79,51 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   LayoutBuilder(
                     builder: (context, constraints) {
                       final isLoading = state is Loading;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Name Input
-                          Text(context.l10n.authFieldFullNameLabel),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            key: const ValueKey('nameField'),
-                            controller: _nameController,
-                            enabled: !isLoading,
-                            decoration: InputDecoration(
-                              hintText: context.l10n.authFieldFullNameHint,
-                              prefixIcon: Icon(Icons.person_outline),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(8),
-                                ),
-                              ),
+                      return Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Name Input
+                            NameWidget(
+                              controller: _nameController,
+                              isLoading: isLoading,
                             ),
-                          ),
-                          const SizedBox(height: 16),
+                            const SizedBox(height: 16),
 
-                          // Email Input
-                          Text(context.l10n.authFieldEmailLabel),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            key: const ValueKey('emailField'),
-                            controller: _emailController,
-                            enabled: !isLoading,
-                            decoration: InputDecoration(
-                              hintText: context.l10n.authFieldEmailHint,
-                              prefixIcon: Icon(Icons.email_outlined),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(8),
-                                ),
-                              ),
+                            // Email Input
+                            EmailWidget(
+                              controller: _emailController,
+                              isLoading: isLoading,
                             ),
-                          ),
-                          const SizedBox(height: 16),
+                            const SizedBox(height: 16),
 
-                          // Password Input
-                          Text(context.l10n.authFieldPasswordLabel),
-                          const SizedBox(height: 8),
-                          TextFormField(
-                            key: const ValueKey('passwordField'),
-                            controller: _passwordController,
-                            obscureText: obscurePassword,
-                            enabled: !isLoading,
-                            decoration: InputDecoration(
-                              hintText: context.l10n.authFieldPasswordHint,
-                              prefixIcon: const Icon(Icons.lock_outline),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  obscurePassword
-                                      ? Icons.visibility_outlined
-                                      : Icons.visibility_off_outlined,
-                                ),
-                                onPressed: () {
+                            // Password Input
+                            PasswordWidget(
+                              controller: _passwordController,
+                              isLoading: isLoading,
+                            ),
+                            const SizedBox(height: 32),
+
+                            // Register Button
+                            AuthButton(
+                              key: const ValueKey('registerButton'),
+                              label: context.l10n.authBtnRegister,
+                              isLoading: isLoading,
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
                                   ref
-                                      .read(obscurePasswordProvider.notifier)
-                                      .toggle();
-                                },
-                              ),
-                              border: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(8),
-                                ),
-                              ),
+                                      .read(registerProvider.notifier)
+                                      .register(
+                                        name: _nameController.text,
+                                        email: _emailController.text,
+                                        password: _passwordController.text,
+                                      );
+                                }
+                              },
                             ),
-                          ),
-                          const SizedBox(height: 32),
-
-                          // Register Button
-                          AuthButton(
-                            key: const ValueKey('registerButton'),
-                            label: context.l10n.authBtnRegister,
-                            isLoading: isLoading,
-                            onPressed: () {
-                              ref
-                                  .read(registerProvider.notifier)
-                                  .register(
-                                    name: _nameController.text,
-                                    email: _emailController.text,
-                                    password: _passwordController.text,
-                                  );
-                            },
-                          ),
-                        ],
+                          ],
+                        ),
                       );
                     },
                   ),

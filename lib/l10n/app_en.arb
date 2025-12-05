@@ -56,5 +56,16 @@
           "type": "String"
         }
       }
+    },
+    "validatorRequired": "This field cannot be empty",
+    "validatorEmailInvalid": "Please enter a valid email address",
+    "validatorMinLength": "Password must be at least {length} characters long",
+    "@validatorMinLength": {
+        "description": "Validation message for minimum length",
+        "placeholders": {
+            "length": {
+                "type": "int"
+            }
+        }
     }
 }

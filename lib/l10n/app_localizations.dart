@@ -355,6 +355,24 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'versi {version}'**
   String settingsTextVersion(String version);
+
+  /// No description provided for @validatorRequired.
+  ///
+  /// In id, this message translates to:
+  /// **'Tidak boleh kosong'**
+  String get validatorRequired;
+
+  /// No description provided for @validatorEmailInvalid.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan alamat email yang valid'**
+  String get validatorEmailInvalid;
+
+  /// Validation message for minimum length
+  ///
+  /// In id, this message translates to:
+  /// **'Password harus terdiri dari minimal {length} karakter'**
+  String validatorMinLength(int length);
 }
 
 class _AppLocalizationsDelegate
