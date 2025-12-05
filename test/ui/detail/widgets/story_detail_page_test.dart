@@ -149,4 +149,41 @@ void main() {
     );
     expect(find.byType(AnimatedSwitcher), findsOneWidget);
   });
+  testWidgets('StoryDetailPage displays medium layout on wide screen', (
+    tester,
+  ) async {
+    final customColorScheme = ColorScheme.fromSeed(seedColor: Colors.red);
+
+    // Force wide layout
+    tester.view.physicalSize = const Size(1200, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await mockNetworkImages(() async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            detailScreenContentProvider('story-1').overrideWith(
+              () => FakeDetailScreenContent(
+                Loaded(story: mockStory, imageBytes: null),
+              ),
+            ),
+            storyColorSchemeProvider(
+              null,
+            ).overrideWith((ref) => Future.value(customColorScheme)),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: StoryDetailPage(id: 'story-1'),
+          ),
+        ),
+      );
+
+      await tester.pump(const Duration(seconds: 2));
+    });
+
+    expect(find.byKey(const ValueKey("MediumLayout")), findsOneWidget);
+    expect(find.byKey(const ValueKey("CompactLayout")), findsNothing);
+  });
 }

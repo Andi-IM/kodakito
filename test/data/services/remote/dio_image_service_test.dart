@@ -12,6 +12,7 @@ void main() {
   late MockDio mockDio;
 
   setUp(() {
+    registerFallbackValue(Options());
     mockDio = MockDio();
     dioImageService = DioImageService(mockDio);
   });
@@ -22,7 +23,9 @@ void main() {
 
     test('get should return Uint8List when the call is successful', () async {
       // Arrange
-      when(() => mockDio.get(tUrl)).thenAnswer(
+      when(
+        () => mockDio.get<Uint8List>(tUrl, options: any(named: 'options')),
+      ).thenAnswer(
         (_) async => Response(
           requestOptions: RequestOptions(path: tUrl),
           data: tBytes,
@@ -35,7 +38,9 @@ void main() {
 
       // Assert
       expect(result, tBytes);
-      verify(() => mockDio.get(tUrl)).called(1);
+      verify(
+        () => mockDio.get<Uint8List>(tUrl, options: any(named: 'options')),
+      ).called(1);
     });
 
     test('get should throw exception when the call fails', () async {
@@ -44,11 +49,15 @@ void main() {
         requestOptions: RequestOptions(path: tUrl),
         error: 'Error',
       );
-      when(() => mockDio.get(tUrl)).thenThrow(tException);
+      when(
+        () => mockDio.get<Uint8List>(tUrl, options: any(named: 'options')),
+      ).thenThrow(tException);
 
       // Act & Assert
       expect(() => dioImageService.get(tUrl), throwsA(equals(tException)));
-      verify(() => mockDio.get(tUrl)).called(1);
+      verify(
+        () => mockDio.get<Uint8List>(tUrl, options: any(named: 'options')),
+      ).called(1);
     });
   });
 }
