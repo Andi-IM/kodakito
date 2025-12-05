@@ -15,7 +15,6 @@ jobs:
       - uses: subosito/flutter-action@v2
         with: 
           channel: 'stable'
-          flutter-version-file: pubspec.yaml
           cache: true
           cache-key: "flutter-:os:-:channel:-:version:-:arach:-:hash:"
           cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:arch:"
