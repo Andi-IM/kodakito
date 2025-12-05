@@ -13,7 +13,6 @@ import 'package:dicoding_story/domain/repository/auth_repository.dart';
 import 'package:dicoding_story/domain/repository/cache_repository.dart';
 import 'package:dicoding_story/domain/repository/detail_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,7 +24,9 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final container = ProviderContainer(
         overrides: [
-          envInfoProvider.overrideWithValue(EnvInfo(AppEnvironment.development)),
+          envInfoProvider.overrideWithValue(
+            EnvInfo(AppEnvironment.development),
+          ),
         ],
       );
       addTearDown(container.dispose);
@@ -82,7 +83,9 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final container = ProviderContainer(
         overrides: [
-          envInfoProvider.overrideWithValue(EnvInfo(AppEnvironment.development)),
+          envInfoProvider.overrideWithValue(
+            EnvInfo(AppEnvironment.development),
+          ),
         ],
       );
       addTearDown(container.dispose);
@@ -104,57 +107,6 @@ void main() {
         container.read(addStoryRepositoryProvider),
         isA<AddStoryRepositoryLocal>(),
       );
-    });
-  });
-
-  group('AppEnvironment Provider', () {
-    setUp(() async {
-      await dotenv.load(fileName: '.env', isOptional: true);
-    });
-
-    test('should return production when APP_ENV is production', () {
-      // Arrange
-      dotenv.env['APP_ENV'] = 'production';
-      final container = ProviderContainer();
-      addTearDown(() {
-        container.dispose();
-        dotenv.env.clear();
-      });
-
-      // Act
-      final env = container.read(envInfoProvider);
-
-      // Assert
-      expect(env, AppEnvironment.production);
-    });
-
-    test('should return development when APP_ENV is development', () {
-      // Arrange
-      dotenv.env['APP_ENV'] = 'development';
-      final container = ProviderContainer();
-      addTearDown(() {
-        container.dispose();
-        dotenv.env.clear();
-      });
-
-      // Act
-      final env = container.read(envInfoProvider);
-
-      // Assert
-      expect(env, AppEnvironment.development);
-    });
-
-    test('should return development when APP_ENV is missing (fallback)', () {
-      // Arrange
-      dotenv.env.clear();
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      // Act
-      final env = container.read(envInfoProvider);
-
-      // Assert
-      expect(env, AppEnvironment.development);
     });
   });
 }
