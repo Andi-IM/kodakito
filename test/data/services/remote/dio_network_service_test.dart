@@ -60,6 +60,7 @@ void main() {
             requestOptions: RequestOptions(path: tEndpoint),
             statusCode: 400,
             statusMessage: 'Bad Request',
+            data: {'message': 'Bad Request'},
           ),
           type: DioExceptionType.badResponse,
         );
@@ -109,6 +110,7 @@ void main() {
             requestOptions: RequestOptions(path: tEndpoint),
             statusCode: 500,
             statusMessage: 'Internal Server Error',
+            data: {'message': 'Internal Server Error'},
           ),
           type: DioExceptionType.badResponse,
         );
