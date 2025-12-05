@@ -25,7 +25,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final container = ProviderContainer(
         overrides: [
-          appEnvironmentProvider.overrideWithValue(AppEnvironment.development),
+          envInfoProvider.overrideWithValue(EnvInfo(AppEnvironment.development)),
         ],
       );
       addTearDown(container.dispose);
@@ -50,7 +50,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final container = ProviderContainer(
         overrides: [
-          appEnvironmentProvider.overrideWithValue(AppEnvironment.production),
+          envInfoProvider.overrideWithValue(EnvInfo(AppEnvironment.production)),
         ],
       );
       addTearDown(container.dispose);
@@ -82,7 +82,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final container = ProviderContainer(
         overrides: [
-          appEnvironmentProvider.overrideWithValue(AppEnvironment.development),
+          envInfoProvider.overrideWithValue(EnvInfo(AppEnvironment.development)),
         ],
       );
       addTearDown(container.dispose);
@@ -122,7 +122,7 @@ void main() {
       });
 
       // Act
-      final env = container.read(appEnvironmentProvider);
+      final env = container.read(envInfoProvider);
 
       // Assert
       expect(env, AppEnvironment.production);
@@ -138,7 +138,7 @@ void main() {
       });
 
       // Act
-      final env = container.read(appEnvironmentProvider);
+      final env = container.read(envInfoProvider);
 
       // Assert
       expect(env, AppEnvironment.development);
@@ -151,7 +151,7 @@ void main() {
       addTearDown(container.dispose);
 
       // Act
-      final env = container.read(appEnvironmentProvider);
+      final env = container.read(envInfoProvider);
 
       // Assert
       expect(env, AppEnvironment.development);

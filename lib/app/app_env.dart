@@ -1,16 +1,28 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'app_env.g.dart';
+
+@riverpod
+EnvInfo envInfo(Ref ref) {
+  final env = dotenv.get("APP_ENV", fallback: "development");
+  final appEnvironment = switch (env) {
+    "production" => AppEnvironment.production,
+    _ => AppEnvironment.development,
+  };
+  return EnvInfo(appEnvironment);
+}
+
 enum AppEnvironment { development, production }
 
-abstract class EnvInfo {
-  static AppEnvironment _environment = AppEnvironment.development;
+class EnvInfo {
+  final AppEnvironment environment;
 
-  static void initialize(AppEnvironment env) {
-    EnvInfo._environment = env;
-  }
+  const EnvInfo(this.environment);
 
-  static String get appName => _environment._appTitle;
-  static String get env => _environment._env;
-  static AppEnvironment get environment => _environment;
-  static bool get isProduction => _environment == AppEnvironment.production;
+  String get appName => environment._appTitle;
+  String get env => environment._env;
+  bool get isProduction => environment == AppEnvironment.production;
 }
 
 extension _EnvProperties on AppEnvironment {

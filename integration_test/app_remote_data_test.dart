@@ -4,7 +4,6 @@ import 'package:dicoding_story/app/observer.dart';
 import 'package:dicoding_story/data/data_providers.dart'
     show authInterceptorProvider, cacheDatasourceProvider;
 import 'package:dicoding_story/data/services/remote/auth/auth_interceptor.dart';
-import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/models/cache/cache.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,8 +22,8 @@ Future<void> main() async {
 
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  final overrideEnv = appEnvironmentProvider.overrideWithValue(
-    AppEnvironment.production,
+  final overrideEnv = envInfoProvider.overrideWithValue(
+    EnvInfo(AppEnvironment.production),
   );
 
   String token = '';

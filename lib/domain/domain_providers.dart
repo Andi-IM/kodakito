@@ -14,23 +14,14 @@ import 'package:dicoding_story/domain/repository/auth_repository.dart';
 import 'package:dicoding_story/domain/repository/cache_repository.dart';
 import 'package:dicoding_story/domain/repository/detail_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'domain_providers.g.dart';
 
 @riverpod
-AppEnvironment appEnvironment(Ref ref) {
-  final env = dotenv.get("APP_ENV", fallback: "development");
-  return (env == "production")
-      ? AppEnvironment.production
-      : AppEnvironment.development;
-}
-
-@riverpod
 AuthRepository authRepository(Ref ref) {
-  final env = ref.watch(appEnvironmentProvider);
-  if (env == AppEnvironment.production) {
+  final env = ref.watch(envInfoProvider);
+  if (env.isProduction) {
     return AuthRepositoryRemote(
       authDataSource: ref.read(authDataSourceProvider),
     );
@@ -45,8 +36,8 @@ CacheRepository cacheRepository(Ref ref) =>
 
 @riverpod
 ListRepository listRepository(Ref ref) {
-  final env = ref.watch(appEnvironmentProvider);
-  if (env == AppEnvironment.production) {
+  final env = ref.watch(envInfoProvider);
+  if (env.isProduction) {
     return ListRepositoryRemote(
       storyDataSource: ref.read(storyDataSourceProvider),
     );
@@ -59,8 +50,8 @@ ListRepository listRepository(Ref ref) {
 
 @riverpod
 DetailRepository detailRepository(Ref ref) {
-  final env = ref.watch(appEnvironmentProvider);
-  if (env == AppEnvironment.production) {
+  final env = ref.watch(envInfoProvider);
+  if (env.isProduction) {
     return DetailRepositoryRemote(
       storyDataSource: ref.read(storyDataSourceProvider),
     );
@@ -74,8 +65,8 @@ DetailRepository detailRepository(Ref ref) {
 @riverpod
 AddStoryRepository addStoryRepository(Ref ref) {
   final remoteListRepository = ref.read(listRepositoryProvider);
-  final env = ref.watch(appEnvironmentProvider);
-  if (env == AppEnvironment.production) {
+  final env = ref.watch(envInfoProvider);
+  if (env.isProduction) {
     return AddStoryRepositoryRemote(
       storyDataSource: ref.read(storyDataSourceProvider),
       cacheInterface: remoteListRepository as ListRepositoryRemote,

@@ -51,17 +51,22 @@ class MockDetailContent extends _$DetailScreenContent
 Future<ColorScheme?> storyColorScheme(Ref ref, String imageUrl) async {
   if (imageUrl.isEmpty) return null;
 
-  final generator = await PaletteGenerator.fromImageProvider(
-    NetworkImage(imageUrl),
-    size: const Size(200, 100),
-  );
-
-  if (generator.dominantColor != null) {
-    return ColorScheme.fromSeed(
-      seedColor: generator.dominantColor!.color,
-      // We don't know the context brightness here, so we return a default.
-      // We can adjust the brightness in the UI later.
+  try {
+    final generator = await PaletteGenerator.fromImageProvider(
+      NetworkImage(imageUrl),
+      size: const Size(200, 100),
     );
+
+    if (generator.dominantColor != null) {
+      return ColorScheme.fromSeed(
+        seedColor: generator.dominantColor!.color,
+        // We don't know the context brightness here, so we return a default.
+        // We can adjust the brightness in the UI later.
+      );
+    }
+  } catch (e) {
+    // If image loading fails, return null so the UI can use a default color scheme
+    return null;
   }
 
   return null;

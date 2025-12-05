@@ -30,7 +30,7 @@ DioNetworkService dioNetworkService(Ref ref) {
   // coverage:ignore-start
   if (!kTestMode) {
     final dioBaseOptions = BaseOptions(
-      baseUrl: dotenv.get("STORY_URL", fallback: "localhost:8000"),
+      baseUrl: dotenv.get("APP_URL", fallback: "localhost:8000"),
       headers: {
         'accept': 'application/json',
         'Content-Type': 'application/json',

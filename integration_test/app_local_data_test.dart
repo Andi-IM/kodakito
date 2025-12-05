@@ -20,8 +20,8 @@ import 'robot/view_story_robot.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  final overrideEnv = appEnvironmentProvider.overrideWithValue(
-    AppEnvironment.development,
+  final overrideEnv = envInfoProvider.overrideWithValue(
+    EnvInfo(AppEnvironment.development),
   );
 
   group('end-to-end test with local data', () {
