@@ -32,6 +32,10 @@ jobs:
       - run: flutter --version
       - run: dart pub get
       - run: dart run build_runner build -d
+      - name: touch and fill .env file
+        run: |
+          touch .env
+          echo "STORY_ENV=development" >> .env
       - run: dart analyze lib
       - run: dart format lib --set-exit-if-changed
       - run: flutter test --coverage
