@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
@@ -6,6 +7,9 @@ import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
+import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
+import 'package:dicoding_story/domain/repository/add_story_repository.dart';
+import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,14 +22,22 @@ class Listener<T> extends Mock {
 void main() {
   late ProviderContainer container;
   late MockListRepository mockListRepository;
+  late MockAddStoryRepository mockAddStoryRepository;
   late Listener<StoriesState> storiesListener;
+  late Listener<AddStoryState> addStoryListener;
 
   setUp(() {
     mockListRepository = MockListRepository();
+    mockAddStoryRepository = MockAddStoryRepository();
     storiesListener = Listener<StoriesState>();
+    addStoryListener = Listener<AddStoryState>();
+    registerFallbackValue(FakeFile());
 
     container = ProviderContainer(
-      overrides: [listRepositoryProvider.overrideWithValue(mockListRepository)],
+      overrides: [
+        listRepositoryProvider.overrideWithValue(mockListRepository),
+        addStoryRepositoryProvider.overrideWithValue(mockAddStoryRepository),
+      ],
     );
   });
 
@@ -147,6 +159,137 @@ void main() {
       expect(state, const StoriesState.initial());
     });
   });
+
+  group('AddStoryNotifier', () {
+    final tFile = MockFile();
+    const tDescription = 'Test Description';
+    const tLat = 10.0;
+    const tLon = 10.0;
+    final tResponse = DefaultResponse(error: false, message: 'Success');
+
+    test('initial state is AddStoryState.initial', () {
+      final state = container.read(addStoryProvider);
+      expect(state, const AddStoryState.initial());
+    });
+
+    test('addStory success updates state to success', () async {
+      // Arrange
+      when(
+        () => mockAddStoryRepository.addStory(
+          any(),
+          any(),
+          lat: any(named: 'lat'),
+          lon: any(named: 'lon'),
+        ),
+      ).thenAnswer((_) async => Right(tResponse));
+
+      container.listen(
+        addStoryProvider,
+        addStoryListener.call,
+        fireImmediately: true,
+      );
+
+      // Act
+      await container
+          .read(addStoryProvider.notifier)
+          .addStory(
+            description: tDescription,
+            photo: tFile,
+            lat: tLat,
+            lon: tLon,
+          );
+
+      // Assert
+      verifyInOrder([
+        () => addStoryListener(null, const AddStoryState.initial()),
+        () => addStoryListener(
+          const AddStoryState.initial(),
+          const AddStoryState.loading(),
+        ),
+        () => addStoryListener(
+          const AddStoryState.loading(),
+          const AddStoryState.success(),
+        ),
+      ]);
+      verify(
+        () => mockAddStoryRepository.addStory(
+          tDescription,
+          tFile,
+          lat: tLat,
+          lon: tLon,
+        ),
+      ).called(1);
+    });
+
+    test('addStory failure updates state to failure', () async {
+      // Arrange
+      final exception = AppException(
+        message: 'Add failed',
+        statusCode: 500,
+        identifier: 'add',
+      );
+      when(
+        () => mockAddStoryRepository.addStory(
+          any(),
+          any(),
+          lat: any(named: 'lat'),
+          lon: any(named: 'lon'),
+        ),
+      ).thenAnswer((_) async => Left(exception));
+
+      container.listen(
+        addStoryProvider,
+        addStoryListener.call,
+        fireImmediately: true,
+      );
+
+      // Act
+      await container
+          .read(addStoryProvider.notifier)
+          .addStory(
+            description: tDescription,
+            photo: tFile,
+            lat: tLat,
+            lon: tLon,
+          );
+
+      // Assert
+      verifyInOrder([
+        () => addStoryListener(null, const AddStoryState.initial()),
+        () => addStoryListener(
+          const AddStoryState.initial(),
+          const AddStoryState.loading(),
+        ),
+        () => addStoryListener(
+          const AddStoryState.loading(),
+          AddStoryState.failure(exception),
+        ),
+      ]);
+      verify(
+        () => mockAddStoryRepository.addStory(
+          tDescription,
+          tFile,
+          lat: tLat,
+          lon: tLon,
+        ),
+      ).called(1);
+    });
+
+    test('resetState resets state to initial', () {
+      // Arrange
+      // Set some state first
+      container.read(addStoryProvider.notifier).resetState();
+
+      final state = container.read(addStoryProvider);
+      expect(state, const AddStoryState.initial());
+    });
+  });
 }
 
 class MockListRepository extends Mock implements ListRepository {}
+
+class MockAddStoryRepository extends Mock implements AddStoryRepository {}
+
+class MockFile extends Mock implements File {}
+
+class FakeFile extends Fake implements File {}
