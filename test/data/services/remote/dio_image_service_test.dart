@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'dart:typed_data' show Uint8List;
 
 import 'package:dicoding_story/data/services/remote/dio_network_service.dart';
 import 'package:dio/dio.dart';

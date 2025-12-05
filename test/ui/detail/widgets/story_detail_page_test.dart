@@ -114,11 +114,11 @@ void main() {
         ProviderScope(
           overrides: [
             detailScreenContentProvider('story-1').overrideWith(
-              () => FakeDetailScreenContent(Loaded(story: mockStory)),
+              () => FakeDetailScreenContent(
+                Loaded(story: mockStory, imageBytes: null),
+              ),
             ),
-            storyColorSchemeProvider(
-              'https://example.com/photo.jpg',
-            ).overrideWith(
+            storyColorSchemeProvider(null).overrideWith(
               (ref) => Future.value(
                 customColorScheme,
               ), // Returning proper scheme again
@@ -139,7 +139,14 @@ void main() {
     expect(find.text('Story 1'), findsOneWidget);
     expect(find.text('Description 1'), findsOneWidget);
 
-    final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
-    expect(scaffold.backgroundColor, customColorScheme.surface);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is AnimatedTheme &&
+            widget.duration == const Duration(milliseconds: 500),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(AnimatedSwitcher), findsOneWidget);
   });
 }

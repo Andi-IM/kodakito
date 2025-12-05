@@ -25,7 +25,7 @@ class StoryDetailPage extends ConsumerWidget {
         appBar: AppBar(
           title: Text(
             context.l10n.storyDetailTitle,
-            style: Theme.of(context).textTheme.titleLarge,
+            style: theme.textTheme.titleLarge,
           ),
           centerTitle: true,
         ),
@@ -37,7 +37,7 @@ class StoryDetailPage extends ConsumerWidget {
         appBar: AppBar(
           title: Text(
             context.l10n.storyDetailTitle,
-            style: Theme.of(context).textTheme.titleLarge,
+            style: theme.textTheme.titleLarge,
           ),
           centerTitle: true,
         ),
@@ -55,48 +55,50 @@ class _StoryDetailContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = ref.watch(storyColorSchemeProvider(imageBytes));
+    final colorSchemeAsync = ref.watch(storyColorSchemeProvider(imageBytes));
     final theme = Theme.of(context);
+    // Use the fetched color scheme if available, otherwise fallback to the current theme's scheme.
+    // This allows AnimatedTheme to interpolate from the default scheme to the extracted one.
+    final targetColorScheme =
+        colorSchemeAsync.asData?.value ?? theme.colorScheme;
 
-    return colorScheme.when(
-      loading: () =>
-          Scaffold(
-            appBar: AppBar(
-              title: Text(
-                context.l10n.storyDetailTitle,
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              centerTitle: true,
-            ),
-            body: Center(child: CircularProgressIndicator())),
-      error: (_, __) => const SizedBox.shrink(),
-      data: (colorScheme) => Theme(
-        data: theme.copyWith(colorScheme: colorScheme),
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              context.l10n.storyDetailTitle,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            centerTitle: true,
+    return AnimatedTheme(
+      data: theme.copyWith(colorScheme: targetColorScheme),
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            context.l10n.storyDetailTitle,
+            style: theme.textTheme.titleLarge,
           ),
-          body: SingleChildScrollView(
-            child: Builder(
-              builder: (context) {
-                final widthClass = WindowWidthClass.of(context);
-                if (widthClass >= WindowWidthClass.medium) {
-                  return StoryDetailMediumLayout(
-                    key: const ValueKey("MediumLayout"),
-                    story: story,
-                  );
-                }
-                return StoryDetailCompactLayout(
-                  key: const ValueKey("CompactLayout"),
-                  story: story,
-                );
-              },
-            ),
-          ),
+          centerTitle: true,
+        ),
+        body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 500),
+          child: colorSchemeAsync.isLoading
+              ? const Center(
+                  key: ValueKey('loading'),
+                  child: CircularProgressIndicator(),
+                )
+              : SingleChildScrollView(
+                  key: const ValueKey('content'),
+                  child: Builder(
+                    builder: (context) {
+                      final widthClass = WindowWidthClass.of(context);
+                      if (widthClass >= WindowWidthClass.medium) {
+                        return StoryDetailMediumLayout(
+                          key: const ValueKey("MediumLayout"),
+                          story: story,
+                        );
+                      }
+                      return StoryDetailCompactLayout(
+                        key: const ValueKey("CompactLayout"),
+                        story: story,
+                      );
+                    },
+                  ),
+                ),
         ),
       ),
     );

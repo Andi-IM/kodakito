@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:async';
+import 'dart:typed_data' show Uint8List;
 
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/data_providers.dart';
@@ -54,9 +56,9 @@ void main() {
   );
 
   test('initial state is initial', () {
-    when(
-      () => mockRepository.getDetailStory(any()),
-    ).thenAnswer((_) async => Right(tStory));
+    when(() => mockRepository.getDetailStory(any())).thenAnswer((_) {
+      return Completer<Either<AppException, Story>>().future;
+    });
 
     final sub = container.listen(detailScreenContentProvider('1'), (_, __) {});
 
@@ -67,6 +69,9 @@ void main() {
     when(
       () => mockRepository.getDetailStory('1'),
     ).thenAnswer((_) async => Right(tStory));
+    when(
+      () => mockNetworkImageService.get(any()),
+    ).thenAnswer((_) async => Uint8List(0));
 
     final sub = container.listen(detailScreenContentProvider('1'), (_, __) {});
 
@@ -112,6 +117,9 @@ void main() {
     when(
       () => mockRepository.getDetailStory('1'),
     ).thenAnswer((_) async => Right(tStory));
+    when(
+      () => mockNetworkImageService.get(any()),
+    ).thenAnswer((_) async => Uint8List(0));
 
     final sub = container.listen(detailScreenContentProvider('1'), (_, __) {});
 
@@ -127,12 +135,14 @@ void main() {
   });
 
   group('storyColorScheme', () {
-    test('returns null when imageUrl is empty (get returns null)', () async {
+    test('returns null when imageBytes is null', () async {
       when(
         () => mockNetworkImageService.get(any()),
       ).thenAnswer((_) async => null);
 
-      final result = await container.read(storyColorSchemeProvider('').future);
+      final result = await container.read(
+        storyColorSchemeProvider(null).future,
+      );
       expect(result, null);
     });
 
@@ -145,7 +155,7 @@ void main() {
       ).thenAnswer((_) async => bytes);
 
       final result = await container.read(
-        storyColorSchemeProvider('test_image').future,
+        storyColorSchemeProvider(bytes).future,
       );
       expect(result, isA<ColorScheme?>());
     });
@@ -159,7 +169,7 @@ void main() {
       ).thenAnswer((_) async => bytes);
 
       final result = await container.read(
-        storyColorSchemeProvider('test_image').future,
+        storyColorSchemeProvider(bytes).future,
       );
 
       expect(result, isNotNull);

@@ -25,7 +25,7 @@ void main() {
     });
 
     test('Loaded holds correct story', () {
-      final state = st.Loaded(story: tStory);
+      final state = st.Loaded(story: tStory, imageBytes: null);
       expect(state, isA<st.Loaded>());
       expect(state.story, tStory);
     });
