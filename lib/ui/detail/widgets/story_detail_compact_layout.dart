@@ -28,38 +28,41 @@ class StoryDetailCompactLayout extends StatelessWidget {
           children: [
             Hero(
               tag: story.id,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
-                ),
-                child: CachedNetworkImage(
-                  key: ValueKey('image_${story.id}'),
-                  imageUrl: story.photoUrl,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorWidget: (context, url, error) {
-                    return Container(
-                      height: 200,
-                      color: colorScheme.surfaceContainerHighest,
-                      child: Center(
-                        child: Icon(
-                          Icons.broken_image,
-                          size: 50,
-                          color: colorScheme.onSurfaceVariant,
+              child: Semantics(
+                key: ValueKey('image_${story.id}'),
+                label: 'Image of ${story.name}',
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(24),
+                  ),
+                  child: CachedNetworkImage(
+                    imageUrl: story.photoUrl,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorWidget: (context, url, error) {
+                      return Container(
+                        height: 200,
+                        color: colorScheme.surfaceContainerHighest,
+                        child: Center(
+                          child: Icon(
+                            Icons.broken_image,
+                            size: 50,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  progressIndicatorBuilder: (context, url, downloadProgress) {
-                    return SizedBox(
-                      height: 200,
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          value: downloadProgress.progress,
+                      );
+                    },
+                    progressIndicatorBuilder: (context, url, downloadProgress) {
+                      return SizedBox(
+                        height: 200,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            value: downloadProgress.progress,
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -70,13 +73,17 @@ class StoryDetailCompactLayout extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      CircleAvatar(
-                        backgroundColor: colorScheme.surface,
-                        child: Text(
-                          story.name[0].toUpperCase(),
-                          style: GoogleFonts.roboto(
-                            fontWeight: FontWeight.w500,
-                            color: colorScheme.onSurface,
+                      Semantics(
+                        key: ValueKey('avatar_${story.id}'),
+                        label: 'Avatar of ${story.name}',
+                        child: CircleAvatar(
+                          backgroundColor: colorScheme.surface,
+                          child: Text(
+                            story.name[0].toUpperCase(),
+                            style: GoogleFonts.roboto(
+                              fontWeight: FontWeight.w500,
+                              color: colorScheme.onSurface,
+                            ),
                           ),
                         ),
                       ),
@@ -85,6 +92,7 @@ class StoryDetailCompactLayout extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
+                            key: ValueKey('name_${story.id}'),
                             story.name,
                             style: GoogleFonts.quicksand(
                               fontSize: 18,
@@ -93,6 +101,7 @@ class StoryDetailCompactLayout extends StatelessWidget {
                             ),
                           ),
                           Text(
+                            key: ValueKey('date_${story.id}'),
                             story.createdAt.toString().split(' ')[0],
                             style: GoogleFonts.quicksand(
                               fontSize: 14,
@@ -106,6 +115,7 @@ class StoryDetailCompactLayout extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
+                    key: ValueKey('description_${story.id}'),
                     story.description,
                     style: GoogleFonts.quicksand(
                       fontSize: 14,

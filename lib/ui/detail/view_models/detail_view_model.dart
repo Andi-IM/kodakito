@@ -66,7 +66,7 @@ Future<ColorScheme?> storyColorScheme(Ref ref, String imageUrl) async {
     }
   } catch (e) {
     // If image loading fails, return null so the UI can use a default color scheme
-    return null;
+    logError('error $e', ref.$element.runtimeType.toString());
   }
 
   return null;
