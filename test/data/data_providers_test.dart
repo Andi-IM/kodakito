@@ -26,6 +26,11 @@ void main() {
         isA<DioNetworkService>(),
       );
 
+      expect(
+        container.read(networkImageServiceProvider),
+        isA<DioImageService>(),
+      );
+
       expect(container.read(authDataSourceProvider), isA<AuthDataSource>());
 
       expect(container.read(cacheDatasourceProvider), isA<CacheDatasource>());

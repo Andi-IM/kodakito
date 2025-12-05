@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
+import 'package:dicoding_story/data/data_providers.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/domain/repository/detail_repository.dart';
@@ -8,20 +11,30 @@ import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:dicoding_story/data/services/remote/network_service.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:mocktail_image_network/mocktail_image_network.dart';
 
 class MockDetailRepository extends Mock implements DetailRepository {}
+
+class MockNetworkImageService extends Mock implements NetworkImageService {}
 
 void main() {
   late MockDetailRepository mockRepository;
   late ProviderContainer container;
 
+  late MockNetworkImageService mockNetworkImageService;
+
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
     mockRepository = MockDetailRepository();
+    mockNetworkImageService = MockNetworkImageService();
     container = ProviderContainer(
-      overrides: [detailRepositoryProvider.overrideWithValue(mockRepository)],
+      overrides: [
+        detailRepositoryProvider.overrideWithValue(mockRepository),
+        networkImageServiceProvider.overrideWith(
+          (ref) => mockNetworkImageService,
+        ),
+      ],
     );
   });
 
@@ -105,27 +118,44 @@ void main() {
   });
 
   group('storyColorScheme', () {
-    test('returns null when imageUrl is empty', () async {
+    test('returns null when imageUrl is empty (get returns null)', () async {
+      when(
+        () => mockNetworkImageService.get(any()),
+      ).thenAnswer((_) async => null);
+
       final result = await container.read(storyColorSchemeProvider('').future);
       expect(result, null);
     });
 
     test('returns ColorScheme when image loads successfully', () async {
-      await mockNetworkImages(() async {
-        final result = await container.read(
-          storyColorSchemeProvider('https://example.com/image.jpg').future,
-        );
-        // Since we can't easily control the dominant color extracted from the mock image (which is usually transparent),
-        // we check if the result is a ColorScheme or null.
-        // However, PaletteGenerator might return null dominant color for transparent images.
-        // Let's just verify it doesn't throw.
-        // Actually, mocktail_image_network usually returns a transparent 1x1 pixel.
-        // PaletteGenerator might fail to find a dominant color.
-        // So we expect either a ColorScheme or null, but mostly we want to ensure it runs without error.
-        // If it returns null, it's also valid behavior for "no dominant color".
-        // For now, let's just check it runs.
-        expect(result, isA<ColorScheme?>());
-      });
+      final file = File('d:/dicoding_story/assets/logo_dark.png');
+      final bytes = await file.readAsBytes();
+
+      when(
+        () => mockNetworkImageService.get(any()),
+      ).thenAnswer((_) async => bytes);
+
+      final result = await container.read(
+        storyColorSchemeProvider('test_image').future,
+      );
+      expect(result, isA<ColorScheme?>());
+    });
+
+    test('returns valid ColorScheme using logo_dark.png', () async {
+      final file = File('d:/dicoding_story/assets/logo_dark.png');
+      final bytes = await file.readAsBytes();
+
+      when(
+        () => mockNetworkImageService.get(any()),
+      ).thenAnswer((_) async => bytes);
+
+      final result = await container.read(
+        storyColorSchemeProvider('test_image').future,
+      );
+
+      expect(result, isNotNull);
+      expect(result, isA<ColorScheme>());
+      expect(result?.primary, isNotNull);
     });
   });
 }

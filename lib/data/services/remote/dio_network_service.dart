@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/services/remote/network_service.dart';
 import 'package:dicoding_story/domain/models/response.dart' as response;
@@ -25,4 +27,14 @@ class DioNetworkService extends NetworkService with ExceptionHandlerMixin {
     Object? data,
   }) =>
       handleException(() => dio.post(endpoint, data: data), endpoint: endpoint);
+}
+
+class DioImageService extends NetworkImageService {
+  final Dio dio;
+
+  DioImageService(this.dio);
+
+  @override
+  Future<Uint8List?> get(String url) =>
+      dio.get(url).then((value) => value.data);
 }

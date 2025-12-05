@@ -1,3 +1,4 @@
+import 'package:dicoding_story/data/data_providers.dart';
 import 'package:dicoding_story/domain/repository/detail_repository.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
@@ -49,25 +50,23 @@ class MockDetailContent extends _$DetailScreenContent
 
 @riverpod
 Future<ColorScheme?> storyColorScheme(Ref ref, String imageUrl) async {
-  if (imageUrl.isEmpty) return null;
-
-  try {
-    final generator = await PaletteGenerator.fromImageProvider(
-      NetworkImage(imageUrl),
-      size: const Size(200, 100),
-    );
-
-    if (generator.dominantColor != null) {
-      return ColorScheme.fromSeed(
-        seedColor: generator.dominantColor!.color,
-        // We don't know the context brightness here, so we return a default.
-        // We can adjust the brightness in the UI later.
-      );
-    }
-  } catch (e) {
-    // If image loading fails, return null so the UI can use a default color scheme
-    logError('error $e', ref.$element.runtimeType.toString());
+  final networkImageProvider = ref.read(networkImageServiceProvider);
+  final imageBytes = await networkImageProvider.get(imageUrl);
+  if (imageBytes == null) {
+    return null;
   }
 
+  final generator = await PaletteGenerator.fromImageProvider(
+    MemoryImage(imageBytes),
+    size: const Size(200, 100),
+  );
+
+  if (generator.dominantColor != null) {
+    return ColorScheme.fromSeed(
+      seedColor: generator.dominantColor!.color,
+      // We don't know the context brightness here, so we return a default.
+      // We can adjust the brightness in the UI later.
+    );
+  }
   return null;
 }
