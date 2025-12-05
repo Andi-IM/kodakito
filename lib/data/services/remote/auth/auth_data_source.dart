@@ -53,11 +53,16 @@ class StoryAuthApi implements AuthDataSource {
         '/login',
         data: loginRequestToJson(loginRequest),
       );
-      return response.fold((error) => Left(error), (response) {
-        final loginResponse = LoginResponse.fromJson(response.data);
+      return response.fold(
+        (error) {
+          return Left(error);
+        },
+        (response) {
+          final loginResponse = LoginResponse.fromJson(response.data);
 
-        return Right(loginResponse);
-      });
+          return Right(loginResponse);
+        },
+      );
     } catch (e) {
       return Left(
         AppException(
