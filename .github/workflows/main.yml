@@ -21,7 +21,7 @@ jobs:
           pub-cache-key: "pub-cache-:os:-:channel:-:version:-:arch:-:hash:"
           pub-cache-path: "${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:"
       - run: flutter --version
-      - run: dart pub get --offline
+      - run: dart pub get
       - run: dart run build_runner build -d
       - run: dart analyze lib
       - run: dart format lib --set-exit-if-changed
