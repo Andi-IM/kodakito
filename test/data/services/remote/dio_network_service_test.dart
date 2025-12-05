@@ -6,21 +6,15 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'package:dicoding_story/data/services/remote/auth/auth_interceptor.dart';
-
 class MockDio extends Mock implements Dio {}
-
-class MockAuthInterceptor extends Mock implements AuthInterceptor {}
 
 void main() {
   late DioNetworkService dioNetworkService;
   late MockDio mockDio;
-  late MockAuthInterceptor mockAuthInterceptor;
 
   setUp(() {
     mockDio = MockDio();
-    mockAuthInterceptor = MockAuthInterceptor();
-    dioNetworkService = DioNetworkService(mockDio, mockAuthInterceptor);
+    dioNetworkService = DioNetworkService(mockDio);
   });
 
   group('DioNetworkService', () {
@@ -128,20 +122,6 @@ void main() {
         // Assert
         expect(result, isA<Left<AppException, response.Response>>());
         verify(() => mockDio.post(tEndpoint, data: tData)).called(1);
-      });
-    });
-
-    group('updateHeader', () {
-      test('should update headers correctly', () {
-        // Arrange
-        final newHeaders = {'Authorization': 'Bearer token'};
-
-        // Act
-        final result = dioNetworkService.updateHeader(newHeaders);
-
-        // Assert
-        expect(result!['Authorization'], 'Bearer token');
-        expect(result['accept'], 'application/json');
       });
     });
   });

@@ -1,3 +1,4 @@
+import 'package:dicoding_story/common/globals.dart';
 import 'package:dicoding_story/data/services/local/cache_datasource.dart';
 import 'package:dicoding_story/data/services/local/local_data_service.dart';
 import 'package:dicoding_story/data/services/local/shared_prefs_storage_service.dart';
@@ -6,6 +7,8 @@ import 'package:dicoding_story/data/services/remote/auth/auth_interceptor.dart';
 import 'package:dicoding_story/data/services/remote/dio_network_service.dart';
 import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'data_providers.g.dart';
@@ -22,8 +25,26 @@ AuthInterceptor authInterceptor(Ref ref) =>
     AuthInterceptor(ref.read(cacheDatasourceProvider));
 
 @riverpod
-DioNetworkService dioNetworkService(Ref ref) =>
-    DioNetworkService(Dio(), ref.read(authInterceptorProvider));
+DioNetworkService dioNetworkService(Ref ref) {
+  final dio = Dio();
+  if (!kTestMode) {
+    final dioBaseOptions = BaseOptions(
+      baseUrl: dotenv.get("STORY_URL", fallback: "localhost:8000"),
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    );
+    dio.options = dioBaseOptions;
+    dio.interceptors.add(ref.read(authInterceptorProvider));
+    if (kDebugMode) {
+      dio.interceptors.add(
+        LogInterceptor(requestBody: true, responseBody: true),
+      );
+    }
+  }
+  return DioNetworkService(dio);
+}
 
 @riverpod
 AuthDataSource authDataSource(Ref ref) =>

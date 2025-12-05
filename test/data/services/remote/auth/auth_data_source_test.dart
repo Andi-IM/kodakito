@@ -179,7 +179,6 @@ void main() {
             ),
           ),
         ).called(1);
-        verifyNever(() => mockNetworkService.updateHeader(any()));
       });
 
       test('should return Left(AppException) when parsing fails', () async {

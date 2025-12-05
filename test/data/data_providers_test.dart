@@ -3,6 +3,7 @@ import 'package:dicoding_story/data/services/local/cache_datasource.dart';
 import 'package:dicoding_story/data/services/local/local_data_service.dart';
 import 'package:dicoding_story/data/services/local/shared_prefs_storage_service.dart';
 import 'package:dicoding_story/data/services/remote/auth/auth_data_source.dart';
+import 'package:dicoding_story/data/services/remote/auth/auth_interceptor.dart';
 import 'package:dicoding_story/data/services/remote/dio_network_service.dart';
 import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,6 +33,8 @@ void main() {
       expect(container.read(localDataServiceProvider), isA<LocalDataService>());
 
       expect(container.read(storyDataSourceProvider), isA<StoryDataSource>());
+
+      expect(container.read(authInterceptorProvider), isA<AuthInterceptor>());
     });
   });
 }
