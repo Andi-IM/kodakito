@@ -14,6 +14,7 @@ import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class Listener<T> extends Mock {
   void call(T? previous, T next);
@@ -282,6 +283,21 @@ void main() {
 
       final state = container.read(addStoryProvider);
       expect(state, const AddStoryState.initial());
+    });
+  });
+
+  group('versionProvider', () {
+    test('returns correct version string', () async {
+      PackageInfo.setMockInitialValues(
+        appName: 'Dicoding Story',
+        packageName: 'com.dicoding.story',
+        version: '1.0.0',
+        buildNumber: '1',
+        buildSignature: '',
+      );
+
+      final version = await container.read(versionProvider.future);
+      expect(version, '1.0.0+1');
     });
   });
 }
