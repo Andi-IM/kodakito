@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,11 +37,11 @@ class StoryDetailMediumLayout extends StatelessWidget {
                       tag: story.id,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(24),
-                        child: Image.network(
-                          story.photoUrl,
+                        child: CachedNetworkImage(
+                          imageUrl: story.photoUrl,
                           width: double.infinity,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
+                          errorWidget: (context, url, error) {
                             return Container(
                               color: colorScheme.surfaceContainerHighest,
                               child: Center(
@@ -52,18 +53,14 @@ class StoryDetailMediumLayout extends StatelessWidget {
                               ),
                             );
                           },
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                              child: CircularProgressIndicator(
-                                value:
-                                    loadingProgress.expectedTotalBytes != null
-                                    ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                    : null,
-                              ),
-                            );
-                          },
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) {
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: downloadProgress.progress,
+                                  ),
+                                );
+                              },
                         ),
                       ),
                     ),
