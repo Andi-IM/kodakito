@@ -63,11 +63,13 @@ class StoryDetailPage extends ConsumerWidget {
           final widthClass = WindowWidthClass.of(context);
           if (widthClass >= WindowWidthClass.medium) {
             return StoryDetailMediumLayout(
+              key: const ValueKey("MediumLayout"),
               colorScheme: colorScheme,
               story: story,
             );
           }
           return StoryDetailCompactLayout(
+            key: const ValueKey("CompactLayout"),
             colorScheme: colorScheme,
             story: story,
           );

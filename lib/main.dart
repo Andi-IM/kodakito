@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 import 'package:dicoding_story/app/app.dart';
 import 'package:dicoding_story/app/app_env.dart';
 import 'package:dicoding_story/app/observer.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -9,24 +10,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final logger = Logger('DEBUGLogger');
 
-Future<void> main() async {
+void main() => mainCommon();
+
+Future<void> mainCommon() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env", mergeWith: Platform.environment);
 
-  final String environment = dotenv.get("APP_ENV");
-  final AppEnvironment env = (environment == "prod")
+  final environment = dotenv.get("STORY_ENV");
+  final env = environment == "production"
       ? AppEnvironment.production
       : AppEnvironment.development;
-
-  mainCommon(env);
-}
-
-Future<void> mainCommon(AppEnvironment environment) async {
-  WidgetsFlutterBinding.ensureInitialized();
-  EnvInfo.initialize(environment);
+  EnvInfo.initialize(env);
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     debugPrint('${record.level.name}: ${record.time}: ${record.message}');
