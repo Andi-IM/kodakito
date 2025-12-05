@@ -21,12 +21,7 @@ void main() {
     await mockNetworkImages(() async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: StoryDetailMediumLayout(
-              colorScheme: const ColorScheme.light(),
-              story: story,
-            ),
-          ),
+          home: Scaffold(body: StoryDetailMediumLayout(story: story)),
         ),
       );
     });

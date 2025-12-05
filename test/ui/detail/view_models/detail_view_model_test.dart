@@ -6,7 +6,7 @@ import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/domain/repository/detail_repository.dart';
 import 'package:dicoding_story/ui/detail/view_models/detail_view_model.dart';
-import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
+import 'package:dicoding_story/ui/detail/view_models/story_state.dart' as st;
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +27,7 @@ void main() {
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
     mockRepository = MockDetailRepository();
+    // ... setup
     mockNetworkImageService = MockNetworkImageService();
     container = ProviderContainer(
       overrides: [
@@ -59,7 +60,7 @@ void main() {
 
     final sub = container.listen(detailScreenContentProvider('1'), (_, __) {});
 
-    expect(sub.read(), const StoryState.initial());
+    expect(sub.read(), isA<st.Initial>());
   });
 
   test('fetchDetailStory success updates state to loaded', () async {
@@ -73,8 +74,10 @@ void main() {
     await container.pump();
     await Future.delayed(Duration.zero);
 
-    expect(sub.read().state, StoryStateType.loaded);
-    expect(sub.read().story, tStory);
+    expect(
+      sub.read(),
+      isA<st.Loaded>().having((s) => s.story, 'story', tStory),
+    );
     verify(() => mockRepository.getDetailStory('1')).called(1);
   });
 
@@ -94,8 +97,14 @@ void main() {
     await container.pump();
     await Future.delayed(Duration.zero);
 
-    expect(sub.read().state, StoryStateType.error);
-    expect(sub.read().errorMessage, 'Network Error');
+    expect(
+      sub.read(),
+      isA<st.Error>().having(
+        (e) => e.errorMessage,
+        'errorMessage',
+        'Network Error',
+      ),
+    );
     verify(() => mockRepository.getDetailStory('1')).called(1);
   });
 
@@ -109,12 +118,12 @@ void main() {
     // Wait for loaded
     await container.pump();
     await Future.delayed(Duration.zero);
-    expect(sub.read().state, StoryStateType.loaded);
+    expect(sub.read(), isA<st.Loaded>());
 
     // Reset
     container.read(detailScreenContentProvider('1').notifier).resetState();
 
-    expect(sub.read(), const StoryState.initial());
+    expect(sub.read(), isA<st.Initial>());
   });
 
   group('storyColorScheme', () {

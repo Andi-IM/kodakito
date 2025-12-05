@@ -5,16 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart' hide Config;
 
 class StoryDetailMediumLayout extends StatelessWidget {
-  final ColorScheme colorScheme;
   final Story story;
-  const StoryDetailMediumLayout({
-    super.key,
-    required this.colorScheme,
-    required this.story,
-  });
+  const StoryDetailMediumLayout({super.key, required this.story});
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 1200),

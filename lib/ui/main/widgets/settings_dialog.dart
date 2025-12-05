@@ -127,7 +127,7 @@ class SettingsDialog extends ConsumerWidget {
 
               // Version
               Text(
-                context.l10n.settingsTextVersion('${versionAsync.value}'),
+                context.l10n.settingsTextVersion('$versionAsync'),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

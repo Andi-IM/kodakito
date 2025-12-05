@@ -296,7 +296,7 @@ void main() {
         buildSignature: '',
       );
 
-      final version = await container.read(versionProvider.future);
+      final String version = await container.read(versionProvider.future);
       expect(version, '1.0.0+1');
     });
   });

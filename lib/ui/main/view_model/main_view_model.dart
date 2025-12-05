@@ -67,10 +67,8 @@ class MockStories extends _$StoriesNotifier
     implements StoriesNotifier {}
 
 @riverpod
-Future<String?> version(Ref ref) async {
-  // coverage:ignore-start
+Future<String> version(Ref ref) async {
   final packageInfo = await PackageInfo.fromPlatform();
-  // coverage:ignore-end
   return '${packageInfo.version}+${packageInfo.buildNumber}';
 }
 

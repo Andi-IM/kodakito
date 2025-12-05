@@ -17,30 +17,27 @@ class DetailScreenContent extends _$DetailScreenContent with LogMixin {
   @override
   StoryState build(String id) {
     Future.microtask(() => fetchDetailStory(id));
-    return const StoryState.initial();
+    return const Initial();
   }
 
   Future<void> fetchDetailStory(String id) async {
     log.info('Fetching detail for story: $id');
-    state = state.copyWith(state: StoryStateType.loading);
+    state = const Loading();
     final result = await _repository.getDetailStory(id);
     result.fold(
       (failure) {
         log.warning('Failed to fetch story detail: ${failure.message}');
-        state = state.copyWith(
-          state: StoryStateType.error,
-          errorMessage: failure.message,
-        );
+        state = Error(errorMessage: failure.message);
       },
       (story) {
         log.info('Successfully fetched story detail');
-        state = state.copyWith(state: StoryStateType.loaded, story: story);
+        state = Loaded(story: story);
       },
     );
   }
 
   void resetState() {
-    state = const StoryState.initial();
+    state = const Initial();
   }
 }
 

@@ -1,5 +1,5 @@
 import 'package:dicoding_story/domain/models/story/story.dart';
-import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
+import 'package:dicoding_story/ui/detail/view_models/story_state.dart' as st;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -14,58 +14,26 @@ void main() {
       lon: 0.0,
     );
 
-    test('supports value equality', () {
-      expect(const StoryState.initial(), const StoryState.initial());
+    test('Initial can be created', () {
+      const state = st.Initial();
+      expect(state, isA<st.Initial>());
     });
 
-    test('initial state is correct', () {
-      const state = StoryState.initial();
-      expect(state.state, StoryStateType.initial);
-      expect(state.story, null);
-      expect(state.errorMessage, null);
+    test('Loading can be created', () {
+      const state = st.Loading();
+      expect(state, isA<st.Loading>());
     });
 
-    test('copyWith returns a new instance with updated values', () {
-      const state = StoryState.initial();
-      final newState = state.copyWith(
-        state: StoryStateType.loaded,
-        story: tStory,
-        errorMessage: 'error',
-      );
-
-      expect(newState.state, StoryStateType.loaded);
-      expect(newState.story, tStory);
-      expect(newState.errorMessage, 'error');
+    test('Loaded holds correct story', () {
+      final state = st.Loaded(story: tStory);
+      expect(state, isA<st.Loaded>());
+      expect(state.story, tStory);
     });
 
-    test('copyWith returns the same instance if no values are passed', () {
-      const state = StoryState.initial();
-      final newState = state.copyWith();
-
-      expect(newState, state);
-    });
-
-    test('props are correct', () {
-      const state = StoryState(
-        state: StoryStateType.loaded,
-        story: null,
-        errorMessage: 'error',
-      );
-
-      expect(state.props, [null, StoryStateType.loaded, 'error']);
-    });
-
-    test('toString returns correct string representation', () {
-      const state = StoryState(
-        state: StoryStateType.initial,
-        story: null,
-        errorMessage: null,
-      );
-
-      expect(
-        state.toString(),
-        'StoryState(story: null, state: StoryStateType.initial, errorMessage: null)',
-      );
+    test('Error holds correct errorMessage', () {
+      const state = st.Error(errorMessage: 'error');
+      expect(state, isA<st.Error>());
+      expect(state.errorMessage, 'error');
     });
   });
 }

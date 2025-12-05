@@ -1,35 +1,23 @@
 import 'package:dicoding_story/domain/models/story/story.dart';
-import 'package:equatable/equatable.dart';
 
-enum StoryStateType { initial, loading, loaded, error }
+sealed class StoryState {
+  const StoryState();
+}
 
-class StoryState extends Equatable {
-  const StoryState({required this.state, this.story, this.errorMessage});
+class Initial extends StoryState {
+  const Initial();
+}
 
-  final Story? story;
-  final StoryStateType state;
-  final String? errorMessage;
+class Loading extends StoryState {
+  const Loading();
+}
 
-  const StoryState.initial()
-    : this(state: StoryStateType.initial, errorMessage: null);
+class Loaded extends StoryState {
+  final Story story;
+  const Loaded({required this.story});
+}
 
-  StoryState copyWith({
-    StoryStateType? state,
-    Story? story,
-    String? errorMessage,
-  }) {
-    return StoryState(
-      state: state ?? this.state,
-      story: story ?? this.story,
-      errorMessage: errorMessage ?? this.errorMessage,
-    );
-  }
-
-  @override
-  String toString() {
-    return 'StoryState(story: $story, state: $state, errorMessage: $errorMessage)';
-  }
-
-  @override
-  List<Object?> get props => [story, state, errorMessage];
+class Error extends StoryState {
+  final String errorMessage;
+  const Error({required this.errorMessage});
 }

@@ -1,4 +1,5 @@
 import 'package:dicoding_story/common/localizations.dart';
+import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/detail/view_models/detail_view_model.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
 import 'package:dicoding_story/ui/detail/widgets/story_detail_compact_layout.dart';
@@ -18,8 +19,8 @@ class StoryDetailPage extends ConsumerWidget {
     final theme = Theme.of(context);
 
     // Watch the color scheme provider based on the story's photo URL
-    final colorSchemeAsync = storyState.story != null
-        ? ref.watch(storyColorSchemeProvider(storyState.story!.photoUrl))
+    final colorSchemeAsync = storyState is Loaded
+        ? ref.watch(storyColorSchemeProvider(storyState.story.photoUrl))
         : const AsyncValue<ColorScheme?>.data(null);
 
     // Get the color scheme, falling back to theme default
@@ -41,22 +42,40 @@ class StoryDetailPage extends ConsumerWidget {
           ),
           centerTitle: true,
         ),
-        body: _buildBody(storyState, colorScheme),
+        body: StoryDetailContent(
+          key: const ValueKey('StoryDetailContent'),
+          storyState: storyState,
+        ),
       ),
     );
   }
+}
 
-  Widget _buildBody(StoryState storyState, ColorScheme colorScheme) {
-    if (storyState.state == StoryStateType.loading) {
-      return const Center(child: CircularProgressIndicator());
-    } else if (storyState.state == StoryStateType.error) {
-      return Center(child: Text(storyState.errorMessage ?? 'Unknown Error'));
-    } else if (storyState.story == null) {
-      return const Center(child: Text('No Data'));
-    }
+class StoryDetailContent extends StatelessWidget {
+  const StoryDetailContent({super.key, required this.storyState});
 
-    final story = storyState.story!;
+  final StoryState storyState;
 
+  @override
+  Widget build(BuildContext context) {
+    return switch (storyState) {
+      Loading() => const Center(child: CircularProgressIndicator()),
+      Error(errorMessage: final message) => Center(child: Text(message)),
+      Loaded(story: final story) => _StoryDetailLoadedContent(story: story),
+      _ => const Center(
+        child: Text('No Data'),
+      ), // Handles null story or other unexpected states
+    };
+  }
+}
+
+class _StoryDetailLoadedContent extends StatelessWidget {
+  const _StoryDetailLoadedContent({required this.story});
+
+  final Story story;
+
+  @override
+  Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Builder(
         builder: (context) {
@@ -64,13 +83,11 @@ class StoryDetailPage extends ConsumerWidget {
           if (widthClass >= WindowWidthClass.medium) {
             return StoryDetailMediumLayout(
               key: const ValueKey("MediumLayout"),
-              colorScheme: colorScheme,
               story: story,
             );
           }
           return StoryDetailCompactLayout(
             key: const ValueKey("CompactLayout"),
-            colorScheme: colorScheme,
             story: story,
           );
         },

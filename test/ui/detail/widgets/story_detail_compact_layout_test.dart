@@ -12,7 +12,6 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: StoryDetailCompactLayout(
-              colorScheme: const ColorScheme.light(),
               story: Story(
                 id: 'id-test1',
                 name: 'Andi Irham',
