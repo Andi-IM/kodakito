@@ -35,6 +35,7 @@ class DioImageService extends NetworkImageService {
   DioImageService(this.dio);
 
   @override
-  Future<Uint8List?> get(String url) =>
-      dio.get(url).then((value) => value.data);
+  Future<Uint8List?> get(String url) => dio
+      .get<Uint8List>(url, options: Options(responseType: ResponseType.bytes))
+      .then((value) => value.data);
 }

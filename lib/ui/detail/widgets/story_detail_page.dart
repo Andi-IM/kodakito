@@ -1,3 +1,5 @@
+import 'dart:typed_data' show Uint8List;
+
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/detail/view_models/detail_view_model.dart';
@@ -18,23 +20,8 @@ class StoryDetailPage extends ConsumerWidget {
     final storyState = ref.watch(detailScreenContentProvider(id));
     final theme = Theme.of(context);
 
-    // Watch the color scheme provider based on the story's photo URL
-    final colorSchemeAsync = storyState is Loaded
-        ? ref.watch(storyColorSchemeProvider(storyState.story.photoUrl))
-        : const AsyncValue<ColorScheme?>.data(null);
-
-    // Get the color scheme, falling back to theme default
-    final colorScheme = colorSchemeAsync.when(
-      data: (scheme) =>
-          scheme?.copyWith(brightness: theme.brightness) ?? theme.colorScheme,
-      loading: () => theme.colorScheme,
-      error: (_, __) => theme.colorScheme,
-    );
-
-    return Theme(
-      data: theme.copyWith(colorScheme: colorScheme),
-      child: Scaffold(
-        backgroundColor: colorScheme.surface,
+    return switch (storyState) {
+      Error(errorMessage: final message) => Scaffold(
         appBar: AppBar(
           title: Text(
             context.l10n.storyDetailTitle,
@@ -42,55 +29,75 @@ class StoryDetailPage extends ConsumerWidget {
           ),
           centerTitle: true,
         ),
-        body: StoryDetailContent(
-          key: const ValueKey('StoryDetailContent'),
-          storyState: storyState,
-        ),
+        body: Center(child: Text(message)),
       ),
-    );
-  }
-}
-
-class StoryDetailContent extends StatelessWidget {
-  const StoryDetailContent({super.key, required this.storyState});
-
-  final StoryState storyState;
-
-  @override
-  Widget build(BuildContext context) {
-    return switch (storyState) {
-      Loading() => const Center(child: CircularProgressIndicator()),
-      Error(errorMessage: final message) => Center(child: Text(message)),
-      Loaded(story: final story) => _StoryDetailLoadedContent(story: story),
-      _ => const Center(
-        child: Text('No Data'),
+      Loaded(story: final story, imageBytes: final imageBytes) =>
+        _StoryDetailContent(story: story, imageBytes: imageBytes),
+      _ => Scaffold(
+        appBar: AppBar(
+          title: Text(
+            context.l10n.storyDetailTitle,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          centerTitle: true,
+        ),
+        body: Center(child: CircularProgressIndicator()),
       ), // Handles null story or other unexpected states
     };
   }
 }
 
-class _StoryDetailLoadedContent extends StatelessWidget {
-  const _StoryDetailLoadedContent({required this.story});
+class _StoryDetailContent extends ConsumerWidget {
+  const _StoryDetailContent({required this.story, required this.imageBytes});
 
   final Story story;
+  final Uint8List? imageBytes;
 
   @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Builder(
-        builder: (context) {
-          final widthClass = WindowWidthClass.of(context);
-          if (widthClass >= WindowWidthClass.medium) {
-            return StoryDetailMediumLayout(
-              key: const ValueKey("MediumLayout"),
-              story: story,
-            );
-          }
-          return StoryDetailCompactLayout(
-            key: const ValueKey("CompactLayout"),
-            story: story,
-          );
-        },
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = ref.watch(storyColorSchemeProvider(imageBytes));
+    final theme = Theme.of(context);
+
+    return colorScheme.when(
+      loading: () =>
+          Scaffold(
+            appBar: AppBar(
+              title: Text(
+                context.l10n.storyDetailTitle,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              centerTitle: true,
+            ),
+            body: Center(child: CircularProgressIndicator())),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (colorScheme) => Theme(
+        data: theme.copyWith(colorScheme: colorScheme),
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(
+              context.l10n.storyDetailTitle,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            centerTitle: true,
+          ),
+          body: SingleChildScrollView(
+            child: Builder(
+              builder: (context) {
+                final widthClass = WindowWidthClass.of(context);
+                if (widthClass >= WindowWidthClass.medium) {
+                  return StoryDetailMediumLayout(
+                    key: const ValueKey("MediumLayout"),
+                    story: story,
+                  );
+                }
+                return StoryDetailCompactLayout(
+                  key: const ValueKey("CompactLayout"),
+                  story: story,
+                );
+              },
+            ),
+          ),
+        ),
       ),
     );
   }

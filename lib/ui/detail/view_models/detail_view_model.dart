@@ -1,4 +1,7 @@
+import 'dart:typed_data' show Uint8List;
+
 import 'package:dicoding_story/data/data_providers.dart';
+import 'package:dicoding_story/data/services/remote/network_service.dart';
 import 'package:dicoding_story/domain/repository/detail_repository.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
@@ -12,6 +15,8 @@ part 'detail_view_model.g.dart';
 
 @Riverpod()
 class DetailScreenContent extends _$DetailScreenContent with LogMixin {
+  NetworkImageService get _networkImageProvider =>
+      ref.read(networkImageServiceProvider);
   DetailRepository get _repository => ref.read(detailRepositoryProvider);
 
   @override
@@ -29,9 +34,10 @@ class DetailScreenContent extends _$DetailScreenContent with LogMixin {
         log.warning('Failed to fetch story detail: ${failure.message}');
         state = Error(errorMessage: failure.message);
       },
-      (story) {
+      (story) async {
         log.info('Successfully fetched story detail');
-        state = Loaded(story: story);
+        final imageBytes = await _networkImageProvider.get(story.photoUrl);
+        state = Loaded(story: story, imageBytes: imageBytes);
       },
     );
   }
@@ -46,9 +52,7 @@ class MockDetailContent extends _$DetailScreenContent
     implements DetailScreenContent {}
 
 @riverpod
-Future<ColorScheme?> storyColorScheme(Ref ref, String imageUrl) async {
-  final networkImageProvider = ref.read(networkImageServiceProvider);
-  final imageBytes = await networkImageProvider.get(imageUrl);
+Future<ColorScheme?> storyColorScheme(Ref ref, Uint8List? imageBytes) async {
   if (imageBytes == null) {
     return null;
   }

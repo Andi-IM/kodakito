@@ -1,4 +1,5 @@
 import 'package:dicoding_story/domain/models/story/story.dart';
+import 'dart:typed_data' show Uint8List;
 
 sealed class StoryState {
   const StoryState();
@@ -14,7 +15,8 @@ class Loading extends StoryState {
 
 class Loaded extends StoryState {
   final Story story;
-  const Loaded({required this.story});
+  final Uint8List? imageBytes;
+  const Loaded({required this.story, required this.imageBytes});
 }
 
 class Error extends StoryState {
