@@ -47,7 +47,7 @@ CacheRepository cacheRepository(Ref ref) =>
 ListRepository listRepository(Ref ref) {
   final env = ref.watch(appEnvironmentProvider);
   if (env == AppEnvironment.production) {
-    return ListRepositoryRemote(
+    return ListRepositoryRemoteImpl(
       storyDataSource: ref.read(storyDataSourceProvider),
     );
   } else {

@@ -6,7 +6,11 @@ import 'package:dicoding_story/utils/http_exception.dart';
 abstract class ListRepository {
   /// Get list of stories
   Future<Either<AppException, List<Story>>> getListStories();
+}
 
-  /// Invalidate cached stories to force fresh fetch on next getListStories call
+abstract class ListRepositoryRemote extends ListRepository {
+  @override
+  Future<Either<AppException, List<Story>>> getListStories();
+
   void invalidateCache();
 }

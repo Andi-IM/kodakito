@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/repositories/list/list_repository_remote.dart';
+import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
@@ -20,7 +21,7 @@ void main() {
 
   setUp(() {
     mockStoryDataSource = MockStoryDataSource();
-    repository = ListRepositoryRemote(storyDataSource: mockStoryDataSource);
+    repository = ListRepositoryRemoteImpl(storyDataSource: mockStoryDataSource);
   });
 
   group('ListRepositoryRemote', () {
