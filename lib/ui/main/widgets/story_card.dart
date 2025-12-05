@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class StoryCard extends StatelessWidget {
   final Story story;
@@ -27,12 +28,12 @@ class StoryCard extends StatelessWidget {
                 child: CachedNetworkImage(
                   imageUrl: story.photoUrl,
                   fit: BoxFit.cover,
-                  // cacheManager: CacheManager(
-                  //   Config(
-                  //     'customCacheKey',
-                  //     stalePeriod: const Duration(minutes: 10),
-                  //   ),
-                  // ),
+                  cacheManager: CacheManager(
+                    Config(
+                      'storyCardKey',
+                      stalePeriod: const Duration(minutes: 60),
+                    ),
+                  ),
                   errorWidget: (context, url, error) {
                     return Container(
                       color: Colors.grey[300],
