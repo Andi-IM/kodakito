@@ -44,13 +44,11 @@ mixin ExceptionHandlerMixin on NetworkService {
           statusCode = 2;
           identifier = 'UnknownException ${e.toString()}\n at $endpoint';
       }
-      return Left(
-        AppException(
-          message: message,
-          identifier: identifier,
-          statusCode: statusCode,
-        ),
-      );
+      return AppException(
+        message: message,
+        identifier: identifier,
+        statusCode: statusCode,
+      ).toLeft();
     }
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/services/remote/dio_network_service.dart';
 import 'package:dicoding_story/domain/models/response.dart' as response;
@@ -62,6 +64,7 @@ void main() {
             statusMessage: 'Bad Request',
             data: {'message': 'Bad Request'},
           ),
+          message: 'The request returned an invalid status code of 400',
           type: DioExceptionType.badResponse,
         );
         when(
@@ -76,8 +79,72 @@ void main() {
 
         // Assert
         expect(result, isA<Left<AppException, response.Response>>());
+        result.fold((l) {
+          expect(
+            l.identifier,
+            'DioException ${tException.message}\n at $tEndpoint',
+          );
+        }, (r) => fail('Should not return Right'));
         verify(() => mockDio.get(tEndpoint)).called(1);
       });
+
+      test(
+        'should return Left(AppException) when SocketException occurs',
+        () async {
+          // Arrange
+          const tException = SocketException('No Internet');
+          when(
+            () => mockDio.get(
+              any(),
+              queryParameters: any(named: 'queryParameters'),
+            ),
+          ).thenThrow(tException);
+
+          // Act
+          final result = await dioNetworkService.get(tEndpoint);
+
+          // Assert
+          expect(result, isA<Left<AppException, response.Response>>());
+          result.fold((l) {
+            expect(l.message, 'Unable to connect to the server.');
+            expect(l.statusCode, 0);
+            expect(
+              l.identifier,
+              'SocketException ${tException.message}\n at $tEndpoint',
+            );
+          }, (r) => fail('Should not return Right'));
+          verify(() => mockDio.get(tEndpoint)).called(1);
+        },
+      );
+
+      test(
+        'should return Left(AppException) when unknown Exception occurs',
+        () async {
+          // Arrange
+          final tException = Exception('Unexpected error');
+          when(
+            () => mockDio.get(
+              any(),
+              queryParameters: any(named: 'queryParameters'),
+            ),
+          ).thenThrow(tException);
+
+          // Act
+          final result = await dioNetworkService.get(tEndpoint);
+
+          // Assert
+          expect(result, isA<Left<AppException, response.Response>>());
+          result.fold((l) {
+            expect(l.message, 'Something went wrong');
+            expect(l.statusCode, 2);
+            expect(
+              l.identifier,
+              'UnknownException ${tException.toString()}\n at $tEndpoint',
+            );
+          }, (r) => fail('Should not return Right'));
+          verify(() => mockDio.get(tEndpoint)).called(1);
+        },
+      );
     });
 
     group('post', () {
@@ -112,6 +179,7 @@ void main() {
             statusMessage: 'Internal Server Error',
             data: {'message': 'Internal Server Error'},
           ),
+          message: 'The request returned an invalid status code of 500',
           type: DioExceptionType.badResponse,
         );
         when(
@@ -123,6 +191,12 @@ void main() {
 
         // Assert
         expect(result, isA<Left<AppException, response.Response>>());
+        result.fold((l) {
+          expect(
+            l.identifier,
+            'DioException ${tException.message}\n at $tEndpoint',
+          );
+        }, (r) => fail('Should not return Right'));
         verify(() => mockDio.post(tEndpoint, data: tData)).called(1);
       });
     });
