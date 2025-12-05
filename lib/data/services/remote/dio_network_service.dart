@@ -2,13 +2,13 @@ import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/common/globals.dart';
 import 'package:dicoding_story/data/services/remote/network_service.dart';
 import 'package:dicoding_story/domain/models/response.dart' as response;
-import 'package:dicoding_story/env/env.dart';
 import 'package:dicoding_story/utils/exception_handler_mixin.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:dicoding_story/data/services/remote/auth/auth_interceptor.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DioNetworkService extends NetworkService with ExceptionHandlerMixin {
   final Dio dio;
@@ -30,7 +30,7 @@ class DioNetworkService extends NetworkService with ExceptionHandlerMixin {
       BaseOptions(baseUrl: baseUrl, headers: headers);
 
   @override
-  String get baseUrl => Env.storyUrl;
+  String get baseUrl => dotenv.get("STORY_URL", fallback: "localhost:8000");
 
   @override
   Map<String, Object> get headers => {

@@ -14,13 +14,16 @@ import 'package:dicoding_story/domain/repository/auth_repository.dart';
 import 'package:dicoding_story/domain/repository/cache_repository.dart';
 import 'package:dicoding_story/domain/repository/detail_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
-import 'package:dicoding_story/env/env.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'domain_providers.g.dart';
 
 @riverpod
-AppEnvironment appEnvironment(Ref ref) => Env.appEnvironment;
+AppEnvironment appEnvironment(Ref ref) {
+  final env = dotenv.get("APP_ENV", fallback: "development");
+  return (env == "production") ? AppEnvironment.production : AppEnvironment.development;
+}
 
 @riverpod
 AuthRepository authRepository(Ref ref) {

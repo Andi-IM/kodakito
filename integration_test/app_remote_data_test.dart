@@ -6,7 +6,7 @@ import 'package:dicoding_story/data/data_providers.dart'
 import 'package:dicoding_story/data/services/remote/auth/auth_interceptor.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/models/cache/cache.dart';
-import 'package:dicoding_story/env/env.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -18,7 +18,9 @@ import 'robot/view_story_robot.dart';
 
 /// This Integration Test launches the app with the remote configuration
 /// Make sure to set the environment variable to 'production' before running this test
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
+
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   final overrideEnv = appEnvironmentProvider.overrideWithValue(
@@ -49,8 +51,8 @@ void main() {
           child: MyApp(),
         ),
       );
-      await loginRobot.typeEmail(Env.testEmail);
-      await loginRobot.typePassword(Env.testPassword);
+      await loginRobot.typeEmail(dotenv.get("TEST_EMAIL"));
+      await loginRobot.typePassword(dotenv.get("TEST_PASSWORD"));
       final result = await loginRobot.tapLoginButton();
       result.fold((l) => fail('Should not return Left'), (r) {
         token = r.token;

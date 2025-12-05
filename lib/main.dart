@@ -2,19 +2,25 @@ import 'dart:io' show Platform;
 import 'package:dicoding_story/app/app.dart';
 import 'package:dicoding_story/app/app_env.dart';
 import 'package:dicoding_story/app/observer.dart';
-import 'package:dicoding_story/env/env.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final logger = Logger('DEBUGLogger');
 
-void main() => mainCommon(Env.appEnvironment);
+Future<void> main() async {
+  await dotenv.load(fileName: ".env");
+
+  final String environment = dotenv.get("APP_ENV");
+  final AppEnvironment env = (environment == "prod") ? AppEnvironment.production : AppEnvironment.development;
+
+  mainCommon(env);
+}
 
 Future<void> mainCommon(AppEnvironment environment) async {
   WidgetsFlutterBinding.ensureInitialized();
