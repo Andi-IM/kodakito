@@ -14,10 +14,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 final logger = Logger('DEBUGLogger');
 
 Future<void> main() async {
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: ".env", mergeWith: Platform.environment);
 
   final String environment = dotenv.get("APP_ENV");
-  final AppEnvironment env = (environment == "prod") ? AppEnvironment.production : AppEnvironment.development;
+  final AppEnvironment env = (environment == "prod")
+      ? AppEnvironment.production
+      : AppEnvironment.development;
 
   mainCommon(env);
 }

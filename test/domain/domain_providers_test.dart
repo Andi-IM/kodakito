@@ -16,7 +16,11 @@ void main() {
     test('providers should exist and return correct repository types', () {
       // Arrange
       SharedPreferences.setMockInitialValues({});
-      final container = ProviderContainer();
+      final container = ProviderContainer(
+        overrides: [
+          appEnvironmentProvider.overrideWithValue(AppEnvironment.development),
+        ],
+      );
       addTearDown(container.dispose);
 
       // Act & Assert
