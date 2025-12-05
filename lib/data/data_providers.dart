@@ -27,6 +27,7 @@ AuthInterceptor authInterceptor(Ref ref) =>
 @riverpod
 DioNetworkService dioNetworkService(Ref ref) {
   final dio = Dio();
+  // coverage:ignore-start
   if (!kTestMode) {
     final dioBaseOptions = BaseOptions(
       baseUrl: dotenv.get("STORY_URL", fallback: "localhost:8000"),
@@ -43,6 +44,7 @@ DioNetworkService dioNetworkService(Ref ref) {
       );
     }
   }
+  // coverage:ignore-end
   return DioNetworkService(dio);
 }
 

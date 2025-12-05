@@ -1,8 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/services/local/cache_datasource.dart';
 import 'package:dicoding_story/data/services/remote/auth/auth_interceptor.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/login_response/login_response.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/login_result/login_result.dart';
+import 'package:dicoding_story/domain/models/cache/cache.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,22 +24,17 @@ void main() {
   });
 
   group('AuthInterceptor', () {
-    final tLoginResult = LoginResult(
-      userId: 'user-id',
-      name: 'name',
+    const tCache = Cache(
       token: 'test-token',
-    );
-    final tLoginResponse = LoginResponse(
-      error: false,
-      message: 'success',
-      loginResult: tLoginResult,
+      userName: 'name',
+      userId: 'user-id',
     );
 
     test('should add Authorization header when token is available', () async {
       // Arrange
       when(
         () => mockCacheDatasource.getToken(),
-      ).thenAnswer((_) async => Right(tLoginResponse));
+      ).thenAnswer((_) async => const Right(tCache));
       final options = RequestOptions(path: '/test');
 
       // Act

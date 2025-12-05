@@ -8,79 +8,101 @@ import 'package:mocktail/mocktail.dart';
 
 class MockStoryDataSource extends Mock implements StoryDataSource {}
 
+class FakeStory extends Fake implements Story {}
+
 void main() {
   late ListRepositoryRemote repository;
   late MockStoryDataSource mockStoryDataSource;
+
+  setUpAll(() {
+    registerFallbackValue(FakeStory());
+  });
 
   setUp(() {
     mockStoryDataSource = MockStoryDataSource();
     repository = ListRepositoryRemote(storyDataSource: mockStoryDataSource);
   });
 
-  final tStory = Story(
-    id: 'story-1',
-    name: 'User',
-    description: 'Description',
-    photoUrl: 'url',
-    createdAt: DateTime.now(),
-    lat: 0.0,
-    lon: 0.0,
-  );
-  final tStories = [tStory];
+  group('ListRepositoryRemote', () {
+    final tStories = [
+      Story(
+        id: '1',
+        name: 'Story 1',
+        description: 'Description 1',
+        photoUrl: 'url1',
+        createdAt: DateTime.now(),
+        lat: null,
+        lon: null,
+      ),
+    ];
 
-  group('getListStories', () {
     test(
-      'should return List<Story> when data source returns success',
+      'should return Right(List<Story>) when getListStories is successful',
       () async {
-        // Arrange
+        // arrange
         when(
           () => mockStoryDataSource.getAllStories(),
         ).thenAnswer((_) async => Right(tStories));
 
-        // Act
+        // act
         final result = await repository.getListStories();
 
-        // Assert
-        verify(() => mockStoryDataSource.getAllStories()).called(1);
+        // assert
         expect(result, Right(tStories));
+        verify(() => mockStoryDataSource.getAllStories()).called(1);
       },
     );
 
+    test('should return cached stories on subsequent calls', () async {
+      // arrange
+      when(
+        () => mockStoryDataSource.getAllStories(),
+      ).thenAnswer((_) async => Right(tStories));
+
+      // act
+      await repository.getListStories();
+      final result = await repository.getListStories();
+
+      // assert
+      expect(result, Right(tStories));
+      verify(() => mockStoryDataSource.getAllStories()).called(1);
+    });
+
     test(
-      'should return AppException when data source returns failure',
+      'should return Left(AppException) when getListStories fails',
       () async {
-        // Arrange
+        // arrange
         final tException = AppException(
-          message: 'Error',
+          message: 'error',
           statusCode: 500,
-          identifier: 'error',
+          identifier: 'test',
         );
         when(
           () => mockStoryDataSource.getAllStories(),
         ).thenAnswer((_) async => Left(tException));
 
-        // Act
+        // act
         final result = await repository.getListStories();
 
-        // Assert
-        verify(() => mockStoryDataSource.getAllStories()).called(1);
+        // assert
         expect(result, Left(tException));
+        verify(() => mockStoryDataSource.getAllStories()).called(1);
       },
     );
-    test('should return cached data when cache is populated', () async {
-      // Arrange
+
+    test('should invalidate cache', () async {
+      // arrange
       when(
         () => mockStoryDataSource.getAllStories(),
       ).thenAnswer((_) async => Right(tStories));
 
-      // Act
-      await repository.getListStories(); // First call to populate cache
-      final result = await repository
-          .getListStories(); // Second call should use cache
+      // act
+      await repository.getListStories();
+      repository.invalidateCache();
+      await repository.getListStories();
 
-      // Assert
-      verify(() => mockStoryDataSource.getAllStories()).called(1);
-      expect(result, Right(tStories));
+      // assert
+      verify(() => mockStoryDataSource.getAllStories()).called(2);
     });
   });
 }
