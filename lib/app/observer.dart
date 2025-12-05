@@ -8,20 +8,22 @@ final class Observer extends ProviderObserver {
     Object? previousValue,
     Object? newValue,
   ) {
-    log('''
-{
-  "provider": "${context.provider.name ?? context.provider.runtimeType}",
-  "newValue": "$newValue"
-}''');
+    // Avoid stringifying large objects
+    final valueString = newValue.toString();
+    final truncatedValue = valueString.length > 200
+        ? '${valueString.substring(0, 200)}...'
+        : valueString;
+
+    log(
+      'Provider updated: ${context.provider.name ?? context.provider.runtimeType} -> $truncatedValue',
+    );
   }
 
   @override
   void didDisposeProvider(ProviderObserverContext context) {
-    log('''
-{
-  "provider": "${context.provider.name ?? context.provider.runtimeType}",
-  "newValue": "disposed"
-}''');
+    log(
+      'Provider disposed: ${context.provider.name ?? context.provider.runtimeType}',
+    );
     super.didDisposeProvider(context);
   }
 }

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
 
 final logger = Logger('DEBUGLogger');
@@ -16,26 +17,34 @@ void main() => mainCommon();
 
 Future<void> mainCommon() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env", mergeWith: Platform.environment);
 
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
     debugPrint('${record.level.name}: ${record.time}: ${record.message}');
   });
-  usePathUrlStrategy();
+
+  final List<Future<void>> startupFutures = [];
+
+  startupFutures.add(
+    dotenv.load(fileName: ".env", mergeWith: Platform.environment),
+  );
+  startupFutures.add(SharedPreferences.getInstance());
 
   if (!kIsWeb && Platform.isWindows) {
-    await windowManager.ensureInitialized();
-    final options = WindowOptions();
-    await windowManager.waitUntilReadyToShow(options, () async {
-      await windowManager.setMinimumSize(const Size(450, 640));
-      await windowManager.setTitle('KodaKito');
-      await windowManager.show();
-      await windowManager.focus();
-    });
+    startupFutures.add(() async {
+      await windowManager.ensureInitialized();
+      final options = WindowOptions();
+      await windowManager.waitUntilReadyToShow(options, () async {
+        await windowManager.setMinimumSize(const Size(450, 640));
+        await windowManager.setTitle('KodaKito');
+        await windowManager.show();
+        await windowManager.focus();
+      });
+    }());
   }
 
   if (kIsWeb) {
+    usePathUrlStrategy();
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -44,13 +53,16 @@ Future<void> mainCommon() async {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
+
+    SystemChrome.setPreferredOrientations(const [
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
   }
-  await SystemChrome.setPreferredOrientations(const [
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
-  ]);
+
+  await Future.wait(startupFutures);
 
   runApp(ProviderScope(observers: [Observer()], child: MyApp()));
 }
