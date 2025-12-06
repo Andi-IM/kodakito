@@ -77,6 +77,8 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
       loading: () => true,
       orElse: () => false,
     );
+    final theme = Theme.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     ref.listen(addStoryProvider, (previous, next) {
       next.when(
@@ -130,9 +132,7 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
                     height: 200,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.outline,
-                      ),
+                      border: Border.all(color: theme.colorScheme.outline),
                       borderRadius: BorderRadius.circular(16),
                       image: imageFile != null
                           ? DecorationImage(
@@ -148,17 +148,13 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
                               Icon(
                                 Icons.image,
                                 size: 50,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 context.l10n.addStoryUploadPlaceholder,
                                 style: TextStyle(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
+                                  color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -194,7 +190,7 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
               : () async {
                   final description = descriptionController.text.trim();
                   if (description.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(
                         content: Text(
                           context.l10n.addStoryErrorEmptyDescription,
@@ -204,7 +200,7 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
                     return;
                   }
                   if (imageFile == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    scaffoldMessenger.showSnackBar(
                       SnackBar(
                         content: Text(context.l10n.addStoryErrorEmptyImage),
                       ),
@@ -212,7 +208,9 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
                     return;
                   }
 
-                  final file = ref.read(imageFileProvider.notifier).toFile();
+                  final file = await ref
+                      .read(imageFileProvider.notifier)
+                      .toFile();
 
                   if (file != null) {
                     // Call addStory
@@ -228,7 +226,7 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Theme.of(context).colorScheme.onPrimary,
+                      theme.colorScheme.onPrimary,
                     ),
                   ),
                 )

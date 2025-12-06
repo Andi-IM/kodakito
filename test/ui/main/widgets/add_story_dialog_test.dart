@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
+import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
@@ -26,68 +29,21 @@ void main() {
   const MethodChannel channelImagePicker = MethodChannel(
     'plugins.flutter.io/image_picker',
   );
-  const MethodChannel channelPathProvider = MethodChannel(
-    'plugins.flutter.io/path_provider',
-  );
 
-  late Directory tempDir;
   late MockAddStoryRepository mockAddStoryRepository;
   late MockListRepository mockListRepository;
   String? mockPickedImagePath;
 
-  // 1x1 Transparent GIF
-  const validGifBytes = [
-    0x47,
-    0x49,
-    0x46,
-    0x38,
-    0x39,
-    0x61,
-    0x01,
-    0x00,
-    0x01,
-    0x00,
-    0x80,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0xFF,
-    0xFF,
-    0xFF,
-    0x21,
-    0xF9,
-    0x04,
-    0x01,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x2C,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x01,
-    0x00,
-    0x01,
-    0x00,
-    0x00,
-    0x02,
-    0x01,
-    0x44,
-    0x00,
-    0x3B,
-  ];
+  late Uint8List testImageBytes;
 
   setUpAll(() async {
-    tempDir = await Directory.systemTemp.createTemp();
     registerFallbackValue(File('dummy'));
-  });
 
-  tearDownAll(() async {
-    await tempDir.delete(recursive: true);
+    // Use a minimal valid 1x1 transparent PNG (base64 decoded)
+    // This ensures image format validation passes in tests
+    testImageBytes = base64Decode(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+    );
   });
 
   setUp(() {
@@ -104,23 +60,11 @@ void main() {
           }
           return null;
         });
-
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channelPathProvider, (
-          MethodCall methodCall,
-        ) async {
-          if (methodCall.method == 'getTemporaryDirectory') {
-            return tempDir.path;
-          }
-          return null;
-        });
   });
 
   tearDown(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channelImagePicker, null);
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channelPathProvider, null);
   });
 
   Future<void> pumpTestWidget(
@@ -134,23 +78,10 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: Builder(
-              builder: (context) {
-                return ElevatedButton(
-                  onPressed: () {
-                    showDialog(context: context, builder: (context) => child);
-                  },
-                  child: const Text('Open Dialog'),
-                );
-              },
-            ),
-          ),
+          home: Scaffold(body: child),
         ),
       ),
     );
-
-    await tester.tap(find.text('Open Dialog'));
     await tester.pumpAndSettle();
   }
 
@@ -226,30 +157,167 @@ void main() {
       );
 
       await tester.enterText(find.byType(TextField), 'Test Description');
-      await tester.pump();
-
       await tester.tap(find.text('Post'));
       await tester.pumpAndSettle();
 
       expect(find.text('Please select an image'), findsOneWidget);
     });
 
-    testWidgets('image picking flow works', skip: true, (tester) async {
-      // Skipped
+    test('successful story post - provider logic', () async {
+      // This tests the provider logic directly instead of through UI
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockAddStoryRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      // Create a test file
+      final testFile = File(
+        '${Directory.systemTemp.path}/test_story_${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
+      await testFile.writeAsBytes(testImageBytes);
+
+      // Don't auto-delete in addTearDown as the file may be in use
+      // We'll let the OS clean up temp files
+
+      // Mock success response
+      when(
+        () => mockAddStoryRepository.addStory(
+          any(),
+          any(),
+          lat: any(named: 'lat'),
+          lon: any(named: 'lon'),
+        ),
+      ).thenAnswer(
+        (_) async => Right(DefaultResponse(error: false, message: 'Success')),
+      );
+
+      // Stub list refresh
+      when(
+        () => mockListRepository.getListStories(),
+      ).thenAnswer((_) async => const Right<AppException, List<Story>>([]));
+
+      // Call addStory directly through provider
+      await container
+          .read(addStoryProvider.notifier)
+          .addStory(description: 'Great Story', photo: testFile);
+
+      // Verify addStory was called with correct parameters
+      verify(
+        () => mockAddStoryRepository.addStory(
+          'Great Story',
+          any(that: isA<File>()),
+        ),
+      ).called(1);
+
+      // Verify list refresh was triggered
+      verify(() => mockListRepository.getListStories()).called(1);
     });
 
-    testWidgets('successful story post', skip: true, (tester) async {
-      // Skipped: Provider update propagation issues in test environment
+    testWidgets('failed story post shows error', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockAddStoryRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(
+        tester,
+        container: container,
+        child: const AddStoryDialog(),
+      );
+
+      // Set image
+      container.read(imageFileProvider.notifier).setImageFile(testImageBytes);
+      await tester.pumpAndSettle();
+
+      // Enter description
+      await tester.enterText(find.byType(TextField), 'Fail Story');
+
+      // Mock Failure
+      when(
+        () => mockAddStoryRepository.addStory(
+          any(),
+          any(),
+          lat: any(named: 'lat'),
+          lon: any(named: 'lon'),
+        ),
+      ).thenAnswer(
+        (_) async => Left(
+          AppException(
+            message: 'Upload failed',
+            statusCode: 500,
+            identifier: 'test',
+          ),
+        ),
+      );
+
+      // Tap Post
+      await tester.tap(find.text('Post'));
+      await tester.pumpAndSettle();
+
+      // Verify Snackbar or error message
+      expect(find.text('Upload failed'), findsOneWidget);
     });
 
-    testWidgets('failed story post shows error', skip: true, (tester) async {
-      // Skipped: Provider update propagation issues in test environment
-    });
+    testWidgets('shows loading state while posting', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
 
-    testWidgets('shows loading state while posting', skip: true, (
-      tester,
-    ) async {
-      // Skipped
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockAddStoryRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(
+        tester,
+        container: container,
+        child: const AddStoryDialog(),
+      );
+
+      container.read(imageFileProvider.notifier).setImageFile(testImageBytes);
+      await tester.enterText(find.byType(TextField), 'Loading Story');
+      await tester.pumpAndSettle();
+
+      // Mock delayed response
+      final completer = Completer<Either<AppException, DefaultResponse>>();
+      when(
+        () => mockAddStoryRepository.addStory(
+          any(),
+          any(),
+          lat: any(named: 'lat'),
+          lon: any(named: 'lon'),
+        ),
+      ).thenAnswer((_) => completer.future);
+
+      // Tap Post
+      await tester.tap(find.text('Post'));
+      await tester.pump(); // Start request
+
+      // Verify loading indicator
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      // Finish
+      completer.complete(Right(DefaultResponse(error: false, message: 'Done')));
+
+      // Stub for the refresh
+      when(
+        () => mockListRepository.getListStories(),
+      ).thenAnswer((_) async => const Right<AppException, List<Story>>([]));
+
+      await tester.pumpAndSettle();
     });
   });
 }

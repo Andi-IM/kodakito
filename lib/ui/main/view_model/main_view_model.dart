@@ -10,6 +10,7 @@ import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'main_view_model.g.dart';
@@ -25,10 +26,14 @@ class ImageFile extends _$ImageFile {
     state = imageFile;
   }
 
-  File? toFile() {
+  Future<File?> toFile() async {
     final bytes = state;
     if (bytes == null) return null;
-    return File.fromRawPath(bytes);
+    final tempDir = await getTemporaryDirectory();
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final file = File('${tempDir.path}/story_$timestamp.jpg');
+    await file.writeAsBytes(bytes);
+    return file;
   }
 }
 
