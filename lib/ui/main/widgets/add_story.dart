@@ -27,19 +27,12 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(getCroppedImageFromPickerProvider(widget.cropStream), (
-      previous,
-      next,
-    ) {
-      if (next.hasValue && next.value != null) {
-        file = next.value;
-      }
-    });
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.addStoryTitle),
         actions: [
           TextButton(
+            key: const Key('postButton'),
             onPressed: () {
               if (file != null) {
                 ref
@@ -62,8 +55,18 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
             StreamBuilder<InstaAssetsExportDetails>(
               stream: widget.cropStream,
               builder: (context, snapshot) {
-                final file = snapshot.data?.data.firstOrNull?.croppedFile;
-                if (file != null) {
+                final croppedFile =
+                    snapshot.data?.data.firstOrNull?.croppedFile;
+                if (croppedFile != null) {
+                  // Update file reference for posting
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted && file != croppedFile) {
+                      setState(() {
+                        file = croppedFile;
+                      });
+                    }
+                  });
+
                   return SizedBox(
                     height: 400,
                     width: 400,
@@ -71,7 +74,7 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
                       aspectRatio: 1,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.file(file, fit: BoxFit.cover),
+                        child: Image.file(croppedFile, fit: BoxFit.cover),
                       ),
                     ),
                   );
@@ -94,6 +97,7 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
               style: Theme.of(context).textTheme.labelMedium,
             ),
             TextField(
+              key: const Key('descriptionField'),
               controller: _descriptionController,
               maxLines: 5,
               decoration: InputDecoration(

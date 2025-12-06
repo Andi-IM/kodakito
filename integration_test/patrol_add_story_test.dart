@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'robot/patrol_add_story_robot.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'dart:math';
 
 void main() {
   patrolTest(
@@ -26,6 +27,10 @@ void main() {
       await robot.grantPermissionWhenVisible();
 
       await robot.selectImageMobile();
+      final random = Random().nextInt(100);
+      await robot.fillDescription('Test description-$random');
+      await robot.tapPostButton();
+      await robot.checkAddStoryResult('Test description-$random');
     },
   );
 }

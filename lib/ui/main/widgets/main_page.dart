@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dicoding_story/common/localizations.dart';
+import 'package:dicoding_story/l10n/app_asset_picker_text_delegate.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story_dialog.dart';
@@ -65,10 +66,10 @@ class _MainScreenState extends ConsumerState<MainPage> {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       InstaAssetPicker.pickAssets(
         context,
-        selectedAssets: [],
         pickerConfig: InstaAssetPickerConfig(
           title: context.l10n.addStoryTitle,
           closeOnComplete: true,
+          textDelegate: IndonesianAssetPickerTextDelegate(),
           pickerTheme:
               InstaAssetPicker.themeData(
                 Theme.of(context).colorScheme.primary,
@@ -99,8 +100,9 @@ class _MainScreenState extends ConsumerState<MainPage> {
           specialItemPosition: SpecialItemPosition.prepend,
         ),
         maxAssets: 1,
-        onCompleted: (cropStream) =>
-            context.pushNamed('add-story', extra: cropStream),
+        onCompleted: (cropStream) {
+          return context.pushNamed('add-story', extra: cropStream);
+        },
       );
       return;
     }

@@ -53,11 +53,26 @@ class PatrolAddStoryRobot {
   }
 
   Future<void> selectImageMobile() async {
-    // verify child of gridFinder is not empty
-    final mediaId = find.byKey(Key('44'));
-    mediaId.evaluate().forEach((element) {
-      print('Element candidate: $element');
-    });
-    await $(mediaId).tap();
+    /// using coordinates for sampling
+    await $.native.tapAt(Offset(0.370, 0.627));
+    await $.native.tapAt(Offset(0.919, 0.05));
+  }
+
+  Future<void> fillDescription(String description) async {
+    await $(#descriptionField).tap();
+    await $(#descriptionField).enterText(description);
+    await $.tester.testTextInput.receiveAction(TextInputAction.done);
+  }
+
+  Future<void> tapPostButton() async {
+    await $(#postButton).tap();
+    await $.pumpAndSettle();
+  }
+
+  Future<void> checkAddStoryResult(String description) async {
+    await $(MainPage).waitUntilExists();
+    await $(Selector(text: description)).waitUntilExists();
+    await $.tester.container().read(cacheRepositoryProvider).deleteToken();
+    await $.tester.pumpAndSettle();
   }
 }
