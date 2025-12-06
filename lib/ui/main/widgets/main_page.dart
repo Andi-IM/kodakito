@@ -105,9 +105,8 @@ class _MainScreenState extends ConsumerState<MainPage> {
           specialItemPosition: SpecialItemPosition.prepend,
         ),
         maxAssets: 1,
-        onCompleted: (cropStream) {
-          context.pushNamed('add-story', extra: cropStream);
-        },
+        onCompleted: (cropStream) =>
+            context.pushNamed('add-story', extra: cropStream),
       );
       return;
     }

@@ -20,18 +20,6 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
   File? file;
 
   @override
-  void initState() {
-    widget.cropStream.firstWhere((event) => event.data.isNotEmpty).then((
-      value,
-    ) {
-      setState(() {
-        file = value.data.firstOrNull!.croppedFile!;
-      });
-    });
-    super.initState();
-  }
-
-  @override
   void dispose() {
     _descriptionController.dispose();
     super.dispose();
@@ -39,6 +27,14 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(getCroppedImageFromPickerProvider(widget.cropStream), (
+      previous,
+      next,
+    ) {
+      if (next.hasValue && next.value != null) {
+        file = next.value;
+      }
+    });
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.addStoryTitle),

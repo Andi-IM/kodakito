@@ -7,6 +7,7 @@ import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
 import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
 import 'package:dicoding_story/utils/logger_mixin.dart';
+import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -23,6 +24,20 @@ class ImageFile extends _$ImageFile {
   void setImageFile(Uint8List imageFile) {
     state = imageFile;
   }
+}
+
+@riverpod
+Future<File?> getCroppedImageFromPicker(
+  Ref ref,
+  Stream<InstaAssetsExportDetails> cropStream,
+) async {
+  File? file;
+  await for (final event in cropStream) {
+    if (event.data.isNotEmpty) {
+      file = event.data.firstOrNull?.croppedFile;
+    }
+  }
+  return file;
 }
 
 @riverpod

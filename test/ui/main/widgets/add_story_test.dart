@@ -6,6 +6,7 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/repository/add_story_repository.dart';
+import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -52,7 +53,22 @@ void main() {
 
   Widget createWidgetUnderTest() {
     return ProviderScope(
-      overrides: [addStoryRepositoryProvider.overrideWithValue(mockRepository)],
+      overrides: [
+        addStoryRepositoryProvider.overrideWithValue(mockRepository),
+        getCroppedImageFromPickerProvider(streamController.stream).overrideWith(
+          (ref) async {
+            // Emulate the logic: wait for stream and return file
+            // Or simply return the mock file if we want to force state
+            // adhering to testFile
+            await for (final event in streamController.stream) {
+              if (event.data.isNotEmpty) {
+                return event.data.first.croppedFile;
+              }
+            }
+            return null;
+          },
+        ),
+      ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
