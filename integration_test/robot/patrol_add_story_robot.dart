@@ -17,30 +17,26 @@ class PatrolAddStoryRobot {
     await $.pumpWidgetAndSettle(widget);
   }
 
-  final emailFieldKey = const ValueKey('emailField');
-  final passwordFieldKey = const ValueKey('passwordField');
-  final loginButtonKey = const ValueKey('loginButton');
-
   Future<void> typeEmail(String email) async {
-    await $(emailFieldKey).tap();
-    await $(emailFieldKey).enterText(email);
+    await $(#emailField).tap();
+    await $(#emailField).enterText(email);
     await $.tester.testTextInput.receiveAction(TextInputAction.done);
   }
 
   Future<void> typePassword(String password) async {
-    await $(passwordFieldKey).tap();
-    await $(passwordFieldKey).enterText(password);
+    await $(#passwordField).tap();
+    await $(#passwordField).enterText(password);
     await $.tester.testTextInput.receiveAction(TextInputAction.done);
   }
 
   Future<Either<AppException, Cache>> tapLoginButton() async {
-    await $(loginButtonKey).tap();
+    await $(#loginButton).tap();
     await $.pumpAndSettle();
     return await $.tester.container().read(cacheRepositoryProvider).getToken();
   }
 
   Future<void> checkLoginResult() async {
-    expect($(MainPage).visible, equals(true));
+    await $(MainPage).waitUntilExists();
     await $.tester.container().read(cacheRepositoryProvider).deleteToken();
     await $.tester.pumpAndSettle();
   }
@@ -58,8 +54,10 @@ class PatrolAddStoryRobot {
 
   Future<void> selectImageMobile() async {
     // verify child of gridFinder is not empty
-    expect($(SliverGrid).visible, equals(true));
-    // find child of gridFinder using patrol finder
-    await $.native.tap(Selector(className: 'android.widget.Image'));
+    final mediaId = find.byKey(Key('44'));
+    mediaId.evaluate().forEach((element) {
+      print('Element candidate: $element');
+    });
+    await $(mediaId).tap();
   }
 }

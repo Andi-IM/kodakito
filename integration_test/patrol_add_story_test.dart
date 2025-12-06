@@ -10,6 +10,7 @@ void main() {
   patrolTest(
     'Add story',
     framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+    config: PatrolTesterConfig(printLogs: true),
     ($) async {
       await initApp();
       final robot = PatrolAddStoryRobot($);

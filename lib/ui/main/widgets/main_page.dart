@@ -65,6 +65,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       InstaAssetPicker.pickAssets(
         context,
+        selectedAssets: [],
         pickerConfig: InstaAssetPickerConfig(
           title: context.l10n.addStoryTitle,
           closeOnComplete: true,
@@ -83,13 +84,6 @@ class _MainScreenState extends ConsumerState<MainPage> {
             InstaPickerCircleIconButton.unselectAll(
               onTap: unselectAll,
               theme: theme,
-              size: height,
-            ),
-            const SizedBox(width: 8),
-            InstaPickerCircleIconButton(
-              onTap: () => _pickFromWeChatCamera(context),
-              theme: theme,
-              icon: const Icon(Icons.camera_alt),
               size: height,
             ),
           ],
