@@ -15,6 +15,7 @@ class ListRepositoryRemote implements ListRepository, CacheInterface {
 
   @override
   Future<Either<AppException, List<Story>>> getListStories() async {
+    print('Fetching stories list: ${_cachedListStories?.length}');
     if (_cachedListStories == null) {
       // No cache, fetch from remote
       final result = await _storyDataSource.getAllStories();

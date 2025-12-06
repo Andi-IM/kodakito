@@ -50,6 +50,7 @@ class PatrolAddStoryRobot {
     if (await $.native.isPermissionDialogVisible()) {
       await $.native.tap(Selector(text: 'Allow all'));
     }
+    await $.pumpAndSettle();
   }
 
   Future<void> selectImageMobile() async {
@@ -72,7 +73,5 @@ class PatrolAddStoryRobot {
   Future<void> checkAddStoryResult(String description) async {
     await $(MainPage).waitUntilExists();
     await $(Selector(text: description)).waitUntilExists();
-    await $.tester.container().read(cacheRepositoryProvider).deleteToken();
-    await $.tester.pumpAndSettle();
   }
 }

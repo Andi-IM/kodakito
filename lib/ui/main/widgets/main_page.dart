@@ -69,7 +69,9 @@ class _MainScreenState extends ConsumerState<MainPage> {
         pickerConfig: InstaAssetPickerConfig(
           title: context.l10n.addStoryTitle,
           closeOnComplete: true,
-          textDelegate: context.l10n.localeName == 'id' ? IndonesianAssetPickerTextDelegate() : null,
+          textDelegate: context.l10n.localeName == 'id'
+              ? IndonesianAssetPickerTextDelegate()
+              : null,
           pickerTheme:
               InstaAssetPicker.themeData(
                 Theme.of(context).colorScheme.primary,
@@ -120,9 +122,8 @@ class _MainScreenState extends ConsumerState<MainPage> {
     final userAsync = ref.watch(fetchUserDataProvider);
     return Scaffold(
       body: storiesAsync.when(
-        data: (stories) => Scrollbar(
-          controller: _scrollController,
-          child: CustomScrollView(
+        data: (stories) {
+          final scrollView = CustomScrollView(
             controller: _scrollController,
             slivers: [
               SliverAppBar(
@@ -133,11 +134,6 @@ class _MainScreenState extends ConsumerState<MainPage> {
                 centerTitle: true,
                 pinned: false,
                 actions: [
-                  IconButtonM3E(
-                    key: const ValueKey('debugCoordinatesButton'),
-                    onPressed: () => context.pushNamed('debug-coordinates'),
-                    icon: const Icon(Icons.dangerous),
-                  ),
                   IconButtonM3E(
                     key: const ValueKey('avatarButton'),
                     onPressed: () => showDialog(
@@ -210,8 +206,24 @@ class _MainScreenState extends ConsumerState<MainPage> {
                 ),
               ),
             ],
-          ),
-        ),
+          );
+
+          final scrollbarChild = Scrollbar(
+            controller: _scrollController,
+            child: scrollView,
+          );
+
+          // Wrap with RefreshIndicator for mobile platforms
+          final isMobile = !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+          return isMobile
+              ? RefreshIndicator(
+                  onRefresh: () async {
+                    await ref.read(storiesProvider.notifier).fetchStories();
+                  },
+                  child: scrollbarChild,
+                )
+              : scrollbarChild;
+        },
         loading: () => Center(
           child: isMedium
               ? SizedBox(

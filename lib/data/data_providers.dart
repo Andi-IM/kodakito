@@ -34,6 +34,7 @@ NetworkImageService networkImageService(Ref ref) {
 @riverpod
 DioNetworkService dioNetworkService(Ref ref) {
   final dio = Dio();
+
   // coverage:ignore-start
   if (!kTestMode) { // coverage:ignore-line
       final dioBaseOptions = BaseOptions(

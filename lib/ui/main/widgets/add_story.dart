@@ -37,9 +37,9 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
         success: () {
           // Navigate back on success
           if (mounted) {
-            context.pop();
             // Reset the provider state for next time
             ref.read(addStoryProvider.notifier).resetState();
+            context.pushReplacementNamed('main');
           }
         },
         failure: (failure) {
@@ -62,19 +62,37 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
       appBar: AppBar(
         title: Text(context.l10n.addStoryTitle),
         actions: [
-          TextButton(
-            key: const Key('postButton'),
-            onPressed: () {
-              if (file != null) {
-                ref
-                    .read(addStoryProvider.notifier)
-                    .addStory(
-                      description: _descriptionController.text,
-                      photo: file!,
-                    );
-              }
+          Consumer(
+            builder: (context, ref, child) {
+              final addStoryState = ref.watch(addStoryProvider);
+              final isLoading = addStoryState.maybeWhen(
+                loading: () => true,
+                orElse: () => false,
+              );
+
+              return TextButton(
+                key: const Key('postButton'),
+                onPressed: isLoading
+                    ? null
+                    : () {
+                        if (file != null) {
+                          ref
+                              .read(addStoryProvider.notifier)
+                              .addStory(
+                                description: _descriptionController.text,
+                                photo: file!,
+                              );
+                        }
+                      },
+                child: isLoading
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(context.l10n.addStoryBtnPost),
+              );
             },
-            child: Text(context.l10n.addStoryBtnPost),
           ),
         ],
       ),
@@ -127,14 +145,25 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
               context.l10n.addStoryDescriptionLabel,
               style: Theme.of(context).textTheme.labelMedium,
             ),
-            TextField(
-              key: const Key('descriptionField'),
-              controller: _descriptionController,
-              maxLines: 5,
-              decoration: InputDecoration(
-                hintText: context.l10n.addStoryDescriptionHint,
-                border: const OutlineInputBorder(),
-              ),
+            Consumer(
+              builder: (context, ref, child) {
+                final addStoryState = ref.watch(addStoryProvider);
+                final isLoading = addStoryState.maybeWhen(
+                  loading: () => true,
+                  orElse: () => false,
+                );
+
+                return TextField(
+                  key: const Key('descriptionField'),
+                  controller: _descriptionController,
+                  maxLines: 5,
+                  enabled: !isLoading,
+                  decoration: InputDecoration(
+                    hintText: context.l10n.addStoryDescriptionHint,
+                    border: const OutlineInputBorder(),
+                  ),
+                );
+              },
             ),
           ],
         ),
