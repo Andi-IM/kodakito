@@ -120,6 +120,10 @@ class AddStoryNotifier extends _$AddStoryNotifier with LogMixin {
       lat: lat,
       lon: lon,
     );
+
+    // Check if the provider is still mounted before updating state
+    if (!ref.mounted) return;
+
     result.fold(
       (failure) {
         log.warning('Failed to add story: ${failure.message}');

@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:dicoding_story/common/localizations.dart';
+import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 
 class AddStoryPage extends ConsumerStatefulWidget {
@@ -27,6 +29,35 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Listen to add story state changes
+    ref.listen(addStoryProvider, (previous, next) {
+      next.when(
+        initial: () {},
+        loading: () {},
+        success: () {
+          // Navigate back on success
+          if (mounted) {
+            context.pop();
+            // Reset the provider state for next time
+            ref.read(addStoryProvider.notifier).resetState();
+          }
+        },
+        failure: (failure) {
+          // Show error message
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(failure.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+            // Reset state so user can try again
+            ref.read(addStoryProvider.notifier).resetState();
+          }
+        },
+      );
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.addStoryTitle),

@@ -69,7 +69,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
         pickerConfig: InstaAssetPickerConfig(
           title: context.l10n.addStoryTitle,
           closeOnComplete: true,
-          textDelegate: IndonesianAssetPickerTextDelegate(),
+          textDelegate: context.l10n.localeName == 'id' ? IndonesianAssetPickerTextDelegate() : null,
           pickerTheme:
               InstaAssetPicker.themeData(
                 Theme.of(context).colorScheme.primary,
@@ -133,6 +133,11 @@ class _MainScreenState extends ConsumerState<MainPage> {
                 centerTitle: true,
                 pinned: false,
                 actions: [
+                  IconButtonM3E(
+                    key: const ValueKey('debugCoordinatesButton'),
+                    onPressed: () => context.pushNamed('debug-coordinates'),
+                    icon: const Icon(Icons.dangerous),
+                  ),
                   IconButtonM3E(
                     key: const ValueKey('avatarButton'),
                     onPressed: () => showDialog(
