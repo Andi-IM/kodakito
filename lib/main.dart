@@ -13,9 +13,12 @@ import 'package:window_manager/window_manager.dart';
 
 final logger = Logger('DEBUGLogger');
 
-void main() => mainCommon();
+void main() {
+  initApp();
+  runApp(ProviderScope(observers: [Observer()], child: MyApp()));
+}
 
-Future<void> mainCommon() async {
+Future<void> initApp() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   Logger.root.level = Level.ALL;
@@ -63,6 +66,4 @@ Future<void> mainCommon() async {
   }
 
   await Future.wait(startupFutures);
-
-  runApp(ProviderScope(observers: [Observer()], child: MyApp()));
 }

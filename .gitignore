@@ -55,3 +55,4 @@ app.*.map.json
 *.gr.dart
 *.freezed.dart
 *.repo.dart
+/integration_test/test_bundle.dart
