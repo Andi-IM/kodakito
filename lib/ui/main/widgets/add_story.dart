@@ -1,18 +1,35 @@
+import 'dart:io';
+
 import 'package:dicoding_story/common/localizations.dart';
+import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 
-class AddStoryPage extends StatefulWidget {
+class AddStoryPage extends ConsumerStatefulWidget {
   const AddStoryPage({super.key, required this.cropStream});
 
   final Stream<InstaAssetsExportDetails> cropStream;
 
   @override
-  State<AddStoryPage> createState() => _AddStoryPageState();
+  ConsumerState<AddStoryPage> createState() => _AddStoryPageState();
 }
 
-class _AddStoryPageState extends State<AddStoryPage> {
+class _AddStoryPageState extends ConsumerState<AddStoryPage> {
   final TextEditingController _descriptionController = TextEditingController();
+  File? file;
+
+  @override
+  void initState() {
+    widget.cropStream.firstWhere((event) => event.data.isNotEmpty).then((
+      value,
+    ) {
+      setState(() {
+        file = value.data.firstOrNull!.croppedFile!;
+      });
+    });
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -27,7 +44,16 @@ class _AddStoryPageState extends State<AddStoryPage> {
         title: Text(context.l10n.addStoryTitle),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              if (file != null) {
+                ref
+                    .read(addStoryProvider.notifier)
+                    .addStory(
+                      description: _descriptionController.text,
+                      photo: file!,
+                    );
+              }
+            },
             child: Text(context.l10n.addStoryBtnPost),
           ),
         ],
