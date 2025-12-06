@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:intl/intl.dart';
 
 class StoryCard extends StatelessWidget {
   final Story story;
@@ -81,9 +83,9 @@ class StoryCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        story.createdAt.toString().split(
-                          ' ',
-                        )[0], // Simple date formatting
+                        DateFormat.yMMMd(
+                          context.l10n.localeName,
+                        ).format(story.createdAt),
                         style: Theme.of(
                           context,
                         ).textTheme.bodySmall?.copyWith(color: Colors.grey),

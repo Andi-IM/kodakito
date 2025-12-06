@@ -13,8 +13,8 @@ import 'package:window_manager/window_manager.dart';
 
 final logger = Logger('DEBUGLogger');
 
-void main() {
-  initApp();
+void main() async {
+  await initApp();
   runApp(ProviderScope(observers: [Observer()], child: MyApp()));
 }
 

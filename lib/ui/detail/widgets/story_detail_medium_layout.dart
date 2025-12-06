@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart' hide Config;
+import 'package:intl/intl.dart';
 
 class StoryDetailMediumLayout extends StatelessWidget {
   final Story story;
@@ -67,7 +69,9 @@ class StoryDetailMediumLayout extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        story.createdAt.toString().split(' ')[0],
+                        DateFormat.yMMMd(
+                          context.l10n.localeName,
+                        ).format(story.createdAt),
                         style: GoogleFonts.quicksand(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
