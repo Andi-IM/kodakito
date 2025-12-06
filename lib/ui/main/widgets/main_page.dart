@@ -61,7 +61,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
     }
   }
 
-  Future<void> _showAddStoryDialog() async {
+  Future<void> showAddStoryDialog() async {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       InstaAssetPicker.pickAssets(
         context,
@@ -242,7 +242,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
     return FloatingActionButton(
       key: const ValueKey('fab_compact'),
       heroTag: 'fab_compact',
-      onPressed: () => _showAddStoryDialog(),
+      onPressed: () => showAddStoryDialog(),
       tooltip: context.l10n.addStoryTitle,
       child: const Icon(Icons.add),
     );
@@ -252,7 +252,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
     return FloatingActionButton.extended(
       key: const ValueKey('fab_extended'),
       heroTag: 'fab_extended',
-      onPressed: () => _showAddStoryDialog(),
+      onPressed: () => showAddStoryDialog(),
       label: Text(context.l10n.addStoryTitle),
       icon: const Icon(Icons.add),
       tooltip: context.l10n.addStoryTitle,

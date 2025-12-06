@@ -24,6 +24,12 @@ class ImageFile extends _$ImageFile {
   void setImageFile(Uint8List imageFile) {
     state = imageFile;
   }
+
+  File? toFile() {
+    final bytes = state;
+    if (bytes == null) return null;
+    return File.fromRawPath(bytes);
+  }
 }
 
 @riverpod

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
@@ -8,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 
 class AddStoryDialog extends ConsumerStatefulWidget {
   const AddStoryDialog({super.key});
@@ -27,10 +24,55 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
     super.dispose();
   }
 
+  void pickImage(BuildContext context) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      if (context.mounted) {
+        final imageBytes = await image.readAsBytes();
+        if (context.mounted) {
+          await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              content: SizedBox(
+                width: 500,
+                height: 500,
+                child: Crop(
+                  image: imageBytes,
+                  controller: cropController,
+                  onCropped: (result) {
+                    if (result is CropSuccess) {
+                      ref
+                          .read(imageFileProvider.notifier)
+                          .setImageFile(result.croppedImage);
+                    }
+                    context.pop();
+                  },
+                  aspectRatio: 1,
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => context.pop(),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () => cropController.crop(),
+                  child: const Text('Crop'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final imageFile = ref.watch(imageFileProvider);
     final addStoryState = ref.watch(addStoryProvider);
+    final imageFile = ref.watch(imageFileProvider);
     final isLoading = addStoryState.maybeWhen(
       loading: () => true,
       orElse: () => false,
@@ -80,53 +122,7 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
               ),
               const SizedBox(height: 8),
               GestureDetector(
-                onTap: () async {
-                  final ImagePicker picker = ImagePicker();
-                  final XFile? image = await picker.pickImage(
-                    source: ImageSource.gallery,
-                  );
-                  if (image != null) {
-                    if (context.mounted) {
-                      final imageBytes = await image.readAsBytes();
-                      if (context.mounted) {
-                        await showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            content: SizedBox(
-                              width: 500,
-                              height: 500,
-                              child: Crop(
-                                image: imageBytes,
-                                controller: cropController,
-                                onCropped: (result) {
-                                  if (result is CropSuccess) {
-                                    ref
-                                        .read(imageFileProvider.notifier)
-                                        .setImageFile(result.croppedImage);
-                                  }
-                                  context.pop();
-                                },
-                                aspectRatio: 1,
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => context.pop(),
-                                child: const Text('Cancel'),
-                              ),
-                              FilledButton(
-                                onPressed: () {
-                                  cropController.crop();
-                                },
-                                child: const Text('Crop'),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                    }
-                  }
-                },
+                onTap: () => pickImage(context),
                 child: Semantics(
                   label: context.l10n.addStoryImageLabel,
                   button: true,
@@ -216,16 +212,14 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
                     return;
                   }
 
-                  // Convert Uint8List to File
-                  final tempDir = await getTemporaryDirectory();
-                  final timestamp = DateTime.now().millisecondsSinceEpoch;
-                  final file = File('${tempDir.path}/story_$timestamp.jpg');
-                  await file.writeAsBytes(imageFile);
+                  final file = ref.read(imageFileProvider.notifier).toFile();
 
-                  // Call addStory
-                  await ref
-                      .read(addStoryProvider.notifier)
-                      .addStory(description: description, photo: file);
+                  if (file != null) {
+                    // Call addStory
+                    await ref
+                        .read(addStoryProvider.notifier)
+                        .addStory(description: description, photo: file);
+                  }
                 },
           child: isLoading
               ? SizedBox(
