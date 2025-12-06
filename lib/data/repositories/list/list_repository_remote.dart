@@ -5,30 +5,16 @@ import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 
 /// Remote data source for [Story].
-class ListRepositoryRemote implements ListRepository, CacheInterface {
+class ListRepositoryRemote implements ListRepository {
   final StoryDataSource _storyDataSource;
 
   ListRepositoryRemote({required StoryDataSource storyDataSource})
     : _storyDataSource = storyDataSource;
 
-  List<Story>? _cachedListStories;
 
   @override
   Future<Either<AppException, List<Story>>> getListStories() async {
-    print('Fetching stories list: ${_cachedListStories?.length}');
-    if (_cachedListStories == null) {
-      // No cache, fetch from remote
-      final result = await _storyDataSource.getAllStories();
-      result.fold((l) {}, (r) => _cachedListStories = r);
-      return result;
-    } else {
-      // Cache hit, return cached result
-      return Right(_cachedListStories!);
-    }
+    return await _storyDataSource.getAllStories();
   }
 
-  @override
-  void invalidateCache() {
-    _cachedListStories = null;
-  }
 }

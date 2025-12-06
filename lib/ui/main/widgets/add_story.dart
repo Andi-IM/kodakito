@@ -39,6 +39,7 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
           if (mounted) {
             // Reset the provider state for next time
             ref.read(addStoryProvider.notifier).resetState();
+            
             context.pushReplacementNamed('main');
           }
         },

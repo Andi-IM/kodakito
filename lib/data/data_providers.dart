@@ -26,14 +26,17 @@ AuthInterceptor authInterceptor(Ref ref) =>
     AuthInterceptor(ref.read(cacheDatasourceProvider));
 
 @riverpod
+Dio dio(Ref ref) => Dio();
+
+@riverpod
 NetworkImageService networkImageService(Ref ref) {
-  final dio = Dio();
+  final dio = ref.read(dioProvider);
   return DioImageService(dio);
 }
 
 @riverpod
 DioNetworkService dioNetworkService(Ref ref) {
-  final dio = Dio();
+  final dio = ref.read(dioProvider);
 
   // coverage:ignore-start
   if (!kTestMode) { // coverage:ignore-line

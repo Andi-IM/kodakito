@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/repositories/list/list_repository_remote.dart';
-import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
@@ -36,10 +35,6 @@ void main() {
         lon: null,
       ),
     ];
-
-    test('should implement CacheInterface', () {
-      expect(repository, isA<CacheInterface>());
-    });
 
     test(
       'should return Right(List<Story>) when getListStories is successful',
@@ -94,20 +89,5 @@ void main() {
         verify(() => mockStoryDataSource.getAllStories()).called(1);
       },
     );
-
-    test('should invalidate cache', () async {
-      // arrange
-      when(
-        () => mockStoryDataSource.getAllStories(),
-      ).thenAnswer((_) async => Right(tStories));
-
-      // act
-      await repository.getListStories();
-      repository.invalidateCache();
-      await repository.getListStories();
-
-      // assert
-      verify(() => mockStoryDataSource.getAllStories()).called(2);
-    });
   });
 }

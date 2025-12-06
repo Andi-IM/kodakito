@@ -7,7 +7,3 @@ abstract class ListRepository {
   /// Get list of stories
   Future<Either<AppException, List<Story>>> getListStories();
 }
-
-abstract class CacheInterface {
-  void invalidateCache();
-}

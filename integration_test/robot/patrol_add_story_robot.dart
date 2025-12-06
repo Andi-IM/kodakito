@@ -67,7 +67,7 @@ class PatrolAddStoryRobot {
 
   Future<void> tapPostButton() async {
     await $(#postButton).tap();
-    await $.pumpAndSettle();
+    await $.pump();    
   }
 
   Future<void> checkAddStoryResult(String description) async {

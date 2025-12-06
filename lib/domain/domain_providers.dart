@@ -64,12 +64,10 @@ DetailRepository detailRepository(Ref ref) {
 
 @riverpod
 AddStoryRepository addStoryRepository(Ref ref) {
-  final remoteListRepository = ref.read(listRepositoryProvider);
   final env = ref.watch(envInfoProvider);
   if (env.isProduction) {
     return AddStoryRepositoryRemote(
       storyDataSource: ref.read(storyDataSourceProvider),
-      cacheInterface: remoteListRepository as ListRepositoryRemote,
     );
   } else {
     return AddStoryRepositoryLocal(
