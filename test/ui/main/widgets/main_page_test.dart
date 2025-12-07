@@ -680,7 +680,12 @@ void main() {
 
       // Stub goRouter.pushNamed
       when(
-        () => mockGoRouter.pushNamed(any(), extra: any(named: 'extra')),
+        () => mockGoRouter.pushNamed(
+          any(),
+          pathParameters: any(named: 'pathParameters'),
+          queryParameters: any(named: 'queryParameters'),
+          extra: any(named: 'extra'),
+        ),
       ).thenAnswer((_) async => null);
 
       mockStories.setState(
@@ -711,9 +716,14 @@ void main() {
       capturedOnCompleted!(mockStream);
       await tester.pump();
 
-      // Verify pushNamed was called with 'add-story' route
+      // Verify pushNamed was called with 'crop' route and the stream as extra
       verify(
-        () => mockGoRouter.pushNamed('add-story', extra: mockStream),
+        () => mockGoRouter.pushNamed(
+          'crop',
+          pathParameters: any(named: 'pathParameters'),
+          queryParameters: any(named: 'queryParameters'),
+          extra: mockStream,
+        ),
       ).called(1);
     },
   );
@@ -835,6 +845,16 @@ void main() {
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
     when(() => mockStories.fetchStories()).thenAnswer((_) async {});
 
+    // Stub goRouter.pushNamed for AddStoryDialog
+    when(
+      () => mockGoRouter.pushNamed(
+        any(),
+        pathParameters: any(named: 'pathParameters'),
+        queryParameters: any(named: 'queryParameters'),
+        extra: any(named: 'extra'),
+      ),
+    ).thenAnswer((_) async => null);
+
     // Set the state to loaded with stories
     mockStories.setState(
       StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
@@ -854,12 +874,15 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('fab_extended')));
     await tester.pump(const Duration(seconds: 1));
 
-    // Verify AddStoryDialog is shown
-    expect(find.byType(AlertDialog), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('addStoryImageContainer')),
-      findsOneWidget,
-    );
+    // Verify navigation to add-story route was called
+    verify(
+      () => mockGoRouter.pushNamed(
+        'add-story',
+        pathParameters: any(named: 'pathParameters'),
+        queryParameters: any(named: 'queryParameters'),
+        extra: any(named: 'extra'),
+      ),
+    ).called(1);
   });
 
   testWidgets(
@@ -1085,6 +1108,11 @@ void main() {
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
     when(() => mockStories.fetchStories()).thenAnswer((_) async {});
 
+    // Stub goRouter.push for SettingsDialog
+    when(
+      () => mockGoRouter.push(any(), extra: any(named: 'extra')),
+    ).thenAnswer((_) async => null);
+
     // Set the state to loaded with stories
     mockStories.setState(
       StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
@@ -1104,9 +1132,10 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('avatarButton')));
     await tester.pump(const Duration(seconds: 1));
 
-    // Verify SettingsDialog is shown (it uses Dialog widget with 'User' text)
-    expect(find.byType(Dialog), findsOneWidget);
-    expect(find.text('User'), findsOneWidget);
+    // Verify navigation to settings route was called
+    verify(
+      () => mockGoRouter.push('/settings', extra: any(named: 'extra')),
+    ).called(1);
   });
 
   testWidgets('displays error message when stories fail to load', (

@@ -6,12 +6,18 @@ import 'package:dicoding_story/data/services/remote/auth/auth_data_source.dart';
 import 'package:dicoding_story/data/services/remote/auth/auth_interceptor.dart';
 import 'package:dicoding_story/data/services/remote/dio_network_service.dart';
 import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('Data Providers', () {
+    setUpAll(() async {
+      // Load dotenv from the actual .env file
+      await dotenv.load(fileName: '.env');
+    });
+
     test('providers should exist and return correct types', () {
       // Arrange
       SharedPreferences.setMockInitialValues({});
