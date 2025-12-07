@@ -1,11 +1,10 @@
 import 'dart:typed_data' show Uint8List;
 
-import 'package:crop_your_image/crop_your_image.dart';
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
-import 'package:dicoding_story/ui/main/widgets/add_story/wide/story_crop_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class AddStoryImageContainer extends ConsumerStatefulWidget {
   const AddStoryImageContainer({super.key, required this.getImageFile});
@@ -23,13 +22,7 @@ class _AddStoryImageContainerState
     final imageBytes = await widget.getImageFile();
     if (imageBytes != null) {
       if (mounted) {
-        await showDialog(
-          context: context,
-          builder: (context) => StoryCropDialog(
-            imageBytes: imageBytes,
-            cropController: CropController(),
-          ),
-        );
+        context.pushNamed('add-story-crop', extra: imageBytes);
       }
     }
   }

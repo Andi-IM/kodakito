@@ -592,6 +592,7 @@ void main() {
           child: StoryCropDialog(
             imageBytes: validImageBytes,
             cropController: mockCropController,
+            onPop: () {},
           ),
         );
 
@@ -602,7 +603,8 @@ void main() {
         verify(() => mockCropController.crop()).called(1);
       });
 
-      testWidgets('calls context.pop on Cancel button', (tester) async {
+      testWidgets('calls onPop on Cancel button', (tester) async {
+        bool onPopCalled = false;
         final container = ProviderContainer(
           overrides: [
             imageFileProvider.overrideWith(() => SafeImageFile()),
@@ -617,6 +619,7 @@ void main() {
           child: StoryCropDialog(
             imageBytes: validImageBytes,
             cropController: mockCropController,
+            onPop: () => onPopCalled = true,
           ),
         );
 
@@ -624,12 +627,14 @@ void main() {
         await tester.tap(find.text('Cancel'));
         await tester.pumpAndSettle();
 
-        // Verify dialog is popped (assuming pumpTestWidget makes it visible)
-        // pumpTestWidget launches dialog. After pop, it should be gone.
-        expect(find.byType(StoryCropDialog), findsNothing);
+        // Verify onPop was called
+        expect(onPopCalled, isTrue);
       });
 
-      testWidgets('updates image and pops on crop success', (tester) async {
+      testWidgets('updates image and calls onPop on crop success', (
+        tester,
+      ) async {
+        bool onPopCalled = false;
         final container = ProviderContainer(
           overrides: [
             imageFileProvider.overrideWith(() => SafeImageFile()),
@@ -637,9 +642,6 @@ void main() {
           ],
         );
         addTearDown(container.dispose);
-
-        // Spy on the notifier or check the state change
-        // We can check ref.read(imageFileProvider) after crop.
 
         // Keep provider alive
         container.listen(imageFileProvider, (previous, next) {});
@@ -650,6 +652,7 @@ void main() {
           child: StoryCropDialog(
             imageBytes: validImageBytes,
             cropController: mockCropController,
+            onPop: () => onPopCalled = true,
           ),
         );
 
@@ -659,15 +662,14 @@ void main() {
         final Crop cropWidget = tester.widget(cropWidgetFinder);
 
         // Simulate success callback
-        // Creating a dummy cropped image
-        final croppedBytes = validImageBytes; // Reusing valid bytes
+        final croppedBytes = validImageBytes;
         cropWidget.onCropped(CropSuccess(croppedBytes));
 
-        // Pump to handle pop and state update
+        // Pump to handle state update
         await tester.pumpAndSettle();
 
-        // Verify dialog popped
-        expect(find.byType(StoryCropDialog), findsNothing);
+        // Verify onPop was called
+        expect(onPopCalled, isTrue);
 
         // Verify provider updated
         final storedImage = container.read(imageFileProvider);

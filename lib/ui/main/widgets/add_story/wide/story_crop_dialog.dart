@@ -5,17 +5,18 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class StoryCropDialog extends ConsumerWidget {
   const StoryCropDialog({
     super.key,
     required this.imageBytes,
     required this.cropController,
+    required this.onPop,
   });
 
   final Uint8List imageBytes;
   final CropController cropController;
+  final Function onPop;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,14 +33,14 @@ class StoryCropDialog extends ConsumerWidget {
                   .read(imageFileProvider.notifier)
                   .setImageFile(result.croppedImage);
             }
-            context.pop();
+            onPop();
           },
           aspectRatio: 1,
         ),
       ),
       actions: [
         TextButton(
-          onPressed: () => context.pop(),
+          onPressed: () => onPop(),
           child: Text(context.l10n.addStoryBtnCancel),
         ),
         FilledButton(
