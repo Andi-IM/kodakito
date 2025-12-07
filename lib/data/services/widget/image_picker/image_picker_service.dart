@@ -16,7 +16,9 @@ class ImagePickerServiceImpl implements ImagePickerService {
   final ImagePicker _picker = ImagePicker();
 
   @override
-  Future<Uint8List?> pickImage({ImageSource source = ImageSource.gallery}) async {
+  Future<Uint8List?> pickImage({
+    ImageSource source = ImageSource.gallery,
+  }) async {
     final pickedImage = await _picker.pickImage(source: source);
     return pickedImage?.readAsBytes();
   }

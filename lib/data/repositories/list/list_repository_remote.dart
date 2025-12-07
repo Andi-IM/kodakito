@@ -11,10 +11,8 @@ class ListRepositoryRemote implements ListRepository {
   ListRepositoryRemote({required StoryDataSource storyDataSource})
     : _storyDataSource = storyDataSource;
 
-
   @override
   Future<Either<AppException, List<Story>>> getListStories() async {
     return await _storyDataSource.getAllStories();
   }
-
 }

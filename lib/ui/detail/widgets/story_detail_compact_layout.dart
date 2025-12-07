@@ -8,10 +8,7 @@ import 'package:intl/intl.dart';
 
 class StoryDetailCompactLayout extends StatelessWidget {
   final Story story;
-  const StoryDetailCompactLayout({
-    super.key,
-    required this.story,
-  });
+  const StoryDetailCompactLayout({super.key, required this.story});
 
   @override
   Widget build(BuildContext context) {
