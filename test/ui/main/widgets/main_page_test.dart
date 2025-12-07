@@ -486,6 +486,65 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets(
+    'on non-mobile platforms, stories are displayed without RefreshIndicator',
+    (tester) async {
+      final testStories = [
+        Story(
+          id: 'story-1',
+          name: 'Test User 1',
+          description: 'Test description 1',
+          photoUrl: 'https://example.com/photo1.jpg',
+          createdAt: DateTime(2024, 1, 1),
+          lat: null,
+          lon: null,
+        ),
+      ];
+
+      final container = ProviderContainer.test(
+        overrides: [
+          storiesProvider.overrideWith(MockStories.new),
+          fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+          cameraPickerServiceProvider.overrideWithValue(
+            mockCameraPickerService,
+          ),
+          instaImagePickerServiceProvider.overrideWithValue(
+            mockInstaImagePickerService,
+          ),
+          imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      // Keep the provider alive
+      container.listen(storiesProvider, (_, __) {});
+      final mockStories =
+          container.read(storiesProvider.notifier) as MockStories;
+      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+      // Set the state to loaded with stories
+      mockStories.setState(
+        StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+      );
+
+      await tester.pumpWidget(
+        pumpTestWidget(
+          tester,
+          container: container,
+          widthClass: WindowWidthClass.compact,
+        ),
+      );
+
+      await tester.pump();
+
+      // On non-mobile platforms (Windows test), Scrollbar should be present
+      expect(find.byType(Scrollbar), findsOneWidget);
+
+      // But RefreshIndicator should NOT be present (line 189 path)
+      expect(find.byType(RefreshIndicator), findsNothing);
+    },
+  );
 }
 
 // Helper for GoRouter mocking
