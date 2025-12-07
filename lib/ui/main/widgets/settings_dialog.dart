@@ -216,14 +216,7 @@ class SettingsDialog extends ConsumerWidget {
 
     String getLanguageLabel(Locale? locale) {
       if (locale == null) return 'Sistem';
-      switch (locale.languageCode) {
-        case 'en':
-          return 'English';
-        case 'id':
-          return 'Indonesia';
-        default:
-          return 'Unknown';
-      }
+      return locale.languageCode == 'en' ? 'English' : 'Indonesia';
     }
 
     return _buildOptionItem(

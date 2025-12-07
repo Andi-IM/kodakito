@@ -280,5 +280,29 @@ void main() {
       // Verify dialog closed
       expect(find.byType(SettingsDialog), findsNothing);
     });
+
+    testWidgets('renders precise version text', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) async => 'Test User'),
+          versionProvider.overrideWith(
+            (ref) async => '1.2.3+4',
+          ), // Specific version
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(tester, container: container);
+
+      // Verify exact version text
+      // Assuming l10n.settingsTextVersion is "Version $version" or similar.
+      // We will look for the version string directly.
+      expect(find.textContaining('1.2.3+4'), findsOneWidget);
+    });
   });
 }

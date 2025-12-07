@@ -1,14 +1,13 @@
 import 'dart:typed_data' show Uint8List;
 
-import 'package:crop_your_image/crop_your_image.dart';
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_button.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_image_container.dart';
-import 'package:dicoding_story/ui/main/widgets/add_story/wide/story_crop_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class AddStoryDialog extends ConsumerStatefulWidget {
   final Future<Uint8List?> Function() getImageFile;
@@ -19,7 +18,6 @@ class AddStoryDialog extends ConsumerStatefulWidget {
 }
 
 class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
-  final cropController = CropController();
   final descriptionController = TextEditingController();
 
   @override
@@ -28,25 +26,8 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
     super.dispose();
   }
 
-  void pickImage() async {
-    final imageBytes = await widget.getImageFile();
-    if (imageBytes != null) {
-      if (mounted) {
-        await showDialog(
-          context: context,
-          builder: (context) => StoryCropDialog(
-            imageBytes: imageBytes,
-            cropController: cropController,
-            ref: ref,
-          ),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final imageFile = ref.watch(imageFileProvider.select((value) => value));
     final addStoryState = ref.watch(addStoryProvider);
     final isLoading = addStoryState is AddStoryLoading;
 
@@ -90,8 +71,7 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
               const SizedBox(height: 8),
               AddStoryImageContainer(
                 key: const ValueKey('addStoryImageContainer'),
-                imageFile: imageFile,
-                onTap: () => pickImage(),
+                getImageFile: widget.getImageFile,
               ),
               const SizedBox(height: 16),
               TextField(
@@ -111,13 +91,12 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: isLoading ? null : () => Navigator.of(context).pop(),
+          onPressed: isLoading ? null : () => context.pop(),
           child: Text(context.l10n.addStoryBtnCancel),
         ),
         //
         AddStoryButton(
           key: const ValueKey('addStoryButton'),
-          isLoading: isLoading,
           descriptionController: descriptionController,
         ),
       ],

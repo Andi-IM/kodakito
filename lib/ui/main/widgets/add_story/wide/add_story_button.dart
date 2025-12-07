@@ -5,17 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddStoryButton extends ConsumerWidget {
-  const AddStoryButton({
-    super.key,
-    required this.isLoading,
-    required this.descriptionController,
-  });
+  const AddStoryButton({super.key, required this.descriptionController});
 
-  final bool isLoading;
   final TextEditingController descriptionController;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(addStoryProvider) is AddStoryLoading;
     final theme = Theme.of(context);
     final imageFile = ref.watch(imageFileProvider);
     final addStoryState = ref.watch(addStoryProvider);

@@ -1,24 +1,47 @@
 import 'dart:typed_data' show Uint8List;
 
+import 'package:crop_your_image/crop_your_image.dart';
 import 'package:dicoding_story/common/localizations.dart';
+import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
+import 'package:dicoding_story/ui/main/widgets/add_story/wide/story_crop_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AddStoryImageContainer extends ConsumerWidget {
-  const AddStoryImageContainer({
-    super.key,
-    required this.imageFile,
-    required this.onTap,
-  });
+class AddStoryImageContainer extends ConsumerStatefulWidget {
+  const AddStoryImageContainer({super.key, required this.getImageFile});
 
-  final Uint8List? imageFile;
-  final VoidCallback onTap;
+  final Future<Uint8List?> Function() getImageFile;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AddStoryImageContainer> createState() =>
+      _AddStoryImageContainerState();
+}
+
+class _AddStoryImageContainerState
+    extends ConsumerState<AddStoryImageContainer> {
+  final cropController = CropController();
+  void pickImage() async {
+    final imageBytes = await widget.getImageFile();
+    if (imageBytes != null) {
+      if (mounted) {
+        await showDialog(
+          context: context,
+          builder: (context) => StoryCropDialog(
+            imageBytes: imageBytes,
+            cropController: cropController,
+            ref: ref,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final imageFile = ref.watch(imageFileProvider.select((value) => value));
     return GestureDetector(
-      onTap: () => onTap(),
+      onTap: () => pickImage(),
       child: Semantics(
         label: context.l10n.addStoryImageLabel,
         button: true,
@@ -30,7 +53,7 @@ class AddStoryImageContainer extends ConsumerWidget {
             borderRadius: BorderRadius.circular(16),
             image: imageFile != null
                 ? DecorationImage(
-                    image: MemoryImage(imageFile!),
+                    image: MemoryImage(imageFile),
                     fit: BoxFit.cover,
                   )
                 : null,
