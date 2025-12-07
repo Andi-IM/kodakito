@@ -219,7 +219,11 @@ class SettingsDialog extends ConsumerWidget {
     );
   }
 
-  Widget _buildLanguageOption(BuildContext context, WidgetRef ref, Function onLanguageDialogOpen) {
+  Widget _buildLanguageOption(
+    BuildContext context,
+    WidgetRef ref,
+    Function onLanguageDialogOpen,
+  ) {
     final currentLocale = ref.watch(appLanguageProvider);
 
     String getLanguageLabel(Locale? locale) {

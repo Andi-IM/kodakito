@@ -93,13 +93,13 @@ class _MainScreenState extends ConsumerState<MainPage> {
                     key: const ValueKey('avatarButton'),
                     onPressed: () => context.push('/settings'),
                     icon: CircleAvatar(
-                        radius: 16,
-                        child: Text(
-                          (userAsync != null && userAsync.isNotEmpty)
-                              ? userAsync[0].toUpperCase()
-                              : '?',
-                        ),
+                      radius: 16,
+                      child: Text(
+                        (userAsync != null && userAsync.isNotEmpty)
+                            ? userAsync[0].toUpperCase()
+                            : '?',
                       ),
+                    ),
                     tooltip: context.l10n.settingsTitle,
                   ),
                 ],
