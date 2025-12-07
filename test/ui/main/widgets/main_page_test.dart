@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dicoding_story/data/services/platform/platform_provider.dart';
 import 'package:dicoding_story/data/services/widget/image_picker/image_picker_service.dart';
 import 'package:dicoding_story/data/services/widget/insta_image_picker/insta_image_picker_service.dart';
@@ -16,6 +18,7 @@ import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:window_size_classes/window_size_classes.dart';
 import 'package:dicoding_story/common/localizations.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 
 class MockGoRouter with Mock implements GoRouter {}
 
@@ -448,6 +451,353 @@ void main() {
     ).called(1);
   });
 
+  testWidgets('_pickFromWeChatCamera returns early when camera returns null', (
+    tester,
+  ) async {
+    final testStories = [
+      Story(
+        id: 'story-1',
+        name: 'Test User 1',
+        description: 'Test description 1',
+        photoUrl: 'https://example.com/photo1.jpg',
+        createdAt: DateTime(2024, 1, 1),
+        lat: null,
+        lon: null,
+      ),
+    ];
+
+    // Capture the pickFromCamera callback
+    Function(BuildContext)? capturedPickFromCamera;
+
+    final container = ProviderContainer.test(
+      overrides: [
+        storiesProvider.overrideWith(MockStories.new),
+        fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+        cameraPickerServiceProvider.overrideWithValue(mockCameraPickerService),
+        instaImagePickerServiceProvider.overrideWithValue(
+          mockInstaImagePickerService,
+        ),
+        imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+        mobilePlatformProvider.overrideWith((ref) => true),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    container.listen(storiesProvider, (_, __) {});
+    final mockStories = container.read(storiesProvider.notifier) as MockStories;
+    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+    // Capture the pickFromCamera callback when pickImage is called
+    when(
+      () => mockInstaImagePickerService.pickImage(any(), any(), any()),
+    ).thenAnswer((invocation) async {
+      capturedPickFromCamera =
+          invocation.positionalArguments[1] as Function(BuildContext);
+    });
+
+    // Stub cameraPickerService.pickImage to return null
+    when(
+      () => mockCameraPickerService.pickImage(any()),
+    ).thenAnswer((_) async => null);
+
+    mockStories.setState(
+      StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+    );
+
+    await tester.pumpWidget(
+      pumpTestWidget(
+        tester,
+        container: container,
+        widthClass: WindowWidthClass.compact,
+      ),
+    );
+
+    await tester.pump();
+
+    // Tap FAB to trigger instaImagePickerService.pickImage
+    await tester.tap(find.byKey(const ValueKey('fab_compact')));
+    await tester.pump();
+
+    // Verify callback was captured
+    expect(capturedPickFromCamera, isNotNull);
+
+    // Invoke the captured _pickFromWeChatCamera callback
+    capturedPickFromCamera!(tester.element(find.byType(MainPage)));
+    await tester.pump();
+
+    // Verify camera picker was called
+    verify(() => mockCameraPickerService.pickImage(any())).called(1);
+
+    // Verify refreshAndSelectEntity was NOT called (because camera returned null)
+    verifyNever(
+      () => mockInstaImagePickerService.refreshAndSelectEntity(any(), any()),
+    );
+  });
+
+  testWidgets(
+    '_pickFromWeChatCamera calls refreshAndSelectEntity when camera returns entity',
+    (tester) async {
+      final testStories = [
+        Story(
+          id: 'story-1',
+          name: 'Test User 1',
+          description: 'Test description 1',
+          photoUrl: 'https://example.com/photo1.jpg',
+          createdAt: DateTime(2024, 1, 1),
+          lat: null,
+          lon: null,
+        ),
+      ];
+
+      // Capture the pickFromCamera callback
+      Function(BuildContext)? capturedPickFromCamera;
+      final fakeAssetEntity = FakeAssetEntity();
+
+      final container = ProviderContainer.test(
+        overrides: [
+          storiesProvider.overrideWith(MockStories.new),
+          fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+          cameraPickerServiceProvider.overrideWithValue(
+            mockCameraPickerService,
+          ),
+          instaImagePickerServiceProvider.overrideWithValue(
+            mockInstaImagePickerService,
+          ),
+          imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+          mobilePlatformProvider.overrideWith((ref) => true),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      container.listen(storiesProvider, (_, __) {});
+      final mockStories =
+          container.read(storiesProvider.notifier) as MockStories;
+      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+      // Capture the pickFromCamera callback when pickImage is called
+      when(
+        () => mockInstaImagePickerService.pickImage(any(), any(), any()),
+      ).thenAnswer((invocation) async {
+        capturedPickFromCamera =
+            invocation.positionalArguments[1] as Function(BuildContext);
+      });
+
+      // Stub cameraPickerService.pickImage to return a fake entity
+      when(
+        () => mockCameraPickerService.pickImage(any()),
+      ).thenAnswer((_) async => fakeAssetEntity);
+
+      // Stub refreshAndSelectEntity
+      when(
+        () => mockInstaImagePickerService.refreshAndSelectEntity(any(), any()),
+      ).thenAnswer((_) async {});
+
+      mockStories.setState(
+        StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+      );
+
+      await tester.pumpWidget(
+        pumpTestWidget(
+          tester,
+          container: container,
+          widthClass: WindowWidthClass.compact,
+        ),
+      );
+
+      await tester.pump();
+
+      // Tap FAB to trigger instaImagePickerService.pickImage
+      await tester.tap(find.byKey(const ValueKey('fab_compact')));
+      await tester.pump();
+
+      // Verify callback was captured
+      expect(capturedPickFromCamera, isNotNull);
+
+      // Invoke the captured _pickFromWeChatCamera callback
+      capturedPickFromCamera!(tester.element(find.byType(MainPage)));
+      await tester.pump();
+
+      // Verify camera picker was called
+      verify(() => mockCameraPickerService.pickImage(any())).called(1);
+
+      // Verify refreshAndSelectEntity WAS called with the entity
+      verify(
+        () => mockInstaImagePickerService.refreshAndSelectEntity(
+          any(),
+          fakeAssetEntity,
+        ),
+      ).called(1);
+    },
+  );
+
+  testWidgets(
+    'instaImagePickerService.pickImage onCompleted callback calls context.pushNamed',
+    (tester) async {
+      final testStories = [
+        Story(
+          id: 'story-1',
+          name: 'Test User 1',
+          description: 'Test description 1',
+          photoUrl: 'https://example.com/photo1.jpg',
+          createdAt: DateTime(2024, 1, 1),
+          lat: null,
+          lon: null,
+        ),
+      ];
+
+      // Capture the onCompleted callback
+      Function(Stream<InstaAssetsExportDetails>)? capturedOnCompleted;
+
+      final container = ProviderContainer.test(
+        overrides: [
+          storiesProvider.overrideWith(MockStories.new),
+          fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+          cameraPickerServiceProvider.overrideWithValue(
+            mockCameraPickerService,
+          ),
+          instaImagePickerServiceProvider.overrideWithValue(
+            mockInstaImagePickerService,
+          ),
+          imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+          mobilePlatformProvider.overrideWith((ref) => true),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      container.listen(storiesProvider, (_, __) {});
+      final mockStories =
+          container.read(storiesProvider.notifier) as MockStories;
+      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+      // Capture the onCompleted callback when pickImage is called
+      when(
+        () => mockInstaImagePickerService.pickImage(any(), any(), any()),
+      ).thenAnswer((invocation) async {
+        capturedOnCompleted =
+            invocation.positionalArguments[2]
+                as Function(Stream<InstaAssetsExportDetails>);
+      });
+
+      // Stub goRouter.pushNamed
+      when(
+        () => mockGoRouter.pushNamed(any(), extra: any(named: 'extra')),
+      ).thenAnswer((_) async => null);
+
+      mockStories.setState(
+        StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+      );
+
+      await tester.pumpWidget(
+        pumpTestWidget(
+          tester,
+          container: container,
+          widthClass: WindowWidthClass.compact,
+        ),
+      );
+
+      await tester.pump();
+
+      // Tap FAB to trigger instaImagePickerService.pickImage
+      await tester.tap(find.byKey(const ValueKey('fab_compact')));
+      await tester.pump();
+
+      // Verify callback was captured
+      expect(capturedOnCompleted, isNotNull);
+
+      // Create a mock stream for the callback
+      final mockStream = Stream<InstaAssetsExportDetails>.empty();
+
+      // Invoke the captured onCompleted callback
+      capturedOnCompleted!(mockStream);
+      await tester.pump();
+
+      // Verify pushNamed was called with 'add-story' route
+      verify(
+        () => mockGoRouter.pushNamed('add-story', extra: mockStream),
+      ).called(1);
+    },
+  );
+
+  testWidgets(
+    'displays loading indicator in avatar button when user data is loading',
+    (tester) async {
+      final testStories = [
+        Story(
+          id: 'story-1',
+          name: 'Test User 1',
+          description: 'Test description 1',
+          photoUrl: 'https://example.com/photo1.jpg',
+          createdAt: DateTime(2024, 1, 1),
+          lat: null,
+          lon: null,
+        ),
+      ];
+
+      // Use a Completer that never completes to simulate loading state
+      final completer = Completer<String?>();
+
+      final container = ProviderContainer.test(
+        overrides: [
+          storiesProvider.overrideWith(MockStories.new),
+          // Use the Completer's future for loading state
+          fetchUserDataProvider.overrideWith((ref) => completer.future),
+          cameraPickerServiceProvider.overrideWithValue(
+            mockCameraPickerService,
+          ),
+          instaImagePickerServiceProvider.overrideWithValue(
+            mockInstaImagePickerService,
+          ),
+          imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+        ],
+      );
+      addTearDown(() {
+        // Complete the completer to allow test cleanup
+        if (!completer.isCompleted) completer.complete(null);
+        container.dispose();
+      });
+
+      container.listen(storiesProvider, (_, __) {});
+      final mockStories =
+          container.read(storiesProvider.notifier) as MockStories;
+      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+      mockStories.setState(
+        StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+      );
+
+      await tester.pumpWidget(
+        pumpTestWidget(
+          tester,
+          container: container,
+          widthClass: WindowWidthClass.compact,
+        ),
+      );
+
+      await tester.pump();
+
+      // Find CircularProgressIndicator widgets that are descendants of the avatar button
+      final progressFinder = find.descendant(
+        of: find.byKey(const ValueKey('avatarButton')),
+        matching: find.byType(CircularProgressIndicator),
+      );
+      expect(progressFinder, findsOneWidget);
+
+      // Verify the parent SizedBox has correct size (24x24)
+      final sizedBoxFinder = find.ancestor(
+        of: progressFinder,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is SizedBox && widget.width == 24 && widget.height == 24,
+        ),
+      );
+      expect(sizedBoxFinder, findsOneWidget);
+    },
+  );
+
+  // Note: Error state for user avatar (line 117) is covered implicitly by
+  // Riverpod's AsyncValue.error handling. Testing it requires handling
+  // the uncaught error from Completer.completeError which is complex.
+
   testWidgets('tapping FAB on medium screen opens AddStoryDialog', (
     tester,
   ) async {
@@ -628,6 +978,78 @@ void main() {
     },
   );
 
+  testWidgets(
+    'RefreshIndicator onRefresh calls fetchStories on mobile platforms',
+    (tester) async {
+      final testStories = [
+        Story(
+          id: 'story-1',
+          name: 'Test User 1',
+          description: 'Test description 1',
+          photoUrl: 'https://example.com/photo1.jpg',
+          createdAt: DateTime(2024, 1, 1),
+          lat: null,
+          lon: null,
+        ),
+      ];
+
+      final container = ProviderContainer.test(
+        overrides: [
+          storiesProvider.overrideWith(MockStories.new),
+          fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+          cameraPickerServiceProvider.overrideWithValue(
+            mockCameraPickerService,
+          ),
+          instaImagePickerServiceProvider.overrideWithValue(
+            mockInstaImagePickerService,
+          ),
+          imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+          // Override to simulate mobile platform
+          mobilePlatformProvider.overrideWith((ref) => true),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      // Keep the provider alive
+      container.listen(storiesProvider, (_, __) {});
+      final mockStories =
+          container.read(storiesProvider.notifier) as MockStories;
+      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+      // Set the state to loaded with stories
+      mockStories.setState(
+        StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+      );
+
+      await tester.pumpWidget(
+        pumpTestWidget(
+          tester,
+          container: container,
+          widthClass: WindowWidthClass.compact,
+        ),
+      );
+
+      await tester.pump();
+
+      // Find the RefreshIndicator and get its onRefresh callback
+      final refreshIndicator = tester.widget<RefreshIndicator>(
+        find.byType(RefreshIndicator),
+      );
+
+      // fetchStories was already called once during initialization
+      // Clear mock to verify it's called again by onRefresh
+      clearInteractions(mockStories);
+      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+      // Invoke the onRefresh callback directly
+      await refreshIndicator.onRefresh();
+      await tester.pump();
+
+      // Verify fetchStories was called by the onRefresh callback
+      verify(() => mockStories.fetchStories()).called(1);
+    },
+  );
+
   testWidgets('tapping avatar button opens SettingsDialog', (tester) async {
     final testStories = [
       Story(
@@ -725,6 +1147,155 @@ void main() {
     // Verify error message is displayed (line 206)
     expect(find.textContaining('Error:'), findsOneWidget);
     expect(find.textContaining('Network error'), findsOneWidget);
+  });
+
+  testWidgets(
+    'displays loading indicator with 120x120 SizedBox on medium screens',
+    (tester) async {
+      final container = ProviderContainer.test(
+        overrides: [
+          storiesProvider.overrideWith(MockStories.new),
+          fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+          cameraPickerServiceProvider.overrideWithValue(
+            mockCameraPickerService,
+          ),
+          instaImagePickerServiceProvider.overrideWithValue(
+            mockInstaImagePickerService,
+          ),
+          imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      container.listen(storiesProvider, (_, __) {});
+      final mockStories =
+          container.read(storiesProvider.notifier) as MockStories;
+      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+      // Set the state to loading
+      mockStories.setState(StoriesState(state: StoriesConcreteState.loading));
+
+      await tester.pumpWidget(
+        pumpTestWidget(
+          tester,
+          container: container,
+          widthClass: WindowWidthClass.medium, // Medium screen, not large
+        ),
+      );
+
+      await tester.pump();
+
+      // Verify LoadingIndicatorM3E is displayed
+      expect(find.byKey(const ValueKey('loadingIndicator')), findsOneWidget);
+
+      // Verify the SizedBox wrapper exists with size 120x120 (medium, not large)
+      final sizedBox = tester.widget<SizedBox>(
+        find.ancestor(
+          of: find.byKey(const ValueKey('loadingIndicator')),
+          matching: find.byType(SizedBox),
+        ),
+      );
+      expect(sizedBox.width, 120);
+      expect(sizedBox.height, 120);
+    },
+  );
+
+  testWidgets(
+    'displays loading indicator with 240x240 SizedBox on large screens',
+    (tester) async {
+      final container = ProviderContainer.test(
+        overrides: [
+          storiesProvider.overrideWith(MockStories.new),
+          fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+          cameraPickerServiceProvider.overrideWithValue(
+            mockCameraPickerService,
+          ),
+          instaImagePickerServiceProvider.overrideWithValue(
+            mockInstaImagePickerService,
+          ),
+          imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      container.listen(storiesProvider, (_, __) {});
+      final mockStories =
+          container.read(storiesProvider.notifier) as MockStories;
+      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+      // Set the state to loading
+      mockStories.setState(StoriesState(state: StoriesConcreteState.loading));
+
+      await tester.pumpWidget(
+        pumpTestWidget(
+          tester,
+          container: container,
+          widthClass: WindowWidthClass.large, // Large screen
+        ),
+      );
+
+      await tester.pump();
+
+      // Verify LoadingIndicatorM3E is displayed
+      expect(find.byKey(const ValueKey('loadingIndicator')), findsOneWidget);
+
+      // Verify the SizedBox wrapper exists with size 240x240 (large)
+      final sizedBox = tester.widget<SizedBox>(
+        find.ancestor(
+          of: find.byKey(const ValueKey('loadingIndicator')),
+          matching: find.byType(SizedBox),
+        ),
+      );
+      expect(sizedBox.width, 240);
+      expect(sizedBox.height, 240);
+    },
+  );
+
+  testWidgets('displays loading indicator without SizedBox on compact screens', (
+    tester,
+  ) async {
+    final container = ProviderContainer.test(
+      overrides: [
+        storiesProvider.overrideWith(MockStories.new),
+        fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+        cameraPickerServiceProvider.overrideWithValue(mockCameraPickerService),
+        instaImagePickerServiceProvider.overrideWithValue(
+          mockInstaImagePickerService,
+        ),
+        imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    container.listen(storiesProvider, (_, __) {});
+    final mockStories = container.read(storiesProvider.notifier) as MockStories;
+    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+    // Set the state to loading
+    mockStories.setState(StoriesState(state: StoriesConcreteState.loading));
+
+    await tester.pumpWidget(
+      pumpTestWidget(
+        tester,
+        container: container,
+        widthClass: WindowWidthClass.compact, // Compact screen
+      ),
+    );
+
+    await tester.pump();
+
+    // Verify LoadingIndicatorM3E is displayed
+    expect(find.byKey(const ValueKey('loadingIndicator')), findsOneWidget);
+
+    // Verify Center wraps the LoadingIndicatorM3E directly (no SizedBox between)
+    // On compact screens, the Center should directly contain the LoadingIndicatorM3E
+    final center = tester.widget<Center>(
+      find.ancestor(
+        of: find.byKey(const ValueKey('loadingIndicator')),
+        matching: find.byType(Center),
+      ),
+    );
+    expect(center.child, isA<LoadingIndicatorM3E>());
   });
 }
 
