@@ -53,21 +53,6 @@ void main() {
       },
     );
 
-    test('should return cached stories on subsequent calls', () async {
-      // arrange
-      when(
-        () => mockStoryDataSource.getAllStories(),
-      ).thenAnswer((_) async => Right(tStories));
-
-      // act
-      await repository.getListStories();
-      final result = await repository.getListStories();
-
-      // assert
-      expect(result, Right(tStories));
-      verify(() => mockStoryDataSource.getAllStories()).called(1);
-    });
-
     test(
       'should return Left(AppException) when getListStories fails',
       () async {

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/detail/widgets/story_detail_compact_layout.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,8 @@ void main() {
     await mockNetworkImages(() async {
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
             body: StoryDetailCompactLayout(
               story: Story(
