@@ -46,7 +46,11 @@ void main() {
                     onPressed: () {
                       showDialog(
                         context: context,
-                        builder: (context) => const SettingsDialog(),
+                        builder: (context) => SettingsDialog(
+                          onPop: () => Navigator.of(context).pop(),
+                          onLogout: () {},
+                          onLanguageDialogOpen: () {},
+                        ),
                       );
                     },
                     child: const Text('Open Settings'),
@@ -64,7 +68,8 @@ void main() {
         ),
         GoRoute(
           path: '/settings/language',
-          builder: (context, state) => const LanguageDialog(),
+          builder: (context, state) =>
+              LanguageDialog(onPop: () => context.pop()),
         ),
       ],
     );
@@ -231,10 +236,14 @@ void main() {
       expect(find.byType(LanguageDialog), findsNothing);
     });
 
-    testWidgets('logout triggers provider and navigation', (tester) async {
+    testWidgets('logout triggers provider and calls onLogout callback', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1000, 2000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
+
+      bool onLogoutCalled = false;
 
       final container = ProviderContainer(
         overrides: [
@@ -246,7 +255,51 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await pumpTestWidget(tester, container: container);
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) {
+              return Scaffold(
+                body: Builder(
+                  builder: (context) {
+                    return ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => SettingsDialog(
+                            onPop: () => Navigator.of(context).pop(),
+                            onLogout: () => onLogoutCalled = true,
+                            onLanguageDialogOpen: () {},
+                          ),
+                        );
+                      },
+                      child: const Text('Open Settings'),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Open the dialog
+      await tester.tap(find.text('Open Settings'));
+      await tester.pumpAndSettle();
 
       final logoutBtn = find.byKey(const ValueKey('logoutButton'));
       expect(logoutBtn, findsOneWidget);
@@ -254,8 +307,8 @@ void main() {
       await tester.tap(logoutBtn);
       await tester.pumpAndSettle();
 
-      // Should have navigated to login
-      expect(find.text('Login Screen'), findsOneWidget);
+      // Should have called onLogout callback
+      expect(onLogoutCalled, isTrue);
     });
 
     testWidgets('closes dialog on close button tap', (tester) async {
@@ -338,6 +391,162 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(LanguageDialog), findsNothing);
+    });
+  });
+
+  group('LanguageDialog', () {
+    testWidgets('renders all language options', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final container = ProviderContainer(
+        overrides: [
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: LanguageDialog(onPop: () {})),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify title
+      expect(find.text('Select Language'), findsOneWidget);
+
+      // Verify all language options
+      expect(find.text('System'), findsOneWidget);
+      expect(find.text('English'), findsOneWidget);
+      expect(find.text('Indonesian'), findsOneWidget);
+
+      // Verify Cancel button
+      expect(find.text('Cancel'), findsOneWidget);
+    });
+
+    testWidgets('calls onPop when language is selected', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      bool onPopCalled = false;
+
+      final container = ProviderContainer(
+        overrides: [
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: LanguageDialog(onPop: () => onPopCalled = true),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Indonesian option
+      await tester.tap(find.text('Indonesian'));
+      await tester.pumpAndSettle();
+
+      // Verify onPop was called
+      expect(onPopCalled, isTrue);
+
+      // Verify storage was updated
+      verify(
+        () => mockStorageService.set(APP_LANGUAGE_STORAGE_KEY, 'id'),
+      ).called(1);
+    });
+
+    testWidgets('calls onPop when Cancel button is pressed', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      bool onPopCalled = false;
+
+      final container = ProviderContainer(
+        overrides: [
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: LanguageDialog(onPop: () => onPopCalled = true),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Cancel
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      // Verify onPop was called
+      expect(onPopCalled, isTrue);
+    });
+
+    testWidgets('selects English language and calls onPop', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      bool onPopCalled = false;
+
+      final container = ProviderContainer(
+        overrides: [
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: LanguageDialog(onPop: () => onPopCalled = true),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap English option
+      await tester.tap(find.text('English'));
+      await tester.pumpAndSettle();
+
+      // Verify onPop was called
+      expect(onPopCalled, isTrue);
+
+      // Verify storage was updated with 'en'
+      verify(
+        () => mockStorageService.set(APP_LANGUAGE_STORAGE_KEY, 'en'),
+      ).called(1);
     });
   });
 }

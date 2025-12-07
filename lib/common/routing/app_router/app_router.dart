@@ -72,14 +72,22 @@ GoRouter appRouter(Ref ref) {
             path: '/settings',
             name: 'settings',
             pageBuilder: (context, state) {
-              return DialogPage(builder: (_) => SettingsDialog());
+              return DialogPage(
+                builder: (_) => SettingsDialog(
+                  onPop: () => context.pop(),
+                  onLogout: () => context.goNamed('login'),
+                  onLanguageDialogOpen: () => context.goNamed('language'),
+                ),
+              );
             },
             routes: [
               GoRoute(
                 path: '/language',
                 name: 'language',
                 pageBuilder: (context, state) {
-                  return DialogPage(builder: (_) => LanguageDialog());
+                  return DialogPage(
+                    builder: (_) => LanguageDialog(onPop: () => context.pop()),
+                  );
                 },
               ),
             ],
