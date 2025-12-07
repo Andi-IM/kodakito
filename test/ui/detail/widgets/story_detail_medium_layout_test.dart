@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/detail/widgets/story_detail_medium_layout.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ void main() {
       photoUrl: 'https://picsum.photos/200/300',
       description:
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-      createdAt: DateTime.now(),
+      createdAt: DateTime(2022, 1, 1),
       lat: null,
       lon: null,
     );
@@ -21,6 +22,8 @@ void main() {
     await mockNetworkImages(() async {
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(body: StoryDetailMediumLayout(story: story)),
         ),
       );
@@ -35,7 +38,8 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.text(story.createdAt.toString().split(' ')[0]), findsOneWidget);
+    // Verify date is displayed in localized format (yMMMd)
+    expect(find.text('Jan 1, 2022'), findsOneWidget);
 
     // Verify Hero
     expect(find.byType(Hero), findsOneWidget);
