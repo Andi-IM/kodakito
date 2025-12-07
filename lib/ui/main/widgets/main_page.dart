@@ -74,7 +74,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
     final isLarge = widthClass >= WindowWidthClass.large;
 
     final storiesAsync = ref.watch(storiesProvider);
-    final userAsync = ref.watch(fetchUserDataProvider);
+    final userAsync = ref.watch(fetchUserDataProvider).value;
     return Scaffold(
       body: storiesAsync.when(
         data: (stories) {
@@ -92,22 +92,14 @@ class _MainScreenState extends ConsumerState<MainPage> {
                   IconButtonM3E(
                     key: const ValueKey('avatarButton'),
                     onPressed: () => context.push('/settings'),
-                    icon: userAsync.when(
-                      data: (name) => CircleAvatar(
+                    icon: CircleAvatar(
                         radius: 16,
                         child: Text(
-                          (name != null && name.isNotEmpty)
-                              ? name[0].toUpperCase()
+                          (userAsync != null && userAsync.isNotEmpty)
+                              ? userAsync[0].toUpperCase()
                               : '?',
                         ),
                       ),
-                      error: (_, __) => const Icon(Icons.account_circle),
-                      loading: () => const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
                     tooltip: context.l10n.settingsTitle,
                   ),
                 ],

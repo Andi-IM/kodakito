@@ -339,6 +339,135 @@ void main() {
       expect(find.byType(SettingsDialog), findsNothing);
     });
 
+    testWidgets('displays correct language label for English locale', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      // Stub storage to return 'en' for language
+      when(
+        () => mockStorageService.get(APP_LANGUAGE_STORAGE_KEY),
+      ).thenAnswer((_) async => 'en');
+
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) async => 'User'),
+          versionProvider.overrideWith((ref) async => '1.0.0'),
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(tester, container: container);
+
+      // Verify English label is displayed in language option subtitle
+      expect(find.text('English'), findsOneWidget);
+    });
+
+    testWidgets('displays correct language label for Indonesian locale', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      // Stub storage to return 'id' for language
+      when(
+        () => mockStorageService.get(APP_LANGUAGE_STORAGE_KEY),
+      ).thenAnswer((_) async => 'id');
+
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) async => 'User'),
+          versionProvider.overrideWith((ref) async => '1.0.0'),
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(tester, container: container);
+
+      // Verify Indonesia label is displayed in language option subtitle
+      expect(find.text('Indonesia'), findsOneWidget);
+    });
+
+    testWidgets('calls onLanguageDialogOpen when language option is tapped', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      bool onLanguageDialogOpenCalled = false;
+
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) async => 'User'),
+          versionProvider.overrideWith((ref) async => '1.0.0'),
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) {
+              return Scaffold(
+                body: Builder(
+                  builder: (context) {
+                    return ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => SettingsDialog(
+                            onPop: () => Navigator.of(context).pop(),
+                            onLogout: () {},
+                            onLanguageDialogOpen: () =>
+                                onLanguageDialogOpenCalled = true,
+                          ),
+                        );
+                      },
+                      child: const Text('Open Settings'),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Open the dialog
+      await tester.tap(find.text('Open Settings'));
+      await tester.pumpAndSettle();
+
+      // Tap the language option
+      final languageOption = find.byKey(const Key('language'));
+      expect(languageOption, findsOneWidget);
+      await tester.tap(languageOption);
+      await tester.pumpAndSettle();
+
+      // Verify onLanguageDialogOpen was called
+      expect(onLanguageDialogOpenCalled, isTrue);
+    });
+
     testWidgets('renders precise version text', (tester) async {
       tester.view.physicalSize = const Size(1000, 2000);
       tester.view.devicePixelRatio = 1.0;
