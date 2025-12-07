@@ -14,7 +14,6 @@ class AddStoryButton extends ConsumerWidget {
     final isLoading = ref.watch(addStoryProvider) is AddStoryLoading;
     final theme = Theme.of(context);
     final imageFile = ref.watch(imageFileProvider);
-    final addStoryState = ref.watch(addStoryProvider);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     return FilledButton(
@@ -46,7 +45,7 @@ class AddStoryButton extends ConsumerWidget {
                     .addStory(description: description, photo: file);
               }
             },
-      child: addStoryState is AddStoryLoading
+      child: isLoading
           ? SizedBox(
               width: 16,
               height: 16,

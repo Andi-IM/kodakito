@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockAddStoryRepository extends Mock implements AddStoryRepository {}
@@ -167,24 +168,36 @@ void main() {
     required ProviderContainer container,
     required Widget child,
   }) async {
+    final router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) {
+            return Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      showDialog(context: context, builder: (context) => child);
+                    },
+                    child: const Text('Launch Dialog'),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ],
+    );
+
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: MaterialApp(
+        child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: Builder(
-              builder: (context) {
-                return ElevatedButton(
-                  onPressed: () {
-                    showDialog(context: context, builder: (context) => child);
-                  },
-                  child: const Text('Launch Dialog'),
-                );
-              },
-            ),
-          ),
+          routerConfig: router,
         ),
       ),
     );
@@ -398,6 +411,102 @@ void main() {
 
       // Verify dialog is still open
       expect(find.text('Add Story'), findsOneWidget);
+    });
+
+    testWidgets('closes dialog on cancel button tap', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockAddStoryRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+          imageFileProvider.overrideWith(() => SafeImageFile()),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(
+        tester,
+        container: container,
+        child: AddStoryDialog(getImageFile: () async => validImageBytes),
+      );
+
+      // Verify dialog is open
+      expect(find.text('Add Story'), findsOneWidget);
+
+      // Find Cancel button (TextButton with 'Cancel' text - l10n default English)
+      final cancelButton = find.text('Cancel');
+      expect(cancelButton, findsOneWidget);
+
+      // Tap Cancel
+      await tester.tap(cancelButton);
+      await tester.pumpAndSettle();
+
+      // Verify dialog closed
+      expect(find.text('Add Story'), findsNothing);
+    });
+
+    testWidgets('shows loading indicator on button when posting', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      // Setup delayed repository response
+      when(() => mockAddStoryRepository.addStory(any(), any())).thenAnswer((
+        _,
+      ) async {
+        await Future.delayed(const Duration(milliseconds: 500));
+        return const Right(
+          DefaultResponse(error: false, message: 'Story Created Successfully'),
+        );
+      });
+      when(
+        () => mockListRepository.getListStories(),
+      ).thenAnswer((_) async => const Right([]));
+
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockAddStoryRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+          imageFileProvider.overrideWith(() => SafeImageFile()),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(
+        tester,
+        container: container,
+        child: AddStoryDialog(getImageFile: () async => validImageBytes),
+      );
+
+      // Prepare data
+      container.read(imageFileProvider.notifier).setImageFile(validImageBytes);
+      await tester.pump();
+      await tester.enterText(find.byType(TextField), 'Loading Story');
+      await tester.pump();
+
+      // Tap Post
+      await tester.tap(find.text('Post'));
+      // Pump to start the action but not finish it (settle)
+      await tester.pump();
+      // Pump a bit to let the loading state propagate to UI
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // Verify CircularProgressIndicator is shown
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      // Verify Text 'Post' is NOT shown (it should be replaced by spinner)
+      expect(find.text('Post'), findsNothing);
+
+      // Finish the async operation
+      await tester.pump(const Duration(milliseconds: 1000));
+      await tester.pumpAndSettle();
+
+      // Verify success finally
+      expect(find.text('Story posted successfully!'), findsOneWidget);
     });
   });
 }

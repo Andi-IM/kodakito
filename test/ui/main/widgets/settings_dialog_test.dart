@@ -304,5 +304,36 @@ void main() {
       // We will look for the version string directly.
       expect(find.textContaining('1.2.3+4'), findsOneWidget);
     });
+
+    testWidgets('closes language dialog on cancel', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) async => 'User'),
+          versionProvider.overrideWith((ref) async => '1.0.0'),
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(tester, container: container);
+
+      // Open Language Dialog
+      await tester.tap(find.byKey(const Key('language')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Select Language'), findsOneWidget);
+
+      // Tap Cancel
+      // In tests, localizations usually default to English values or keys if not mocked differently.
+      // Assuming 'Cancel' is the English value for settingsBtnCancel.
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Select Language'), findsNothing);
+    });
   });
 }
