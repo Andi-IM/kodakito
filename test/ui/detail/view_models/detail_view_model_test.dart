@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'dart:async';
-import 'dart:typed_data' show Uint8List;
 
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/data_providers.dart';
@@ -11,6 +9,7 @@ import 'package:dicoding_story/ui/detail/view_models/detail_view_model.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_state.dart' as st;
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dicoding_story/data/services/remote/network_service.dart';
@@ -147,29 +146,29 @@ void main() {
     });
 
     test('returns ColorScheme when image loads successfully', () async {
-      final file = File('../../assets/logo_dark.png');
-      final bytes = await file.readAsBytes();
+      final bytes = await rootBundle.load('assets/logo_dark.png');
+      final bytesData = bytes.buffer.asUint8List();
 
       when(
         () => mockNetworkImageService.get(any()),
-      ).thenAnswer((_) async => bytes);
+      ).thenAnswer((_) async => bytesData);
 
       final result = await container.read(
-        storyColorSchemeProvider(bytes).future,
+        storyColorSchemeProvider(bytesData).future,
       );
       expect(result, isA<ColorScheme?>());
     });
 
     test('returns valid ColorScheme using logo_dark.png', () async {
-      final file = File('../../assets/logo_dark.png');
-      final bytes = await file.readAsBytes();
+      final bytes = await rootBundle.load('assets/logo_dark.png');
+      final bytesData = bytes.buffer.asUint8List();
 
       when(
         () => mockNetworkImageService.get(any()),
-      ).thenAnswer((_) async => bytes);
+      ).thenAnswer((_) async => bytesData);
 
       final result = await container.read(
-        storyColorSchemeProvider(bytes).future,
+        storyColorSchemeProvider(bytesData).future,
       );
 
       expect(result, isNotNull);
