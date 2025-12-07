@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/main/widgets/story_card.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,8 @@ void main() {
       await mockNetworkImages(() async {
         await tester.pumpWidget(
           MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(body: StoryCard(story: tStory)),
           ),
         );
@@ -30,8 +33,8 @@ void main() {
       expect(find.text('Story Name'), findsOneWidget);
       expect(find.text('Story Description'), findsOneWidget);
 
-      // Verify date is displayed (formatted as YYYY-MM-DD)
-      expect(find.text('2022-01-01'), findsOneWidget);
+      // Verify date is displayed (formatted as Jan 1, 2022)
+      expect(find.text('Jan 1, 2022'), findsOneWidget);
 
       // Verify CachedNetworkImage is present
       expect(find.byType(CachedNetworkImage), findsOneWidget);
@@ -43,6 +46,8 @@ void main() {
       await mockNetworkImages(() async {
         await tester.pumpWidget(
           MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
               body: StoryCard(
                 story: tStory,
@@ -69,6 +74,8 @@ void main() {
       await mockNetworkImages(() async {
         await tester.pumpWidget(
           MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(body: StoryCard(story: tStory)),
           ),
         );
@@ -96,6 +103,8 @@ void main() {
       await mockNetworkImages(() async {
         await tester.pumpWidget(
           MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(body: StoryCard(story: tStory)),
           ),
         );
