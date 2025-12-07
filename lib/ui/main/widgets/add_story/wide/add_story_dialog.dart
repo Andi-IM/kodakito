@@ -1,5 +1,3 @@
-import 'dart:typed_data' show Uint8List;
-
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/data/services/widget/image_picker/image_picker_service.dart';
 import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
@@ -25,9 +23,6 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
     descriptionController.dispose();
     super.dispose();
   }
-
-  Future<Uint8List?> _getImageFile() async =>
-      await ref.read(imagePickerServiceProvider).pickImage();
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +53,8 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
       }
     });
 
+    final pickImage = ref.read(imagePickerServiceProvider);
+
     return AlertDialog(
       title: Text(context.l10n.addStoryTitle),
       content: SingleChildScrollView(
@@ -74,7 +71,7 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
               const SizedBox(height: 8),
               AddStoryImageContainer(
                 key: const ValueKey('addStoryImageContainer'),
-                getImageFile: _getImageFile,
+                getImageFile: pickImage.pickImage,
               ),
               const SizedBox(height: 16),
               TextField(
