@@ -1,3 +1,4 @@
+import 'package:dicoding_story/data/services/platform/platform_provider.dart';
 import 'package:dicoding_story/data/services/widget/image_picker/image_picker_service.dart';
 import 'package:dicoding_story/data/services/widget/insta_image_picker/insta_image_picker_service.dart';
 import 'package:dicoding_story/data/services/widget/wechat_camera_picker/wechat_camera_picker_service.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:window_size_classes/window_size_classes.dart';
 import 'package:dicoding_story/common/localizations.dart';
@@ -27,11 +29,25 @@ class MockInstaImagePickerServiceProvider
 
 class MockImagePickerServiceProvider with Mock implements ImagePickerService {}
 
+// Fake BuildContext for mocktail fallback registration
+class FakeBuildContext extends Fake implements BuildContext {}
+
+// Fake AssetEntity for mocktail fallback registration
+class FakeAssetEntity extends Fake implements AssetEntity {}
+
 void main() {
   late MockGoRouter mockGoRouter;
   late MockCameraPickerServiceProvider mockCameraPickerService;
   late MockInstaImagePickerServiceProvider mockInstaImagePickerService;
   late MockImagePickerServiceProvider mockImagePickerService;
+
+  setUpAll(() {
+    // Register fallback values for mocktail
+    registerFallbackValue(FakeBuildContext());
+    registerFallbackValue(FakeAssetEntity());
+    registerFallbackValue((BuildContext context) async {});
+    registerFallbackValue((Stream<InstaAssetsExportDetails> stream) async {});
+  });
 
   setUp(() {
     mockGoRouter = MockGoRouter();
@@ -367,7 +383,7 @@ void main() {
     verify(() => mockGoRouter.go('/story/story-1')).called(1);
   });
 
-  testWidgets('tapping FAB on compact screen opens AddStoryDialog', (
+  testWidgets('tapping FAB on compact screen calls instaImagePickerService', (
     tester,
   ) async {
     final testStories = [
@@ -391,6 +407,8 @@ void main() {
           mockInstaImagePickerService,
         ),
         imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+        // Override to simulate mobile platform
+        mobilePlatformProvider.overrideWith((ref) => true),
       ],
     );
     addTearDown(container.dispose);
@@ -399,6 +417,11 @@ void main() {
     container.listen(storiesProvider, (_, __) {});
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
     when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+    // Stub the instaImagePickerService.pickImage method
+    when(
+      () => mockInstaImagePickerService.pickImage(any(), any(), any()),
+    ).thenAnswer((_) async {});
 
     // Set the state to loaded with stories
     mockStories.setState(
@@ -415,16 +438,14 @@ void main() {
 
     await tester.pump();
 
-    // Find and tap the FAB (compact version)
+    // Find and tap the FAB (compact version - triggers mobile picker flow)
     await tester.tap(find.byKey(const ValueKey('fab_compact')));
-    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
 
-    // Verify AddStoryDialog is shown (via its title widget)
-    expect(find.byType(AlertDialog), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('addStoryImageContainer')),
-      findsOneWidget,
-    );
+    // Verify instaImagePickerService.pickImage was called (lines 61-67)
+    verify(
+      () => mockInstaImagePickerService.pickImage(any(), any(), any()),
+    ).called(1);
   });
 
   testWidgets('tapping FAB on medium screen opens AddStoryDialog', (
@@ -543,6 +564,67 @@ void main() {
 
       // But RefreshIndicator should NOT be present (line 189 path)
       expect(find.byType(RefreshIndicator), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'on mobile platforms, stories are displayed with RefreshIndicator and pull-to-refresh triggers fetchStories',
+    (tester) async {
+      final testStories = [
+        Story(
+          id: 'story-1',
+          name: 'Test User 1',
+          description: 'Test description 1',
+          photoUrl: 'https://example.com/photo1.jpg',
+          createdAt: DateTime(2024, 1, 1),
+          lat: null,
+          lon: null,
+        ),
+      ];
+
+      final container = ProviderContainer.test(
+        overrides: [
+          storiesProvider.overrideWith(MockStories.new),
+          fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+          cameraPickerServiceProvider.overrideWithValue(
+            mockCameraPickerService,
+          ),
+          instaImagePickerServiceProvider.overrideWithValue(
+            mockInstaImagePickerService,
+          ),
+          imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+          // Override to simulate mobile platform
+          mobilePlatformProvider.overrideWith((ref) => true),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      // Keep the provider alive
+      container.listen(storiesProvider, (_, __) {});
+      final mockStories =
+          container.read(storiesProvider.notifier) as MockStories;
+      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+      // Set the state to loaded with stories
+      mockStories.setState(
+        StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+      );
+
+      await tester.pumpWidget(
+        pumpTestWidget(
+          tester,
+          container: container,
+          widthClass: WindowWidthClass.compact,
+        ),
+      );
+
+      await tester.pump();
+
+      // On mobile platforms, RefreshIndicator should be present
+      expect(find.byType(RefreshIndicator), findsOneWidget);
+
+      // Verify Scrollbar is also present under RefreshIndicator
+      expect(find.byType(Scrollbar), findsOneWidget);
     },
   );
 

@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:dicoding_story/common/localizations.dart';
+import 'package:dicoding_story/data/services/platform/platform_provider.dart';
 import 'package:dicoding_story/data/services/widget/image_picker/image_picker_service.dart';
 import 'package:dicoding_story/data/services/widget/insta_image_picker/insta_image_picker_service.dart';
 import 'package:dicoding_story/data/services/widget/wechat_camera_picker/wechat_camera_picker_service.dart';
@@ -10,7 +9,6 @@ import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_dialog.d
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/widgets/settings_dialog.dart';
 import 'package:dicoding_story/ui/main/widgets/story_card.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -56,8 +54,8 @@ class _MainScreenState extends ConsumerState<MainPage> {
     }
   }
 
-  Future<void> showAddStoryDialog() async {
-    if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+  Future<void> showAddStoryDialog({required bool isMobilePlatform}) async {
+    if (isMobilePlatform) {
       ref
           .read(instaImagePickerServiceProvider)
           .pickImage(
@@ -79,6 +77,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobilePlatform = ref.watch(mobilePlatformProvider);
     final widthClass = WindowWidthClass.of(context);
     final isMedium = widthClass >= WindowWidthClass.medium;
     final isLarge = widthClass >= WindowWidthClass.large;
@@ -178,8 +177,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
           );
 
           // Wrap with RefreshIndicator for mobile platforms
-          final isMobile = !kIsWeb && (Platform.isAndroid || Platform.isIOS);
-          return isMobile
+          return isMobilePlatform
               ? RefreshIndicator(
                   onRefresh: () async {
                     await ref.read(storiesProvider.notifier).fetchStories();
@@ -210,29 +208,28 @@ class _MainScreenState extends ConsumerState<MainPage> {
         transitionBuilder: (Widget child, Animation<double> animation) {
           return ScaleTransition(scale: animation, child: child);
         },
-        child: isMedium ? _buildFABExtended() : _buildFAB(),
+        child: _buildFAB(isMedium, isMobilePlatform: isMobilePlatform),
       ),
     );
   }
 
-  Widget _buildFAB() {
+  Widget _buildFAB(bool isMediumWidth, {required bool isMobilePlatform}) {
+    if (isMediumWidth) {
+      return FloatingActionButton.extended(
+        key: const ValueKey('fab_extended'),
+        heroTag: 'fab_extended',
+        onPressed: () => showAddStoryDialog(isMobilePlatform: isMobilePlatform),
+        label: Text(context.l10n.addStoryTitle),
+        icon: const Icon(Icons.add),
+        tooltip: context.l10n.addStoryTitle,
+      );
+    }
     return FloatingActionButton(
       key: const ValueKey('fab_compact'),
       heroTag: 'fab_compact',
-      onPressed: () => showAddStoryDialog(),
+      onPressed: () => showAddStoryDialog(isMobilePlatform: isMobilePlatform),
       tooltip: context.l10n.addStoryTitle,
       child: const Icon(Icons.add),
-    );
-  }
-
-  Widget _buildFABExtended() {
-    return FloatingActionButton.extended(
-      key: const ValueKey('fab_extended'),
-      heroTag: 'fab_extended',
-      onPressed: () => showAddStoryDialog(),
-      label: Text(context.l10n.addStoryTitle),
-      icon: const Icon(Icons.add),
-      tooltip: context.l10n.addStoryTitle,
     );
   }
 }
