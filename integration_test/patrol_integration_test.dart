@@ -50,8 +50,8 @@ void main() {
 
       await robot.tapAvatarButton();
 
-      await robot.tapThemeLightDropdown();
       await robot.tapThemeDarkDropdown();
+      await robot.tapThemeLightDropdown();
 
       await robot.tapIndonesianLanguage();
       await robot.tapEnglishLanguage();
