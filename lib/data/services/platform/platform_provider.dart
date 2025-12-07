@@ -6,6 +6,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'platform_provider.g.dart';
 
 @riverpod
-bool mobilePlatform(Ref ref) {
-  return !kIsWeb && (Platform.isAndroid || Platform.isIOS);
-}
+bool mobilePlatform(Ref ref) =>
+    !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+
+@riverpod
+bool webPlatform(Ref ref) => kIsWeb;

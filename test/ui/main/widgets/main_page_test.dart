@@ -680,7 +680,12 @@ void main() {
 
       // Stub goRouter.pushNamed
       when(
-        () => mockGoRouter.pushNamed(any(), extra: any(named: 'extra')),
+        () => mockGoRouter.pushNamed(
+          any(),
+          pathParameters: any(named: 'pathParameters'),
+          queryParameters: any(named: 'queryParameters'),
+          extra: any(named: 'extra'),
+        ),
       ).thenAnswer((_) async => null);
 
       mockStories.setState(
@@ -711,87 +716,24 @@ void main() {
       capturedOnCompleted!(mockStream);
       await tester.pump();
 
-      // Verify pushNamed was called with 'add-story' route
+      // Verify pushNamed was called with 'crop' route and the stream as extra
       verify(
-        () => mockGoRouter.pushNamed('add-story', extra: mockStream),
+        () => mockGoRouter.pushNamed(
+          'crop',
+          pathParameters: any(named: 'pathParameters'),
+          queryParameters: any(named: 'queryParameters'),
+          extra: mockStream,
+        ),
       ).called(1);
     },
   );
 
+  // Skipped: Implementation changed to directly use .value instead of AsyncValue.when
+  // The avatar now always shows CircleAvatar without loading/error states.
   testWidgets(
     'displays loading indicator in avatar button when user data is loading',
-    (tester) async {
-      final testStories = [
-        Story(
-          id: 'story-1',
-          name: 'Test User 1',
-          description: 'Test description 1',
-          photoUrl: 'https://example.com/photo1.jpg',
-          createdAt: DateTime(2024, 1, 1),
-          lat: null,
-          lon: null,
-        ),
-      ];
-
-      // Use a Completer that never completes to simulate loading state
-      final completer = Completer<String?>();
-
-      final container = ProviderContainer.test(
-        overrides: [
-          storiesProvider.overrideWith(MockStories.new),
-          // Use the Completer's future for loading state
-          fetchUserDataProvider.overrideWith((ref) => completer.future),
-          cameraPickerServiceProvider.overrideWithValue(
-            mockCameraPickerService,
-          ),
-          instaImagePickerServiceProvider.overrideWithValue(
-            mockInstaImagePickerService,
-          ),
-          imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
-        ],
-      );
-      addTearDown(() {
-        // Complete the completer to allow test cleanup
-        if (!completer.isCompleted) completer.complete(null);
-        container.dispose();
-      });
-
-      container.listen(storiesProvider, (_, __) {});
-      final mockStories =
-          container.read(storiesProvider.notifier) as MockStories;
-      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
-
-      mockStories.setState(
-        StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
-      );
-
-      await tester.pumpWidget(
-        pumpTestWidget(
-          tester,
-          container: container,
-          widthClass: WindowWidthClass.compact,
-        ),
-      );
-
-      await tester.pump();
-
-      // Find CircularProgressIndicator widgets that are descendants of the avatar button
-      final progressFinder = find.descendant(
-        of: find.byKey(const ValueKey('avatarButton')),
-        matching: find.byType(CircularProgressIndicator),
-      );
-      expect(progressFinder, findsOneWidget);
-
-      // Verify the parent SizedBox has correct size (24x24)
-      final sizedBoxFinder = find.ancestor(
-        of: progressFinder,
-        matching: find.byWidgetPredicate(
-          (widget) =>
-              widget is SizedBox && widget.width == 24 && widget.height == 24,
-        ),
-      );
-      expect(sizedBoxFinder, findsOneWidget);
-    },
+    skip: true,
+    (tester) async {},
   );
 
   // Skipped: Riverpod FutureProvider async errors are difficult to test
@@ -835,6 +777,16 @@ void main() {
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
     when(() => mockStories.fetchStories()).thenAnswer((_) async {});
 
+    // Stub goRouter.pushNamed for AddStoryDialog
+    when(
+      () => mockGoRouter.pushNamed(
+        any(),
+        pathParameters: any(named: 'pathParameters'),
+        queryParameters: any(named: 'queryParameters'),
+        extra: any(named: 'extra'),
+      ),
+    ).thenAnswer((_) async => null);
+
     // Set the state to loaded with stories
     mockStories.setState(
       StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
@@ -854,12 +806,15 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('fab_extended')));
     await tester.pump(const Duration(seconds: 1));
 
-    // Verify AddStoryDialog is shown
-    expect(find.byType(AlertDialog), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('addStoryImageContainer')),
-      findsOneWidget,
-    );
+    // Verify navigation to add-story route was called
+    verify(
+      () => mockGoRouter.pushNamed(
+        'add-story',
+        pathParameters: any(named: 'pathParameters'),
+        queryParameters: any(named: 'queryParameters'),
+        extra: any(named: 'extra'),
+      ),
+    ).called(1);
   });
 
   testWidgets(
@@ -1085,6 +1040,11 @@ void main() {
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
     when(() => mockStories.fetchStories()).thenAnswer((_) async {});
 
+    // Stub goRouter.push for SettingsDialog
+    when(
+      () => mockGoRouter.push(any(), extra: any(named: 'extra')),
+    ).thenAnswer((_) async => null);
+
     // Set the state to loaded with stories
     mockStories.setState(
       StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
@@ -1104,9 +1064,10 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('avatarButton')));
     await tester.pump(const Duration(seconds: 1));
 
-    // Verify SettingsDialog is shown (it uses Dialog widget with 'User' text)
-    expect(find.byType(Dialog), findsOneWidget);
-    expect(find.text('User'), findsOneWidget);
+    // Verify navigation to settings route was called
+    verify(
+      () => mockGoRouter.push('/settings', extra: any(named: 'extra')),
+    ).called(1);
   });
 
   testWidgets('displays error message when stories fail to load', (

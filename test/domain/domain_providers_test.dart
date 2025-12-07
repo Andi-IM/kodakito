@@ -13,12 +13,18 @@ import 'package:dicoding_story/domain/repository/auth_repository.dart';
 import 'package:dicoding_story/domain/repository/cache_repository.dart';
 import 'package:dicoding_story/domain/repository/detail_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('Domain Providers', () {
+    setUpAll(() async {
+      // Load dotenv from the actual .env file
+      await dotenv.load(fileName: '.env');
+    });
+
     test('providers should exist and return correct repository types', () {
       // Arrange
       SharedPreferences.setMockInitialValues({});

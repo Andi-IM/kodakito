@@ -46,7 +46,11 @@ void main() {
                     onPressed: () {
                       showDialog(
                         context: context,
-                        builder: (context) => const SettingsDialog(),
+                        builder: (context) => SettingsDialog(
+                          onPop: () => Navigator.of(context).pop(),
+                          onLogout: () {},
+                          onLanguageDialogOpen: () {},
+                        ),
                       );
                     },
                     child: const Text('Open Settings'),
@@ -61,6 +65,11 @@ void main() {
           path: '/login',
           builder: (context, state) =>
               const Scaffold(body: Text('Login Screen')),
+        ),
+        GoRoute(
+          path: '/settings/language',
+          builder: (context, state) =>
+              LanguageDialog(onPop: () => context.pop()),
         ),
       ],
     );
@@ -186,7 +195,8 @@ void main() {
       ).called(1);
     });
 
-    testWidgets('changes language', (tester) async {
+    // Skip: Language dialog is shown via route navigation requiring shell route
+    testWidgets('changes language', skip: true, (tester) async {
       tester.view.physicalSize = const Size(1000, 2000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -206,14 +216,14 @@ void main() {
       final languageOption = find.byKey(const Key('language'));
       expect(languageOption, findsOneWidget);
 
-      // Tap it
+      // Tap it - navigates to language route
       await tester.tap(languageOption);
       await tester.pumpAndSettle();
 
-      // Dialog appears
-      expect(find.text('Select Language'), findsOneWidget);
+      // LanguageDialog appears (title from l10n.settingsBtnLanguagePrompt)
+      expect(find.byType(LanguageDialog), findsOneWidget);
 
-      // Select Indonesia (EN string for 'id')
+      // Select Indonesia (EN string 'Indonesian' from l10n.settingsBtnLanguageID)
       await tester.tap(find.text('Indonesian'));
       await tester.pumpAndSettle();
 
@@ -223,13 +233,17 @@ void main() {
       ).called(1);
 
       // Verify language dialog closed
-      expect(find.text('Select Language'), findsNothing);
+      expect(find.byType(LanguageDialog), findsNothing);
     });
 
-    testWidgets('logout triggers provider and navigation', (tester) async {
+    testWidgets('logout triggers provider and calls onLogout callback', (
+      tester,
+    ) async {
       tester.view.physicalSize = const Size(1000, 2000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
+
+      bool onLogoutCalled = false;
 
       final container = ProviderContainer(
         overrides: [
@@ -241,7 +255,51 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      await pumpTestWidget(tester, container: container);
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) {
+              return Scaffold(
+                body: Builder(
+                  builder: (context) {
+                    return ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => SettingsDialog(
+                            onPop: () => Navigator.of(context).pop(),
+                            onLogout: () => onLogoutCalled = true,
+                            onLanguageDialogOpen: () {},
+                          ),
+                        );
+                      },
+                      child: const Text('Open Settings'),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Open the dialog
+      await tester.tap(find.text('Open Settings'));
+      await tester.pumpAndSettle();
 
       final logoutBtn = find.byKey(const ValueKey('logoutButton'));
       expect(logoutBtn, findsOneWidget);
@@ -249,8 +307,8 @@ void main() {
       await tester.tap(logoutBtn);
       await tester.pumpAndSettle();
 
-      // Should have navigated to login
-      expect(find.text('Login Screen'), findsOneWidget);
+      // Should have called onLogout callback
+      expect(onLogoutCalled, isTrue);
     });
 
     testWidgets('closes dialog on close button tap', (tester) async {
@@ -281,6 +339,135 @@ void main() {
       expect(find.byType(SettingsDialog), findsNothing);
     });
 
+    testWidgets('displays correct language label for English locale', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      // Stub storage to return 'en' for language
+      when(
+        () => mockStorageService.get(APP_LANGUAGE_STORAGE_KEY),
+      ).thenAnswer((_) async => 'en');
+
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) async => 'User'),
+          versionProvider.overrideWith((ref) async => '1.0.0'),
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(tester, container: container);
+
+      // Verify English label is displayed in language option subtitle
+      expect(find.text('English'), findsOneWidget);
+    });
+
+    testWidgets('displays correct language label for Indonesian locale', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      // Stub storage to return 'id' for language
+      when(
+        () => mockStorageService.get(APP_LANGUAGE_STORAGE_KEY),
+      ).thenAnswer((_) async => 'id');
+
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) async => 'User'),
+          versionProvider.overrideWith((ref) async => '1.0.0'),
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(tester, container: container);
+
+      // Verify Indonesia label is displayed in language option subtitle
+      expect(find.text('Indonesia'), findsOneWidget);
+    });
+
+    testWidgets('calls onLanguageDialogOpen when language option is tapped', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      bool onLanguageDialogOpenCalled = false;
+
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) async => 'User'),
+          versionProvider.overrideWith((ref) async => '1.0.0'),
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) {
+              return Scaffold(
+                body: Builder(
+                  builder: (context) {
+                    return ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => SettingsDialog(
+                            onPop: () => Navigator.of(context).pop(),
+                            onLogout: () {},
+                            onLanguageDialogOpen: () =>
+                                onLanguageDialogOpenCalled = true,
+                          ),
+                        );
+                      },
+                      child: const Text('Open Settings'),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp.router(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Open the dialog
+      await tester.tap(find.text('Open Settings'));
+      await tester.pumpAndSettle();
+
+      // Tap the language option
+      final languageOption = find.byKey(const Key('language'));
+      expect(languageOption, findsOneWidget);
+      await tester.tap(languageOption);
+      await tester.pumpAndSettle();
+
+      // Verify onLanguageDialogOpen was called
+      expect(onLanguageDialogOpenCalled, isTrue);
+    });
+
     testWidgets('renders precise version text', (tester) async {
       tester.view.physicalSize = const Size(1000, 2000);
       tester.view.devicePixelRatio = 1.0;
@@ -305,7 +492,8 @@ void main() {
       expect(find.textContaining('1.2.3+4'), findsOneWidget);
     });
 
-    testWidgets('closes language dialog on cancel', (tester) async {
+    // Skip: Language dialog is shown via route navigation requiring shell route
+    testWidgets('closes language dialog on cancel', skip: true, (tester) async {
       tester.view.physicalSize = const Size(1000, 2000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -321,19 +509,173 @@ void main() {
 
       await pumpTestWidget(tester, container: container);
 
-      // Open Language Dialog
+      // Open Language Dialog via navigation
       await tester.tap(find.byKey(const Key('language')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Select Language'), findsOneWidget);
+      expect(find.byType(LanguageDialog), findsOneWidget);
 
       // Tap Cancel
-      // In tests, localizations usually default to English values or keys if not mocked differently.
-      // Assuming 'Cancel' is the English value for settingsBtnCancel.
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Select Language'), findsNothing);
+      expect(find.byType(LanguageDialog), findsNothing);
+    });
+  });
+
+  group('LanguageDialog', () {
+    testWidgets('renders all language options', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final container = ProviderContainer(
+        overrides: [
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: LanguageDialog(onPop: () {})),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify title
+      expect(find.text('Select Language'), findsOneWidget);
+
+      // Verify all language options
+      expect(find.text('System'), findsOneWidget);
+      expect(find.text('English'), findsOneWidget);
+      expect(find.text('Indonesian'), findsOneWidget);
+
+      // Verify Cancel button
+      expect(find.text('Cancel'), findsOneWidget);
+    });
+
+    testWidgets('calls onPop when language is selected', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      bool onPopCalled = false;
+
+      final container = ProviderContainer(
+        overrides: [
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: LanguageDialog(onPop: () => onPopCalled = true),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Indonesian option
+      await tester.tap(find.text('Indonesian'));
+      await tester.pumpAndSettle();
+
+      // Verify onPop was called
+      expect(onPopCalled, isTrue);
+
+      // Verify storage was updated
+      verify(
+        () => mockStorageService.set(APP_LANGUAGE_STORAGE_KEY, 'id'),
+      ).called(1);
+    });
+
+    testWidgets('calls onPop when Cancel button is pressed', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      bool onPopCalled = false;
+
+      final container = ProviderContainer(
+        overrides: [
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: LanguageDialog(onPop: () => onPopCalled = true),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Cancel
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      // Verify onPop was called
+      expect(onPopCalled, isTrue);
+    });
+
+    testWidgets('selects English language and calls onPop', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      bool onPopCalled = false;
+
+      final container = ProviderContainer(
+        overrides: [
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: LanguageDialog(onPop: () => onPopCalled = true),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap English option
+      await tester.tap(find.text('English'));
+      await tester.pumpAndSettle();
+
+      // Verify onPop was called
+      expect(onPopCalled, isTrue);
+
+      // Verify storage was updated with 'en'
+      verify(
+        () => mockStorageService.set(APP_LANGUAGE_STORAGE_KEY, 'en'),
+      ).called(1);
     });
   });
 }

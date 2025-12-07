@@ -1,10 +1,9 @@
-import 'dart:io';
-
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 
 class AddStoryPage extends ConsumerStatefulWidget {
@@ -23,7 +22,7 @@ class AddStoryPage extends ConsumerStatefulWidget {
 
 class _AddStoryPageState extends ConsumerState<AddStoryPage> {
   final TextEditingController _descriptionController = TextEditingController();
-  File? file;
+  XFile? file;
 
   @override
   void dispose() {
@@ -64,15 +63,14 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
                 key: const Key('postButton'),
                 onPressed: addStoryState is AddStoryLoading
                     ? null
-                    : () {
-                        if (file != null) {
-                          ref
-                              .read(addStoryProvider.notifier)
-                              .addStory(
-                                description: _descriptionController.text,
-                                photo: file!,
-                              );
-                        }
+                    : () async {
+                        if (file == null) return;
+                        ref
+                            .read(addStoryProvider.notifier)
+                            .addStory(
+                              description: _descriptionController.text,
+                              photoFile: file!,
+                            );
                       },
                 child: addStoryState is AddStoryLoading
                     ? const SizedBox(
@@ -99,9 +97,9 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
                 if (croppedFile != null) {
                   // Update file reference for posting
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted && file != croppedFile) {
+                    if (mounted && file?.path != croppedFile.path) {
                       setState(() {
-                        file = croppedFile;
+                        file = XFile(croppedFile.path);
                       });
                     }
                   });

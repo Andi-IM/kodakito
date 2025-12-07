@@ -1,6 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data';
-
+import 'package:dicoding_story/data/services/platform/platform_provider.dart';
 import 'package:dicoding_story/data/services/widget/package_info/package_info_service.dart';
 import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
@@ -8,6 +7,8 @@ import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
 import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
 import 'package:dicoding_story/utils/logger_mixin.dart';
+import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path_provider/path_provider.dart';
@@ -26,14 +27,22 @@ class ImageFile extends _$ImageFile {
     state = imageFile;
   }
 
-  Future<File?> toFile() async {
+  Future<XFile?> toFile() async {
     final bytes = state;
     if (bytes == null) return null;
-    final tempDir = await getTemporaryDirectory();
+
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final file = File('${tempDir.path}/story_$timestamp.jpg');
+    final nameFile = 'story_$timestamp.jpg';
+
+    if (ref.read(webPlatformProvider)) {
+      return XFile.fromData(bytes, name: nameFile, mimeType: 'image/jpeg');
+    }
+
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/$nameFile');
     await file.writeAsBytes(bytes);
-    return file;
+
+    return XFile(file.path);
   }
 }
 
@@ -111,7 +120,7 @@ class AddStoryNotifier extends _$AddStoryNotifier with LogMixin {
 
   Future<void> addStory({
     required String description,
-    required File photo,
+    required XFile photoFile,
     double? lat,
     double? lon,
   }) async {
@@ -119,7 +128,7 @@ class AddStoryNotifier extends _$AddStoryNotifier with LogMixin {
     state = const AddStoryLoading();
     final result = await _repository.addStory(
       description,
-      photo,
+      photoFile,
       lat: lat,
       lon: lon,
     );

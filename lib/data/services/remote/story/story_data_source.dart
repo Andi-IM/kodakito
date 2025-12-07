@@ -1,16 +1,15 @@
-import 'dart:io';
-
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
 import 'package:dicoding_story/data/services/remote/network_service.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 
 abstract class StoryDataSource {
   Future<Either<AppException, DefaultResponse>> addStory(
     String description,
-    File photo, {
+    XFile photoFile, {
     double? lat,
     double? lon,
   });
@@ -32,13 +31,17 @@ class StoryRemoteDataSource implements StoryDataSource {
   @override
   Future<Either<AppException, DefaultResponse>> addStory(
     String description,
-    File photo, {
+    XFile photoFile, {
     double? lat,
     double? lon,
   }) async {
     final formData = FormData.fromMap({
       'description': description,
-      'photo': await MultipartFile.fromFile(photo.path),
+      'photo': MultipartFile.fromBytes(
+        await photoFile.readAsBytes(),
+        filename: photoFile.name,
+        contentType: DioMediaType('image', 'jpeg'),
+      ),
       if (lat != null) 'lat': lat,
       if (lon != null) 'lon': lon,
     });

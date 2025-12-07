@@ -1,4 +1,4 @@
-import 'package:dicoding_story/common/app_router.dart';
+import 'package:dicoding_story/common/routing/app_router/app_router.dart';
 import 'package:dicoding_story/common/theme.dart';
 import 'package:dicoding_story/common/util.dart';
 import 'package:flutter/material.dart';
