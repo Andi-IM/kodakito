@@ -1,11 +1,10 @@
-import 'dart:typed_data';
-
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/services/local/local_data_service.dart';
 import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
 class AddStoryRepositoryLocal extends AddStoryRepository {
@@ -17,7 +16,7 @@ class AddStoryRepositoryLocal extends AddStoryRepository {
   @override
   Future<Either<AppException, DefaultResponse>> addStory(
     String description,
-    Uint8List photoBytes, {
+    XFile photoFile, {
     double? lat,
     double? lon,
   }) {

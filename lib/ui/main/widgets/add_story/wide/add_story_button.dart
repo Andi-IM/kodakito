@@ -37,13 +37,13 @@ class AddStoryButton extends ConsumerWidget {
               }
 
               // Use bytes directly instead of converting to File
-              final bytes = ref.read(imageFileProvider.notifier).getBytes();
+              final file = await ref.read(imageFileProvider.notifier).toFile();
 
-              if (bytes != null) {
+              if (file != null) {
                 // Call addStory with bytes directly
                 await ref
                     .read(addStoryProvider.notifier)
-                    .addStory(description: description, photoBytes: bytes);
+                    .addStory(description: description, photoFile: file);
               }
             },
       child: isLoading
