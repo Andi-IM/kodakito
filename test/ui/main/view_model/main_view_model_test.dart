@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -13,6 +14,8 @@ import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/services.dart';
+import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -21,10 +24,16 @@ class Listener<T> extends Mock {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late ProviderContainer container;
   late MockListRepository mockListRepository;
   late MockAddStoryRepository mockAddStoryRepository;
   late Listener<StoriesState> storiesListener;
+
+  const MethodChannel channelPathProvider = MethodChannel(
+    'plugins.flutter.io/path_provider',
+  );
 
   setUp(() {
     mockListRepository = MockListRepository();
@@ -38,10 +47,22 @@ void main() {
         addStoryRepositoryProvider.overrideWithValue(mockAddStoryRepository),
       ],
     );
+
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channelPathProvider, (
+          MethodCall methodCall,
+        ) async {
+          if (methodCall.method == 'getTemporaryDirectory') {
+            return '.';
+          }
+          return null;
+        });
   });
 
   tearDown(() {
     container.dispose();
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channelPathProvider, null);
   });
 
   group('ImageFile', () {
@@ -56,6 +77,68 @@ void main() {
 
       final state = container.read(imageFileProvider);
       expect(state, imageBytes);
+    });
+
+    test('toFile returns null when state is null', () async {
+      final file = await container.read(imageFileProvider.notifier).toFile();
+      expect(file, isNull);
+    });
+
+    test('toFile writes bytes to file and returns it', () async {
+      final imageBytes = Uint8List.fromList([1, 2, 3]);
+      container.read(imageFileProvider.notifier).setImageFile(imageBytes);
+
+      // We expect the file to be created in '.' (current dir mock)
+      // path_provider mock returns '.'
+      // But we can't easily verify actual file write without real IO or mocking File.
+      // However, ImageFile implementation uses real File.
+      // So we will get a real File object pointing to ./story_TIMESTAMP.jpg
+
+      final file = await container.read(imageFileProvider.notifier).toFile();
+
+      expect(file, isNotNull);
+      expect(file!.path, contains('story_'));
+      expect(file.path, contains('.jpg'));
+
+      // Clean up created file if it exists
+      if (file.existsSync()) {
+        file.deleteSync();
+      }
+    });
+  });
+
+  group('getCroppedImageFromPicker', () {
+    test('returns null when stream is empty', () async {
+      final streamController = StreamController<InstaAssetsExportDetails>();
+      final future = container.read(
+        getCroppedImageFromPickerProvider(streamController.stream).future,
+      );
+
+      streamController.close();
+
+      final result = await future;
+      expect(result, isNull);
+    });
+
+    test('returns file when stream emits data', () async {
+      final streamController = StreamController<InstaAssetsExportDetails>();
+      final tFile = File('test_path');
+
+      final mockDetails = MockInstaAssetsExportDetails();
+      final mockData = MockInstaAssetsExportData();
+
+      when(() => mockData.croppedFile).thenReturn(tFile);
+      when(() => mockDetails.data).thenReturn([mockData]);
+
+      final future = container.read(
+        getCroppedImageFromPickerProvider(streamController.stream).future,
+      );
+
+      streamController.add(mockDetails);
+      streamController.close();
+
+      final result = await future;
+      expect(result, equals(tFile));
     });
   });
 
@@ -294,3 +377,8 @@ class MockAddStoryRepository extends Mock implements AddStoryRepository {}
 class MockFile extends Mock implements File {}
 
 class FakeFile extends Fake implements File {}
+
+class MockInstaAssetsExportDetails extends Mock
+    implements InstaAssetsExportDetails {}
+
+class MockInstaAssetsExportData extends Mock implements InstaAssetsExportData {}
