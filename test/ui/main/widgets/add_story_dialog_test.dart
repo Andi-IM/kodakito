@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:crop_your_image/crop_your_image.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
@@ -28,6 +29,8 @@ class SafeImageFile extends ImageFile {
     return File('dummy_image.jpg');
   }
 }
+
+class MockCropController extends Mock implements CropController {}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -543,6 +546,105 @@ void main() {
 
       // Verify StoryCropDialog is shown
       expect(find.byType(StoryCropDialog), findsOneWidget);
+    });
+
+    group('StoryCropDialog', () {
+      late MockCropController mockCropController;
+
+      setUp(() {
+        mockCropController = MockCropController();
+      });
+
+      testWidgets('calls crop on controller when Crop button is pressed', (
+        tester,
+      ) async {
+        final container = ProviderContainer(
+          overrides: [imageFileProvider.overrideWith(() => SafeImageFile())],
+        );
+        addTearDown(container.dispose);
+
+        await pumpTestWidget(
+          tester,
+          container: container,
+          child: StoryCropDialog(
+            imageBytes: validImageBytes,
+            cropController: mockCropController,
+          ),
+        );
+
+        // Tap Crop button
+        await tester.tap(find.text('Crop'));
+        await tester.pump();
+
+        verify(() => mockCropController.crop()).called(1);
+      });
+
+      testWidgets('calls context.pop on Cancel button', (tester) async {
+        final container = ProviderContainer(
+          overrides: [imageFileProvider.overrideWith(() => SafeImageFile())],
+        );
+        addTearDown(container.dispose);
+
+        await pumpTestWidget(
+          tester,
+          container: container,
+          child: StoryCropDialog(
+            imageBytes: validImageBytes,
+            cropController: mockCropController,
+          ),
+        );
+
+        // Tap Cancel
+        await tester.tap(find.text('Cancel'));
+        await tester.pumpAndSettle();
+
+        // Verify dialog is popped (assuming pumpTestWidget makes it visible)
+        // pumpTestWidget launches dialog. After pop, it should be gone.
+        expect(find.byType(StoryCropDialog), findsNothing);
+      });
+
+      testWidgets('updates image and pops on crop success', (tester) async {
+        final container = ProviderContainer(
+          overrides: [imageFileProvider.overrideWith(() => SafeImageFile())],
+        );
+        addTearDown(container.dispose);
+
+        // Spy on the notifier or check the state change
+        // We can check ref.read(imageFileProvider) after crop.
+
+        // Keep provider alive
+        container.listen(imageFileProvider, (previous, next) {});
+
+        await pumpTestWidget(
+          tester,
+          container: container,
+          child: StoryCropDialog(
+            imageBytes: validImageBytes,
+            cropController: mockCropController,
+          ),
+        );
+
+        // Find Crop widget to get callback
+        final cropWidgetFinder = find.byType(Crop);
+        expect(cropWidgetFinder, findsOneWidget);
+        final Crop cropWidget = tester.widget(cropWidgetFinder);
+
+        // Simulate success callback
+        // Creating a dummy cropped image
+        final croppedBytes = validImageBytes; // Reusing valid bytes
+        cropWidget.onCropped(CropSuccess(croppedBytes));
+
+        // Pump to handle pop and state update
+        await tester.pumpAndSettle();
+
+        // Verify dialog popped
+        expect(find.byType(StoryCropDialog), findsNothing);
+
+        // Verify provider updated
+        final storedImage = container.read(imageFileProvider);
+        expect(storedImage, isNotNull);
+        expect(storedImage, equals(croppedBytes));
+      });
     });
   });
 }
