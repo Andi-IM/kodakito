@@ -28,9 +28,14 @@ Future<void> initApp() async {
 
   final List<Future<void>> startupFutures = [];
 
-  startupFutures.add(
-    dotenv.load(fileName: ".env", mergeWith: Platform.environment),
-  );
+  // Platform.environment is not available on web
+  if (kIsWeb) {
+    startupFutures.add(dotenv.load(fileName: ".env"));
+  } else {
+    startupFutures.add(
+      dotenv.load(fileName: ".env", mergeWith: Platform.environment),
+    );
+  }
   startupFutures.add(SharedPreferences.getInstance());
 
   if (!kIsWeb && Platform.isWindows) {

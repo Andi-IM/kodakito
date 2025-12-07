@@ -52,8 +52,8 @@ To run this project locally, follow these steps:
 3.  **Configure Environment Variables**:
     Create a `.env` file in the root directory and add the following variables:
     ```env
-    STORY_ENV=production
-    STORY_URL=https://story-api.dicoding.dev/v1
+    APP_ENV=production
+    APP_URL=https://story-api.dicoding.dev/v1
     ```
 
 4.  **Generate Code**:

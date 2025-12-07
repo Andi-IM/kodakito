@@ -1,6 +1,7 @@
 import 'dart:typed_data' show Uint8List;
 
 import 'package:dicoding_story/common/localizations.dart';
+import 'package:dicoding_story/data/services/widget/image_picker/image_picker_service.dart';
 import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_button.dart';
@@ -10,8 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class AddStoryDialog extends ConsumerStatefulWidget {
-  final Future<Uint8List?> Function() getImageFile;
-  const AddStoryDialog({super.key, required this.getImageFile});
+  const AddStoryDialog({super.key});
 
   @override
   ConsumerState<AddStoryDialog> createState() => _AddStoryDialogState();
@@ -25,6 +25,9 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
     descriptionController.dispose();
     super.dispose();
   }
+
+  Future<Uint8List?> _getImageFile() async =>
+      await ref.read(imagePickerServiceProvider).pickImage();
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +48,7 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
         );
         // Close the dialog
         if (localContext.mounted) {
-          Navigator.of(localContext).pop();
+          localContext.pop();
         }
       }
       if (next is AddStoryFailure) {
@@ -71,7 +74,7 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
               const SizedBox(height: 8),
               AddStoryImageContainer(
                 key: const ValueKey('addStoryImageContainer'),
-                getImageFile: widget.getImageFile,
+                getImageFile: _getImageFile,
               ),
               const SizedBox(height: 16),
               TextField(

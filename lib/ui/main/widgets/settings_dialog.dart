@@ -225,52 +225,7 @@ class SettingsDialog extends ConsumerWidget {
       icon: Icons.language,
       title: context.l10n.settingsBtnLanguage,
       subtitle: getLanguageLabel(currentLocale),
-      onTap: () {
-        _showLanguageDialog(context, ref);
-      },
-    );
-  }
-
-  void _showLanguageDialog(BuildContext context, WidgetRef ref) {
-    final currentLocale = ref.watch(appLanguageProvider);
-
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: Text(context.l10n.settingsBtnLanguagePrompt),
-          content: RadioGroup<Locale?>(
-            groupValue: currentLocale,
-            onChanged: (value) {
-              ref.read(appLanguageProvider.notifier).changeLanguage(value);
-              dialogContext.pop();
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                RadioListTile<Locale?>(
-                  title: Text(context.l10n.settingsBtnDefault),
-                  value: null,
-                ),
-                RadioListTile<Locale?>(
-                  title: Text(context.l10n.settingsBtnLanguageEN),
-                  value: const Locale('en'),
-                ),
-                RadioListTile<Locale?>(
-                  title: Text(context.l10n.settingsBtnLanguageID),
-                  value: const Locale('id'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => dialogContext.pop(),
-              child: Text(context.l10n.settingsBtnCancel),
-            ),
-          ],
-        );
-      },
+      onTap: () => context.go('/settings/language'),
     );
   }
 
@@ -308,6 +263,48 @@ class SettingsDialog extends ConsumerWidget {
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
+    );
+  }
+}
+
+class LanguageDialog extends ConsumerWidget {
+  const LanguageDialog({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentLocale = ref.watch(appLanguageProvider);
+    return AlertDialog(
+      title: Text(context.l10n.settingsBtnLanguagePrompt),
+      content: RadioGroup<Locale?>(
+        groupValue: currentLocale,
+        onChanged: (value) {
+          ref.read(appLanguageProvider.notifier).changeLanguage(value);
+          context.pop();
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<Locale?>(
+              title: Text(context.l10n.settingsBtnDefault),
+              value: null,
+            ),
+            RadioListTile<Locale?>(
+              title: Text(context.l10n.settingsBtnLanguageEN),
+              value: const Locale('en'),
+            ),
+            RadioListTile<Locale?>(
+              title: Text(context.l10n.settingsBtnLanguageID),
+              value: const Locale('id'),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => context.pop(),
+          child: Text(context.l10n.settingsBtnCancel),
+        ),
+      ],
     );
   }
 }

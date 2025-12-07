@@ -64,13 +64,15 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
                 key: const Key('postButton'),
                 onPressed: addStoryState is AddStoryLoading
                     ? null
-                    : () {
+                    : () async {
                         if (file != null) {
+                          // Read file bytes for upload
+                          final bytes = await file!.readAsBytes();
                           ref
                               .read(addStoryProvider.notifier)
                               .addStory(
                                 description: _descriptionController.text,
-                                photo: file!,
+                                photoBytes: bytes,
                               );
                         }
                       },

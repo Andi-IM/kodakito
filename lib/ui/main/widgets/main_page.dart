@@ -1,13 +1,10 @@
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/data/services/platform/platform_provider.dart';
-import 'package:dicoding_story/data/services/widget/image_picker/image_picker_service.dart';
 import 'package:dicoding_story/data/services/widget/insta_image_picker/insta_image_picker_service.dart';
 import 'package:dicoding_story/data/services/widget/wechat_camera_picker/wechat_camera_picker_service.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
-import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_dialog.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
-import 'package:dicoding_story/ui/main/widgets/settings_dialog.dart';
 import 'package:dicoding_story/ui/main/widgets/story_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -61,18 +58,12 @@ class _MainScreenState extends ConsumerState<MainPage> {
           .pickImage(
             context,
             _pickFromWeChatCamera,
-            (cropStream) => context.pushNamed('add-story', extra: cropStream),
+            (cropStream) => context.pushNamed('crop', extra: cropStream),
           );
       return;
     }
 
-    return showDialog(
-      context: context,
-      builder: (context) => AddStoryDialog(
-        getImageFile: () async =>
-            await ref.read(imagePickerServiceProvider).pickImage(),
-      ),
-    );
+    context.pushNamed('add-story');
   }
 
   @override
@@ -100,11 +91,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
                 actions: [
                   IconButtonM3E(
                     key: const ValueKey('avatarButton'),
-                    onPressed: () => showDialog(
-                      context: context,
-                      useRootNavigator: true,
-                      builder: (context) => SettingsDialog(),
-                    ),
+                    onPressed: () => context.push('/settings'),
                     icon: userAsync.when(
                       data: (name) => CircleAvatar(
                         radius: 16,

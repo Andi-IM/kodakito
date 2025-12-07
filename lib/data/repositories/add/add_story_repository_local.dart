@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/services/local/local_data_service.dart';
@@ -17,7 +17,7 @@ class AddStoryRepositoryLocal extends AddStoryRepository {
   @override
   Future<Either<AppException, DefaultResponse>> addStory(
     String description,
-    File photo, {
+    Uint8List photoBytes, {
     double? lat,
     double? lon,
   }) {

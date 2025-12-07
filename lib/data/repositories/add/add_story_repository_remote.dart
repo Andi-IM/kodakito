@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
@@ -15,10 +15,15 @@ class AddStoryRepositoryRemote extends AddStoryRepository {
   @override
   Future<Either<AppException, DefaultResponse>> addStory(
     String description,
-    File photo, {
+    Uint8List photoBytes, {
     double? lat,
     double? lon,
   }) {
-    return _storyDataSource.addStory(description, photo, lat: lat, lon: lon);
+    return _storyDataSource.addStory(
+      description,
+      photoBytes,
+      lat: lat,
+      lon: lon,
+    );
   }
 }

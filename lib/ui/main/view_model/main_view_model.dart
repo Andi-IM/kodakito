@@ -10,7 +10,6 @@ import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
 import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'main_view_model.g.dart';
@@ -26,15 +25,8 @@ class ImageFile extends _$ImageFile {
     state = imageFile;
   }
 
-  Future<File?> toFile() async {
-    final bytes = state;
-    if (bytes == null) return null;
-    final tempDir = await getTemporaryDirectory();
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final file = File('${tempDir.path}/story_$timestamp.jpg');
-    await file.writeAsBytes(bytes);
-    return file;
-  }
+  /// Returns the current image bytes directly (no File conversion needed for web)
+  Uint8List? getBytes() => state;
 }
 
 @riverpod
@@ -111,7 +103,7 @@ class AddStoryNotifier extends _$AddStoryNotifier with LogMixin {
 
   Future<void> addStory({
     required String description,
-    required File photo,
+    required Uint8List photoBytes,
     double? lat,
     double? lon,
   }) async {
@@ -119,7 +111,7 @@ class AddStoryNotifier extends _$AddStoryNotifier with LogMixin {
     state = const AddStoryLoading();
     final result = await _repository.addStory(
       description,
-      photo,
+      photoBytes,
       lat: lat,
       lon: lon,
     );
