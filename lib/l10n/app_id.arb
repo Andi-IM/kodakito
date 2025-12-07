@@ -1,0 +1,75 @@
+{
+    "@@locale": "id",
+    "appTitle" : "KodaKito",
+
+    "@_AUTH_FEATURE" : {},
+    "authGreeting" : "Selamat Datang",
+    "authRegisterTitle" : "Buat Akun",
+
+    "authBtnLogin" : "Masuk",
+    "authBtnRegister" : "Daftar",
+    "authFieldEmailLabel" : "Email *",
+    "authFieldEmailHint" : "email@domain.com",
+    "authFieldPasswordLabel" : "Kata Sandi *",
+    "authFieldPasswordHint" : "********",
+    "authFieldFullNameLabel" : "Nama Lengkap *",
+    "authFieldFullNameHint" : "Masukkan nama anda",
+    "authMsgNoAccount" : "Belum Punya Akun? ",
+    "authLinkRegisterNow" : "Daftar Sekarang",
+    "authMsgHaveAccount" : "Sudah Punya Akun? ",
+    "authLinkLoginNow" : "Masuk",
+    "authRegisterSuccessMessage" : "Register berhasil, silahkan login terlebih dahulu",
+
+
+    "@_STORY_FEATURE" : {},
+    "storyBtnAddSemantic" : "Tambah Cerita Baru",
+    "storyDetailTitle" : "Detail Cerita",
+    "addStoryTitle" : "Tambah Cerita",
+    "addStoryBtnPost" : "Posting",
+    "addStoryBtnCancel" : "Batal",
+    "addStoryImageLabel" : "Foto Cerita",
+    "addStoryUploadPlaceholder" : "Unggah Gambar",
+    "addStoryDescriptionLabel" : "Deskripsi",
+    "addStoryDescriptionHint" : "Ceritakan pengalamanmu...",
+    "addStoryBtnCamera" : "Kamera",
+    "addStoryBtnCameraCrop" : "Potong",
+    "addStoryBtnGallery" : "Galeri",
+    "addStorySuccessMessage" : "Cerita berhasil diposting!",
+    "addStoryErrorEmptyDescription" : "Silakan masukkan deskripsi",
+    "addStoryErrorEmptyImage" : "Silakan pilih gambar",
+
+    "@_SETTINGS_FEATURE": {},
+    "settingsTitle": "Pengaturan",
+    "settingsBtnLogout": "Keluar",
+    "settingsBtnLogoutPrompt": "Logout dari aplikasi",
+    "settingsBtnLanguage": "Bahasa",
+    "settingsBtnLanguagePrompt": "Pilih Bahasa",
+    "settingsBtnDefault": "System",
+    "settingsBtnLanguageID": "Bahasa Indonesia",
+    "settingsBtnLanguageEN": "Bahasa Inggris",
+    "settingsBtnCancel": "Batal",
+    "settingsBtnTheme": "Tema",
+    "settingsBtnThemePrompt": "Pilih tema aplikasi",
+    "settingsBtnThemeLight": "Tema Terang",
+    "settingsBtnThemeDark": "Tema Gelap",
+    "settingsTextVersion": "versi {version}",
+    "@settingsTextVersion": {
+      "description": "Version text in settings dialog",
+      "placeholders": {
+        "version": {
+          "type": "String"
+        }
+    }
+    },
+    "validatorRequired": "Tidak boleh kosong",
+    "validatorEmailInvalid": "Masukkan alamat email yang valid",
+    "validatorMinLength": "Password harus terdiri dari minimal {length} karakter",
+    "@validatorMinLength": {
+        "description": "Validation message for minimum length",
+        "placeholders": {
+            "length": {
+                "type": "int"
+            }
+        }
+    }
+}

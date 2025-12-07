@@ -1,0 +1,73 @@
+{
+    "@@locale": "en",
+    "appTitle" : "KodaKito",
+
+    "@_AUTH_FEATURE" : {},
+    "authGreeting" : "Welcome back",
+    "authBtnLogin" : "Login",
+    "authRegisterTitle" : "Create Account",
+    "authBtnRegister" : "Register",
+    "authFieldEmailLabel" : "Email *",
+    "authFieldEmailHint" : "email@domain.com",
+    "authFieldPasswordLabel" : "Password *",
+    "authFieldPasswordHint" : "********",
+    "authFieldFullNameLabel" : "Full Name *",
+    "authFieldFullNameHint" : "Enter your name",
+    "authMsgNoAccount" : "Don't have an account? ",
+    "authLinkRegisterNow" : "Register now",
+    "authMsgHaveAccount" : "Already have an account? ",
+    "authLinkLoginNow" : "Login",
+    "storyBtnAddSemantic" : "Add new story",
+    "authRegisterSuccessMessage" : "Register success, please login",
+
+    "@_STORY_FEATURE" : {},
+    "storyDetailTitle" : "Story Detail",
+    "addStoryTitle" : "Add Story",
+    "addStoryBtnPost" : "Post",
+    "addStoryImageLabel" :"Story Photo",
+    "addStoryUploadPlaceholder" :"Upload Image",
+    "addStoryBtnCamera" : "Camera",
+    "addStoryBtnCameraCrop" : "Crop",
+    "addStoryBtnGallery" : "Gallery",
+    "addStoryDescriptionLabel" : "Description",
+    "addStoryBtnCancel" : "Cancel",
+    "addStoryDescriptionHint" : "Tell your experience...",
+    "addStorySuccessMessage" : "Story posted successfully!",
+    "addStoryErrorEmptyDescription" : "Please enter a description",
+    "addStoryErrorEmptyImage" : "Please select an image",
+
+    "@_SETTINGS_FEATURE": {},
+    "settingsTitle": "Settings",
+    "settingsBtnLogout": "Logout",
+    "settingsBtnLogoutPrompt": "Logout from app",
+    "settingsBtnLanguage": "Language",
+    "settingsBtnLanguagePrompt": "Select Language",
+    "settingsBtnDefault": "System",
+    "settingsBtnLanguageID": "Indonesian",
+    "settingsBtnLanguageEN": "English",
+    "settingsBtnCancel": "Cancel",
+    "settingsBtnTheme": "Theme",
+    "settingsBtnThemePrompt": "Choose app theme",
+    "settingsBtnThemeLight": "Light",
+    "settingsBtnThemeDark": "Dark",
+    "settingsTextVersion": "version {version}",
+    "@settingsTextVersion": {
+      "description": "Version text in settings dialog",
+      "placeholders": {
+        "version": {
+          "type": "String"
+        }
+      }
+    },
+    "validatorRequired": "This field cannot be empty",
+    "validatorEmailInvalid": "Please enter a valid email address",
+    "validatorMinLength": "Password must be at least {length} characters long",
+    "@validatorMinLength": {
+        "description": "Validation message for minimum length",
+        "placeholders": {
+            "length": {
+                "type": "int"
+            }
+        }
+    }
+}

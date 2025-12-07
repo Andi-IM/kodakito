@@ -1,38 +1,53 @@
 import 'dart:io' show Platform;
-
-import 'package:dicoding_story/common/app_router.dart';
-import 'package:dicoding_story/common/theme.dart';
-import 'package:dicoding_story/common/util.dart';
+import 'package:dicoding_story/app/app.dart';
+import 'package:dicoding_story/app/observer.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
-import 'package:m3e_collection/m3e_collection.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
-
-
-Future initLogging() async {
-  Logger.root.level = Level.ALL;
-}
 
 final logger = Logger('DEBUGLogger');
 
-Future<void> _setupDesktopWindow() async {
-  if (!kIsWeb && Platform.isWindows) {
-    await windowManager.ensureInitialized();
-    final options = WindowOptions();
-    await windowManager.waitUntilReadyToShow(options, () async {
-      await windowManager.setMinimumSize(const Size(450, 640));
-      await windowManager.setTitle('KodaKito');
-      await windowManager.show();
-      await windowManager.focus();
-    });
-  }
+void main() async {
+  await initApp();
+  runApp(ProviderScope(observers: [Observer()], child: MyApp()));
 }
 
-Future<void> _setupSystemUI() async {
+Future<void> initApp() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    debugPrint('${record.level.name}: ${record.time}: ${record.message}');
+  });
+
+  final List<Future<void>> startupFutures = [];
+
+  startupFutures.add(
+    dotenv.load(fileName: ".env", mergeWith: Platform.environment),
+  );
+  startupFutures.add(SharedPreferences.getInstance());
+
+  if (!kIsWeb && Platform.isWindows) {
+    startupFutures.add(() async {
+      await windowManager.ensureInitialized();
+      final options = WindowOptions();
+      await windowManager.waitUntilReadyToShow(options, () async {
+        await windowManager.setMinimumSize(const Size(450, 640));
+        await windowManager.setTitle('KodaKito');
+        await windowManager.show();
+        await windowManager.focus();
+      });
+    }());
+  }
+
   if (kIsWeb) {
+    usePathUrlStrategy();
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -41,40 +56,14 @@ Future<void> _setupSystemUI() async {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
     );
+
+    SystemChrome.setPreferredOrientations(const [
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
   }
-  await SystemChrome.setPreferredOrientations(const [
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
-  ]);
-}
 
-void main() {
-  initLogging();
-  WidgetsFlutterBinding.ensureInitialized();
-  _setupDesktopWindow();
-  _setupSystemUI();
-  runApp(const ProviderScope(child: MyApp()));
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // final brightness = View.of(context).platformDispatcher.platformBrightness;
-    TextTheme textTheme = createTextTheme(context, "Quicksand", "Quicksand");
-
-    MaterialTheme theme = MaterialTheme(textTheme);
-
-    return MaterialApp.router(
-      routerConfig: AppRouter.createRouter(),
-      title: 'KodaKito',
-      // theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-      theme: withM3ETheme(theme.light()),
-      darkTheme: withM3ETheme(theme.dark()),
-      themeMode: ThemeMode.light,
-    );
-  }
+  await Future.wait(startupFutures);
 }

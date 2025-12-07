@@ -49,12 +49,47 @@ To run this project locally, follow these steps:
     flutter pub get
     ```
 
-3.  **Run the application**:
+3.  **Configure Environment Variables**:
+    Create a `.env` file in the root directory and add the following variables:
+    ```env
+    STORY_URL=https://story-api.dicoding.dev/v1
+    STORY_ENV=production
+    TEST_EMAIL=test@example.com 
+    TEST_PASSWORD=password 
+    ```
+    *Note: `TEST_EMAIL` and `TEST_PASSWORD` are used for integration tests.*
+
+4.  **Generate Code**:
+    This project uses code generation for Riverpod, JSON serialization, and GoRouter. You must run the build runner to generate the necessary `.g.dart` files.
+    ```bash
+    dart run build_runner build -d
+    ```
+
+5.  **Run the application**:
     ```bash
     flutter run
     ```
 
 ## Architecture & Design
+
+### Clean Architecture
+
+This project has been refactored to follow **Clean Architecture** principles, ensuring separation of concerns, scalability, and testability. The project structure is divided into three main layers:
+
+1.  **Domain Layer** (`lib/domain`):
+    -   Contains the core business logic and entities.
+    -   Defines abstract repositories (interfaces) that the data layer must implement.
+    -   **Impact on Understanding**: This layer is pure Dart and has no dependencies on Flutter or external data sources. It represents *what* the app does, independent of *how* it does it.
+
+2.  **Data Layer** (`lib/data`):
+    -   Responsible for data retrieval and storage (API calls, local database).
+    -   Implements the repositories defined in the domain layer.
+    -   **Impact on Understanding**: This layer handles the "dirty work" of talking to the outside world. It converts raw data (JSON) into domain entities.
+
+3.  **Presentation Layer** (`lib/ui`):
+    -   Contains the UI code (Widgets) and State Management (Riverpod Providers).
+    -   Depends on the Domain layer to execute business logic.
+    -   **Impact on Understanding**: This is where the user interacts with the application. It observes state changes and rebuilds the UI accordingly.
 
 ### Navigation 2.0 with GoRouter
 
@@ -76,12 +111,21 @@ The application embraces the latest Material 3 design principles, focusing on ad
     -   **Tablet/Desktop (>= 600dp)**: Uses `NavigationRailM3E` (Material 3 Expressive Navigation Rail) on the side. This rail supports expanded and collapsed states, optimizing screen real estate for larger displays.
 -   **Responsive Layouts**: Screens like `MainScreen` adjust their content layout (e.g., switching from `ListView` to `GridView`) based on the available width, ensuring content looks great on any device.
 
+## State Management
+
+This project uses **Flutter Riverpod** for state management, leveraging its compile-time safety and testability.
+
+-   **Providers**: We use `riverpod_annotation` to generate providers, reducing boilerplate code.
+-   **AsyncValue**: UI states (Loading, Error, Data) are handled gracefully using `AsyncValue`. This ensures that the UI always reflects the current state of the data, including loading spinners and error messages.
+-   **Dependency Injection**: Riverpod is also used for dependency injection (DI), allowing us to easily swap implementations (e.g., for testing) by overriding providers.
+-   **Ref**: The `Ref` object is used to read other providers, enabling a reactive and composable architecture.
+
 ## Project Structure
 
 -   `lib/common`: Shared utilities, constants, and router configuration.
 -   `lib/data`: Data layer including models and repositories.
--   `lib/presentation`: UI layer organized by feature (main, login, etc.).
--   `lib/domain`: Business logic and entities (if applicable).
+-   `lib/ui`: UI layer organized by feature (main, login, etc.).
+-   `lib/domain`: Business logic and entities.
 
 ## Contributing
 
