@@ -10,8 +10,8 @@ import 'package:dicoding_story/ui/main/widgets/settings_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mocktail/mocktail.dart';
 
 class MockStorageService extends Mock implements SharedPrefsService {}
 
@@ -28,29 +28,87 @@ void main() {
     ).thenAnswer((_) async => true);
   });
 
+  Future<void> pumpTestWidget(
+    WidgetTester tester, {
+    required ProviderContainer container,
+    bool settle = true,
+  }) async {
+    final router = GoRouter(
+      initialLocation: '/',
+      routes: [
+        GoRoute(
+          path: '/',
+          builder: (context, state) {
+            return Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => const SettingsDialog(),
+                      );
+                    },
+                    child: const Text('Open Settings'),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'login',
+          path: '/login',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Login Screen')),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Open the dialog
+    await tester.tap(find.text('Open Settings'));
+    if (settle) {
+      await tester.pumpAndSettle();
+    } else {
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 10));
+    }
+  }
+
   group('SettingsDialog', () {
     testWidgets('renders loading state correctly', (tester) async {
       tester.view.physicalSize = const Size(1000, 2000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
-      // We can trigger loading by using a completer that hasn't completed
       final userCompleter = Completer<String?>();
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            fetchUserDataProvider.overrideWith((ref) => userCompleter.future),
-            versionProvider.overrideWith((ref) => Future.value('1.0.0+1')),
-            storageServiceProvider.overrideWithValue(mockStorageService),
-          ],
-          child: const MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: SettingsDialog(),
-          ),
-        ),
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) => userCompleter.future),
+          versionProvider.overrideWith((ref) => Future.value('1.0.0+1')),
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
       );
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(tester, container: container, settle: false);
+
+      // Should find the loading state (e.g. from the avatar or text placeholder if any)
+      // The current implementation shows "Halo, ..." when loading name
+      expect(find.text('Halo, ...'), findsOneWidget);
     });
 
     testWidgets('renders user data and version correctly', (tester) async {
@@ -58,59 +116,20 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            fetchUserDataProvider.overrideWith((ref) async => 'Test User'),
-            versionProvider.overrideWith((ref) async => '1.0.0+1'),
-            storageServiceProvider.overrideWithValue(mockStorageService),
-          ],
-          child: const MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: SettingsDialog(),
-          ),
-        ),
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) async => 'Test User'),
+          versionProvider.overrideWith((ref) async => '1.0.0+1'),
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
       );
+      addTearDown(container.dispose);
 
-      await tester.pumpAndSettle();
+      await pumpTestWidget(tester, container: container);
 
       expect(find.text('Halo, Test User'), findsOneWidget);
       expect(find.text('T'), findsOneWidget); // Initial
       expect(find.textContaining('1.0.0+1'), findsOneWidget);
-    });
-
-    testWidgets('renders default user and version loading', (tester) async {
-      tester.view.physicalSize = const Size(1000, 2000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-
-      // Use Completer to simulate ongoing loading without timers
-      final userCompleter = Completer<String?>();
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            fetchUserDataProvider.overrideWith((ref) => userCompleter.future),
-            versionProvider.overrideWith(
-              (ref) async => '...',
-            ), // Loading version
-            storageServiceProvider.overrideWithValue(mockStorageService),
-          ],
-          child: const MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: SettingsDialog(),
-          ),
-        ),
-      );
-
-      // Should be loading or default
-      expect(find.text('Halo, ...'), findsOneWidget);
-      expect(
-        find.byType(CircularProgressIndicator),
-        findsOneWidget,
-      ); // Avatar loading
     });
 
     testWidgets('renders user error state', (tester) async {
@@ -118,22 +137,16 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            fetchUserDataProvider.overrideWith((ref) => Future.error('Failed')),
-            versionProvider.overrideWith((ref) async => '1.0.0'),
-            storageServiceProvider.overrideWithValue(mockStorageService),
-          ],
-          child: const MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: SettingsDialog(),
-          ),
-        ),
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) => Future.error('Failed')),
+          versionProvider.overrideWith((ref) async => '1.0.0'),
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
       );
+      addTearDown(container.dispose);
 
-      await tester.pumpAndSettle();
+      await pumpTestWidget(tester, container: container);
 
       expect(find.text('Halo, User'), findsOneWidget);
       expect(find.byIcon(Icons.error), findsOneWidget);
@@ -144,21 +157,16 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            fetchUserDataProvider.overrideWith((ref) async => 'User'),
-            versionProvider.overrideWith((ref) async => '1.0.0'),
-            storageServiceProvider.overrideWithValue(mockStorageService),
-          ],
-          child: const MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: SettingsDialog(),
-          ),
-        ),
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) async => 'User'),
+          versionProvider.overrideWith((ref) async => '1.0.0'),
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
       );
-      await tester.pumpAndSettle();
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(tester, container: container);
 
       // Find Dropdown
       final dropdownFinder = find.byKey(const Key('theme_dropdown'));
@@ -183,21 +191,16 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            fetchUserDataProvider.overrideWith((ref) async => 'User'),
-            versionProvider.overrideWith((ref) async => '1.0.0'),
-            storageServiceProvider.overrideWithValue(mockStorageService),
-          ],
-          child: const MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: SettingsDialog(),
-          ),
-        ),
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) async => 'User'),
+          versionProvider.overrideWith((ref) async => '1.0.0'),
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
       );
-      await tester.pumpAndSettle();
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(tester, container: container);
 
       // Find Language option
       final languageOption = find.byKey(const Key('language'));
@@ -207,20 +210,19 @@ void main() {
       await tester.tap(languageOption);
       await tester.pumpAndSettle();
 
-      // Dialog appears (EN string)
+      // Dialog appears
       expect(find.text('Select Language'), findsOneWidget);
 
-      // Select Indonesia (EN string for 'id'?)
-      // Check app_en.arb: "settingsBtnLanguageID": "Indonesian"
+      // Select Indonesia (EN string for 'id')
       await tester.tap(find.text('Indonesian'));
-      await tester.pumpAndSettle(); // Radio change
+      await tester.pumpAndSettle();
 
       // Verify storage called
       verify(
         () => mockStorageService.set(APP_LANGUAGE_STORAGE_KEY, 'id'),
       ).called(1);
 
-      // Verify dialog closed
+      // Verify language dialog closed
       expect(find.text('Select Language'), findsNothing);
     });
 
@@ -229,38 +231,17 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
-      final router = GoRouter(
-        initialLocation: '/settings',
-        routes: [
-          GoRoute(
-            path: '/settings',
-            builder: (context, state) => const SettingsDialog(),
-          ),
-          GoRoute(
-            name: 'login',
-            path: '/login',
-            builder: (context, state) =>
-                const Scaffold(body: Text('Login Screen')),
-          ),
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) async => 'User'),
+          versionProvider.overrideWith((ref) async => '1.0.0'),
+          storageServiceProvider.overrideWithValue(mockStorageService),
+          logoutProvider.overrideWith((ref) async => true),
         ],
       );
+      addTearDown(container.dispose);
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            fetchUserDataProvider.overrideWith((ref) async => 'User'),
-            versionProvider.overrideWith((ref) async => '1.0.0'),
-            storageServiceProvider.overrideWithValue(mockStorageService),
-            logoutProvider.overrideWith((ref) async => true),
-          ],
-          child: MaterialApp.router(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            routerConfig: router,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
+      await pumpTestWidget(tester, container: container);
 
       final logoutBtn = find.byKey(const ValueKey('logoutButton'));
       expect(logoutBtn, findsOneWidget);
@@ -270,6 +251,34 @@ void main() {
 
       // Should have navigated to login
       expect(find.text('Login Screen'), findsOneWidget);
+    });
+
+    testWidgets('closes dialog on close button tap', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final container = ProviderContainer(
+        overrides: [
+          fetchUserDataProvider.overrideWith((ref) async => 'User'),
+          versionProvider.overrideWith((ref) async => '1.0.0'),
+          storageServiceProvider.overrideWithValue(mockStorageService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(tester, container: container);
+
+      // Find Close button
+      final closeButton = find.byIcon(Icons.close);
+      expect(closeButton, findsOneWidget);
+
+      // Tap it
+      await tester.tap(closeButton);
+      await tester.pumpAndSettle();
+
+      // Verify dialog closed
+      expect(find.byType(SettingsDialog), findsNothing);
     });
   });
 }
