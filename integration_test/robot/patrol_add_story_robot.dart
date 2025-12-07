@@ -146,9 +146,9 @@ class PatrolAddStoryRobot {
     await $('Dark').tap();
     await $.pumpAndSettle();
     await $('Dark').waitUntilVisible();
-    final finder = find.byKey(const ValueKey('themeOption'));
-    final Container widget = $.tester.widget<Container>(finder);
-    expect(widget.color, Color(0xff1a1111));
+    final finder = find.byKey(const ValueKey('settingsDialog'));
+    final Dialog widget = $.tester.widget<Dialog>(finder);
+    expect(widget.backgroundColor, Color(0xff271d1d));
   }
 
   Future<void> tapThemeLightDropdown() async {
@@ -157,9 +157,9 @@ class PatrolAddStoryRobot {
     await $('Light').tap();
     await $.pumpAndSettle();
     await $('Light').waitUntilVisible();
-    final finder = find.byKey(const ValueKey('themeOption'));
-    final Container widget = $.tester.widget<Container>(finder);
-    expect(widget.color, Color(0xfffff8f7));
+    final finder = find.byKey(const ValueKey('settingsDialog'));
+    final Dialog widget = $.tester.widget<Dialog>(finder);
+    expect(widget.backgroundColor, Color(0xfffceae8));
   }
 
   Future<void> tapIndonesianLanguage() async {

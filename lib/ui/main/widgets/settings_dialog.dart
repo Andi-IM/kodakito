@@ -24,6 +24,7 @@ class SettingsDialog extends ConsumerWidget {
     final versionAsync = ref.watch(versionProvider);
 
     return Dialog(
+      key: const ValueKey('settingsDialog'),
       backgroundColor: theme.colorScheme.surfaceContainer,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
       insetPadding: const EdgeInsets.all(24),

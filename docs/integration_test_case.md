@@ -140,10 +140,10 @@ Full end-to-end native integration test using the Patrol testing framework. This
 |-------|-------|
 | **ID** | TC-P01 |
 | **Name** | Integration Test |
-| **Description** | Complete end-to-end test covering registration, login, add story, view story, and logout |
+| **Description** | Complete end-to-end test covering registration, login, add story, view story, settings (theme & language), and logout |
 | **Preconditions** | App installed on device |
-| **Steps** | 1. Navigate to register page<br>2. Fill registration form with faker data<br>3. Tap register button<br>4. Verify registration success<br>5. Login with registered credentials<br>6. Verify login success<br>7. Tap add story button<br>8. Grant permissions when visible<br>9. Select image from gallery<br>10. Fill description with faker sentence<br>11. Tap post button<br>12. Verify story appears in list<br>13. Tap on the new story<br>14. Verify story detail is displayed<br>15. Navigate back<br>16. Tap avatar button<br>17. Tap logout button<br>18. Verify logout success |
-| **Expected Result** | All steps complete successfully, user completes full journey |
+| **Steps** | 1. Navigate to register page<br>2. Fill registration form with faker data<br>3. Tap register button<br>4. Verify registration success<br>5. Login with registered credentials<br>6. Verify login success<br>7. Tap add story button<br>8. Grant permissions when visible<br>9. Select image from gallery<br>10. Fill description with faker sentence<br>11. Tap post button<br>12. Verify story appears in list<br>13. Tap on the new story<br>14. Verify story detail is displayed<br>15. Navigate back<br>16. Tap avatar button<br>17. Switch theme to Dark<br>18. Switch theme to Light<br>19. Change language to Indonesian<br>20. Change language to English<br>21. Tap logout button<br>22. Verify logout success |
+| **Expected Result** | All steps complete successfully, user completes full journey including settings changes |
 
 ---
 
