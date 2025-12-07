@@ -39,8 +39,9 @@ DioNetworkService dioNetworkService(Ref ref) {
   final dio = ref.read(dioProvider);
 
   // coverage:ignore-start
-  if (!kTestMode) { // coverage:ignore-line
-      final dioBaseOptions = BaseOptions(
+  if (!kTestMode) {
+    // coverage:ignore-line
+    final dioBaseOptions = BaseOptions(
       baseUrl: dotenv.get("APP_URL", fallback: "localhost:8000"),
       headers: {
         'accept': 'application/json',
@@ -49,7 +50,8 @@ DioNetworkService dioNetworkService(Ref ref) {
     );
     dio.options = dioBaseOptions;
     dio.interceptors.add(ref.read(authInterceptorProvider));
-    if (kDebugMode) { // coverage:ignore-line
+    if (kDebugMode) {
+      // coverage:ignore-line
       dio.interceptors.add(
         LogInterceptor(requestBody: true, responseBody: true),
       );

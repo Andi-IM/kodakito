@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dicoding_story/data/services/widget/package_info/package_info_service.dart';
 import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
@@ -9,7 +10,6 @@ import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
 import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -92,12 +92,12 @@ class MockStories extends _$StoriesNotifier
   @override
   StoriesState build() => StoriesState.initial();
 
-  void setState(StoriesState state) => this.state = state;
+  void setState(StoriesState newState) => state = newState;
 }
 
 @riverpod
 Future<String> version(Ref ref) async {
-  final packageInfo = await PackageInfo.fromPlatform();
+  final packageInfo = await ref.read(packageInfoProvider).getAppVersion();
   return '${packageInfo.version}+${packageInfo.buildNumber}';
 }
 
