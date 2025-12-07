@@ -366,6 +366,126 @@ void main() {
     // Verify navigation was triggered with correct path
     verify(() => mockGoRouter.go('/story/story-1')).called(1);
   });
+
+  testWidgets('tapping FAB on compact screen opens AddStoryDialog', (
+    tester,
+  ) async {
+    final testStories = [
+      Story(
+        id: 'story-1',
+        name: 'Test User 1',
+        description: 'Test description 1',
+        photoUrl: 'https://example.com/photo1.jpg',
+        createdAt: DateTime(2024, 1, 1),
+        lat: null,
+        lon: null,
+      ),
+    ];
+
+    final container = ProviderContainer.test(
+      overrides: [
+        storiesProvider.overrideWith(MockStories.new),
+        fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+        cameraPickerServiceProvider.overrideWithValue(mockCameraPickerService),
+        instaImagePickerServiceProvider.overrideWithValue(
+          mockInstaImagePickerService,
+        ),
+        imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    // Keep the provider alive
+    container.listen(storiesProvider, (_, __) {});
+    final mockStories = container.read(storiesProvider.notifier) as MockStories;
+    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+    // Set the state to loaded with stories
+    mockStories.setState(
+      StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+    );
+
+    await tester.pumpWidget(
+      pumpTestWidget(
+        tester,
+        container: container,
+        widthClass: WindowWidthClass.compact,
+      ),
+    );
+
+    await tester.pump();
+
+    // Find and tap the FAB (compact version)
+    await tester.tap(find.byKey(const ValueKey('fab_compact')));
+    await tester.pump(const Duration(seconds: 1));
+
+    // Verify AddStoryDialog is shown (via its title widget)
+    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('addStoryImageContainer')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('tapping FAB on medium screen opens AddStoryDialog', (
+    tester,
+  ) async {
+    final testStories = [
+      Story(
+        id: 'story-1',
+        name: 'Test User 1',
+        description: 'Test description 1',
+        photoUrl: 'https://example.com/photo1.jpg',
+        createdAt: DateTime(2024, 1, 1),
+        lat: null,
+        lon: null,
+      ),
+    ];
+
+    final container = ProviderContainer.test(
+      overrides: [
+        storiesProvider.overrideWith(MockStories.new),
+        fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+        cameraPickerServiceProvider.overrideWithValue(mockCameraPickerService),
+        instaImagePickerServiceProvider.overrideWithValue(
+          mockInstaImagePickerService,
+        ),
+        imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    // Keep the provider alive
+    container.listen(storiesProvider, (_, __) {});
+    final mockStories = container.read(storiesProvider.notifier) as MockStories;
+    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+    // Set the state to loaded with stories
+    mockStories.setState(
+      StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+    );
+
+    await tester.pumpWidget(
+      pumpTestWidget(
+        tester,
+        container: container,
+        widthClass: WindowWidthClass.medium,
+      ),
+    );
+
+    await tester.pump();
+
+    // Find and tap the FAB (extended version)
+    await tester.tap(find.byKey(const ValueKey('fab_extended')));
+    await tester.pump(const Duration(seconds: 1));
+
+    // Verify AddStoryDialog is shown
+    expect(find.byType(AlertDialog), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('addStoryImageContainer')),
+      findsOneWidget,
+    );
+  });
 }
 
 // Helper for GoRouter mocking
