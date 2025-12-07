@@ -35,7 +35,7 @@ class SettingsDialog extends ConsumerWidget {
                     alignment: Alignment.centerRight,
                     child: IconButton(
                       icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => context.pop(),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                     ),
@@ -117,7 +117,7 @@ class SettingsDialog extends ConsumerWidget {
                     if (success) {
                       context.goNamed('login');
                     } else {
-                      Navigator.pop(context);
+                      context.pop();
                     }
                   }
                 },
@@ -252,7 +252,7 @@ class SettingsDialog extends ConsumerWidget {
             groupValue: currentLocale,
             onChanged: (value) {
               ref.read(appLanguageProvider.notifier).changeLanguage(value);
-              Navigator.pop(dialogContext);
+              dialogContext.pop();
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -274,7 +274,7 @@ class SettingsDialog extends ConsumerWidget {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
+              onPressed: () => dialogContext.pop(),
               child: Text(context.l10n.settingsBtnCancel),
             ),
           ],
