@@ -545,6 +545,105 @@ void main() {
       expect(find.byType(RefreshIndicator), findsNothing);
     },
   );
+
+  testWidgets('tapping avatar button opens SettingsDialog', (tester) async {
+    final testStories = [
+      Story(
+        id: 'story-1',
+        name: 'Test User 1',
+        description: 'Test description 1',
+        photoUrl: 'https://example.com/photo1.jpg',
+        createdAt: DateTime(2024, 1, 1),
+        lat: null,
+        lon: null,
+      ),
+    ];
+
+    final container = ProviderContainer.test(
+      overrides: [
+        storiesProvider.overrideWith(MockStories.new),
+        fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+        cameraPickerServiceProvider.overrideWithValue(mockCameraPickerService),
+        instaImagePickerServiceProvider.overrideWithValue(
+          mockInstaImagePickerService,
+        ),
+        imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    // Keep the provider alive
+    container.listen(storiesProvider, (_, __) {});
+    final mockStories = container.read(storiesProvider.notifier) as MockStories;
+    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+    // Set the state to loaded with stories
+    mockStories.setState(
+      StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+    );
+
+    await tester.pumpWidget(
+      pumpTestWidget(
+        tester,
+        container: container,
+        widthClass: WindowWidthClass.compact,
+      ),
+    );
+
+    await tester.pump();
+
+    // Find and tap the avatar button
+    await tester.tap(find.byKey(const ValueKey('avatarButton')));
+    await tester.pump(const Duration(seconds: 1));
+
+    // Verify SettingsDialog is shown (it uses Dialog widget with 'User' text)
+    expect(find.byType(Dialog), findsOneWidget);
+    expect(find.text('User'), findsOneWidget);
+  });
+
+  testWidgets('displays error message when stories fail to load', (
+    tester,
+  ) async {
+    final container = ProviderContainer.test(
+      overrides: [
+        storiesProvider.overrideWith(MockStories.new),
+        fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+        cameraPickerServiceProvider.overrideWithValue(mockCameraPickerService),
+        instaImagePickerServiceProvider.overrideWithValue(
+          mockInstaImagePickerService,
+        ),
+        imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    // Keep the provider alive
+    container.listen(storiesProvider, (_, __) {});
+    final mockStories = container.read(storiesProvider.notifier) as MockStories;
+    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+    // Set the state to failure
+    mockStories.setState(
+      StoriesState(
+        state: StoriesConcreteState.failure,
+        message: 'Network error',
+      ),
+    );
+
+    await tester.pumpWidget(
+      pumpTestWidget(
+        tester,
+        container: container,
+        widthClass: WindowWidthClass.compact,
+      ),
+    );
+
+    await tester.pump();
+
+    // Verify error message is displayed (line 206)
+    expect(find.textContaining('Error:'), findsOneWidget);
+    expect(find.textContaining('Network error'), findsOneWidget);
+  });
 }
 
 // Helper for GoRouter mocking
