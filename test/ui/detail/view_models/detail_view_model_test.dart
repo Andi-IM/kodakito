@@ -147,7 +147,7 @@ void main() {
     });
 
     test('returns ColorScheme when image loads successfully', () async {
-      final file = File('d:/dicoding_story/assets/logo_dark.png');
+      final file = File('../../assets/logo_dark.png');
       final bytes = await file.readAsBytes();
 
       when(
@@ -161,7 +161,7 @@ void main() {
     });
 
     test('returns valid ColorScheme using logo_dark.png', () async {
-      final file = File('d:/dicoding_story/assets/logo_dark.png');
+      final file = File('../../assets/logo_dark.png');
       final bytes = await file.readAsBytes();
 
       when(
