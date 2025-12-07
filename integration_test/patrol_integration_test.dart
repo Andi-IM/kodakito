@@ -49,6 +49,13 @@ void main() {
       await robot.checkStoryDetailIsDisplayedWithStory(description);
 
       await robot.tapAvatarButton();
+
+      await robot.tapThemeLightDropdown();
+      await robot.tapThemeDarkDropdown();
+
+      await robot.tapIndonesianLanguage();
+      await robot.tapEnglishLanguage();
+
       await robot.tapLogoutButton();
       await robot.checkLogoutResult();
     },
