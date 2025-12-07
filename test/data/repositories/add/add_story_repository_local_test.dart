@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/repositories/add/add_story_repository_local.dart';
 import 'package:dicoding_story/data/services/local/local_data_service.dart';
@@ -7,6 +5,7 @@ import 'package:dicoding_story/data/services/remote/auth/model/default_response/
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockLocalDataService extends Mock implements LocalDataService {}
@@ -30,7 +29,7 @@ void main() {
 
   group('AddStoryRepositoryLocal', () {
     final tDescription = 'test description';
-    final tFile = File('test_path');
+    final tFile = XFile('test_path');
     final tLat = 10.0;
     final tLon = 10.0;
 

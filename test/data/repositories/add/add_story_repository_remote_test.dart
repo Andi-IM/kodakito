@@ -1,23 +1,22 @@
-import 'dart:io';
-
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/repositories/add/add_story_repository_remote.dart';
 import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
 import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockStoryDataSource extends Mock implements StoryDataSource {}
 
-class FakeFile extends Fake implements File {}
+class FakeXFile extends Fake implements XFile {}
 
 void main() {
   late AddStoryRepositoryRemote repository;
   late MockStoryDataSource mockStoryDataSource;
 
   setUpAll(() {
-    registerFallbackValue(FakeFile());
+    registerFallbackValue(FakeXFile());
   });
 
   setUp(() {
@@ -27,7 +26,7 @@ void main() {
 
   group('AddStoryRepositoryRemote', () {
     final tDescription = 'test description';
-    final tFile = File('test_path');
+    final tFile = XFile('test_path');
     final tLat = 10.0;
     final tLon = 10.0;
     final tResponse = DefaultResponse(error: false, message: 'success');

@@ -11,6 +11,7 @@ import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -20,6 +21,8 @@ class MockInstaAssetsExportDetails extends Mock
 class MockInstaAssetsExportData extends Mock implements InstaAssetsExportData {}
 
 class MockAddStoryRepository extends Mock implements AddStoryRepository {}
+
+class FakeXFile extends Fake implements XFile {}
 
 void main() {
   late StreamController<InstaAssetsExportDetails> streamController;
@@ -33,7 +36,7 @@ void main() {
     tempDir = await Directory.systemTemp.createTemp();
     testFile = File('${tempDir.path}/test_image.png');
     await testFile.create();
-    registerFallbackValue(File('dummy')); // For repository calls
+    registerFallbackValue(FakeXFile()); // For repository calls
   });
 
   tearDownAll(() async {
@@ -192,9 +195,9 @@ void main() {
       await tester.tap(find.byKey(const Key('postButton')));
       await tester.pump();
 
-      // Verify repository was called
+      // Verify repository was called with XFile
       verify(
-        () => mockRepository.addStory('Test description', testFile),
+        () => mockRepository.addStory('Test description', any()),
       ).called(1);
     });
 

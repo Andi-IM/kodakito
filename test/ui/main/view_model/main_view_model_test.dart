@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:dicoding_story/data/services/platform/platform_provider.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
@@ -14,6 +15,7 @@ import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -38,12 +40,13 @@ void main() {
     mockListRepository = MockListRepository();
     mockAddStoryRepository = MockAddStoryRepository();
     storiesListener = Listener<StoriesState>();
-    registerFallbackValue(FakeFile());
+    registerFallbackValue(FakeXFile());
 
     container = ProviderContainer(
       overrides: [
         listRepositoryProvider.overrideWithValue(mockListRepository),
         addStoryRepositoryProvider.overrideWithValue(mockAddStoryRepository),
+        webPlatformProvider.overrideWithValue(false),
       ],
     );
 
@@ -83,15 +86,9 @@ void main() {
       expect(file, isNull);
     });
 
-    test('toFile writes bytes to file and returns it', () async {
+    test('toFile writes bytes to file and returns XFile', () async {
       final imageBytes = Uint8List.fromList([1, 2, 3]);
       container.read(imageFileProvider.notifier).setImageFile(imageBytes);
-
-      // We expect the file to be created in '.' (current dir mock)
-      // path_provider mock returns '.'
-      // But we can't easily verify actual file write without real IO or mocking File.
-      // However, ImageFile implementation uses real File.
-      // So we will get a real File object pointing to ./story_TIMESTAMP.jpg
 
       final file = await container.read(imageFileProvider.notifier).toFile();
 
@@ -100,9 +97,33 @@ void main() {
       expect(file.path, contains('.jpg'));
 
       // Clean up created file if it exists
-      if (file.existsSync()) {
-        file.deleteSync();
+      final actualFile = File(file.path);
+      if (actualFile.existsSync()) {
+        actualFile.deleteSync();
       }
+    });
+
+    test('toFile returns XFile.fromData when on web platform', () async {
+      // Create container with web platform override
+      final webContainer = ProviderContainer(
+        overrides: [
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+          addStoryRepositoryProvider.overrideWithValue(mockAddStoryRepository),
+          webPlatformProvider.overrideWithValue(true),
+        ],
+      );
+
+      final imageBytes = Uint8List.fromList([1, 2, 3]);
+      webContainer.read(imageFileProvider.notifier).setImageFile(imageBytes);
+
+      final file = await webContainer.read(imageFileProvider.notifier).toFile();
+
+      expect(file, isNotNull);
+      // XFile.fromData creates an in-memory file, verify bytes are readable
+      final bytes = await file!.readAsBytes();
+      expect(bytes, imageBytes);
+
+      webContainer.dispose();
     });
   });
 
@@ -242,7 +263,7 @@ void main() {
   });
 
   group('AddStoryNotifier', () {
-    final tFile = MockFile();
+    final tFile = MockXFile();
     const tDescription = 'Test Description';
     const tLat = 10.0;
     const tLon = 10.0;
@@ -274,7 +295,7 @@ void main() {
           .read(addStoryProvider.notifier)
           .addStory(
             description: tDescription,
-            photo: tFile,
+            photoFile: tFile,
             lat: tLat,
             lon: tLon,
           );
@@ -321,7 +342,7 @@ void main() {
           .read(addStoryProvider.notifier)
           .addStory(
             description: tDescription,
-            photo: tFile,
+            photoFile: tFile,
             lat: tLat,
             lon: tLon,
           );
@@ -373,9 +394,9 @@ class MockListRepository extends Mock implements ListRepository {}
 
 class MockAddStoryRepository extends Mock implements AddStoryRepository {}
 
-class MockFile extends Mock implements File {}
+class MockXFile extends Mock implements XFile {}
 
-class FakeFile extends Fake implements File {}
+class FakeXFile extends Fake implements XFile {}
 
 class MockInstaAssetsExportDetails extends Mock
     implements InstaAssetsExportDetails {}

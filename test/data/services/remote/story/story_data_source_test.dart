@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
@@ -8,11 +9,12 @@ import 'package:dicoding_story/domain/models/response.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockNetworkService extends Mock implements NetworkService {}
 
-class MockFile extends Mock implements File {}
+class MockXFile extends Mock implements XFile {}
 
 void main() {
   late StoryRemoteDataSource dataSource;
@@ -216,21 +218,20 @@ void main() {
       });
     });
 
-    // Note: addStory test requires File mocking which is complex with MultipartFile.
-    // For now, we will skip addStory test or implement a basic one if possible.
-    // Since MultipartFile.fromFile is a static method, it's hard to mock without a wrapper or real file.
-    // We will try to create a real temp file.
     group('addStory', () {
-      late File tFile;
+      late XFile tFile;
 
       setUp(() {
-        tFile = File('${Directory.systemTemp.path}/test_image.jpg');
-        tFile.createSync();
+        // Create a real temp file for testing
+        final tempFile = File('${Directory.systemTemp.path}/test_image.jpg');
+        tempFile.writeAsBytesSync(Uint8List.fromList([0, 1, 2, 3]));
+        tFile = XFile(tempFile.path);
       });
 
       tearDown(() {
-        if (tFile.existsSync()) {
-          tFile.deleteSync();
+        final tempFile = File(tFile.path);
+        if (tempFile.existsSync()) {
+          tempFile.deleteSync();
         }
       });
 
