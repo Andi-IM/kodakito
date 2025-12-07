@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 
