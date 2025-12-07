@@ -18,6 +18,7 @@
     "authMsgHaveAccount" : "Already have an account? ",
     "authLinkLoginNow" : "Login",
     "storyBtnAddSemantic" : "Add new story",
+    "authRegisterSuccessMessage" : "Register success, please login",
 
     "@_STORY_FEATURE" : {},
     "storyDetailTitle" : "Story Detail",

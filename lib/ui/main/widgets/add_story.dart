@@ -5,11 +5,15 @@ import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 
 class AddStoryPage extends ConsumerStatefulWidget {
-  const AddStoryPage({super.key, required this.cropStream});
+  final Function() onAddStorySuccess;
+  const AddStoryPage({
+    super.key,
+    required this.cropStream,
+    required this.onAddStorySuccess,
+  });
 
   final Stream<InstaAssetsExportDetails> cropStream;
 
@@ -34,15 +38,7 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
       next.when(
         initial: () {},
         loading: () {},
-        success: () {
-          // Navigate back on success
-          if (mounted) {
-            // Reset the provider state for next time
-            ref.read(addStoryProvider.notifier).resetState();
-            
-            context.pushReplacementNamed('main');
-          }
-        },
+        success: () => widget.onAddStorySuccess(),
         failure: (failure) {
           // Show error message
           if (mounted) {

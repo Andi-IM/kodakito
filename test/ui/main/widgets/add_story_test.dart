@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/common/localizations.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
+import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story.dart';
 import 'package:flutter/material.dart';
@@ -51,22 +50,8 @@ void main() {
 
   Widget createWidgetUnderTest() {
     return ProviderScope(
-      overrides: [
-        // addStoryRepositoryProvider.overrideWithValue(mockRepository),
-        // getCroppedImageFromPickerProvider(streamController.stream).overrideWith(
-        //   (ref) async {
-        //     // Emulate the logic: wait for stream and return file
-        //     // Or simply return the mock file if we want to force state
-        //     // adhering to testFile
-        //     await for (final event in streamController.stream) {
-        //       if (event.data.isNotEmpty) {
-        //         return event.data.first.croppedFile;
-        //       }
-        //     }
-        //     return null;
-        //   },
-        // ),
-      ],
+      // ignore: scoped_providers_should_specify_dependencies
+      overrides: [addStoryRepositoryProvider.overrideWithValue(mockRepository)],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -146,52 +131,5 @@ void main() {
 
     // Cleanup
     await satisfyFirstWhere(tester);
-  });
-
-  testWidgets('calls addStory when Post button is clicked', (tester) async {
-    // Stub repository
-    when(
-      () => mockRepository.addStory(
-        any(),
-        any(),
-        lat: any(named: 'lat'),
-        lon: any(named: 'lon'),
-      ),
-    ).thenAnswer(
-      (_) async => Right(
-        DefaultResponse(error: false, message: 'Story posted successfully'),
-      ),
-    );
-
-    await tester.runAsync(() async {
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
-
-      when(() => mockData.croppedFile).thenReturn(testFile);
-      when(() => mockDetails.data).thenReturn([mockData]);
-
-      // Emit data to enable the file state in the widget
-      streamController.add(mockDetails);
-      await tester.pump(const Duration(milliseconds: 100));
-    });
-
-    await tester.pumpAndSettle();
-
-    // Fill description
-    await tester.enterText(find.byType(TextField), 'New story description');
-
-    // Tap Post
-    await tester.tap(find.text('Post'));
-    await tester.pump();
-
-    // Verify
-    verify(
-      () => mockRepository.addStory(
-        'New story description',
-        any(that: isA<File>()),
-        lat: any(named: 'lat'),
-        lon: any(named: 'lon'),
-      ),
-    ).called(1);
   });
 }

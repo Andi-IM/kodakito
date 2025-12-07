@@ -8,10 +8,15 @@ import 'package:dicoding_story/ui/auth/widgets/auth_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
-  const LoginPage({super.key});
+  final Function() goToRegister;
+  final Function() onLoginSuccess;
+  const LoginPage({
+    super.key,
+    required this.goToRegister,
+    required this.onLoginSuccess,
+  });
 
   @override
   ConsumerState<LoginPage> createState() => _LoginPageState();
@@ -27,7 +32,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void initState() {
     super.initState();
     _tapRecognizer = TapGestureRecognizer()
-      ..onTap = () => context.go('/register');
+      ..onTap = () => widget.goToRegister();
   }
 
   @override
@@ -46,7 +51,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           context,
         ).showSnackBar(SnackBar(content: Text(next.exception.message)));
       } else if (next is Loaded) {
-        context.pushReplacementNamed('main');
+        widget.onLoginSuccess();
       }
     }));
     return Scaffold(

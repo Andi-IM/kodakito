@@ -7,10 +7,15 @@ import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
-  const RegisterPage({super.key});
+  final Function() onRegisterSuccess;
+  final Function() goToLogin;
+  const RegisterPage({
+    super.key,
+    required this.onRegisterSuccess,
+    required this.goToLogin,
+  });
 
   @override
   ConsumerState<RegisterPage> createState() => _RegisterPageState();
@@ -26,10 +31,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   void initState() {
     super.initState();
-    _tapRecognizer = TapGestureRecognizer()
-      ..onTap = () {
-        context.go('/login');
-      };
+    _tapRecognizer = TapGestureRecognizer()..onTap = () => widget.goToLogin();
   }
 
   @override
@@ -44,16 +46,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(registerProvider);
+    final scaffold = ScaffoldMessenger.of(context);
     ref.listen(registerProvider.select((value) => value), ((previous, next) {
       if (next is Failure) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.exception.message)));
+        scaffold.showSnackBar(SnackBar(content: Text(next.exception.message)));
       } else if (next is Loaded) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Register success, please login')),
-        );
-        context.go('/login');
+        widget.onRegisterSuccess();
       }
     }));
     return Scaffold(

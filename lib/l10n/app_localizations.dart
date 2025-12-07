@@ -188,6 +188,12 @@ abstract class AppLocalizations {
   /// **'Masuk'**
   String get authLinkLoginNow;
 
+  /// No description provided for @authRegisterSuccessMessage.
+  ///
+  /// In id, this message translates to:
+  /// **'Register berhasil, silahkan login terlebih dahulu'**
+  String get authRegisterSuccessMessage;
+
   /// No description provided for @storyBtnAddSemantic.
   ///
   /// In id, this message translates to:

@@ -18,6 +18,8 @@
     "authLinkRegisterNow" : "Daftar Sekarang",
     "authMsgHaveAccount" : "Sudah Punya Akun? ",
     "authLinkLoginNow" : "Masuk",
+    "authRegisterSuccessMessage" : "Register berhasil, silahkan login terlebih dahulu",
+
 
     "@_STORY_FEATURE" : {},
     "storyBtnAddSemantic" : "Tambah Cerita Baru",

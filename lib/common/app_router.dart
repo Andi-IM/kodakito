@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
+import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story.dart';
 import 'package:dicoding_story/ui/main/widgets/main_page.dart';
 import 'package:dicoding_story/ui/detail/widgets/story_detail_page.dart';
@@ -37,12 +39,23 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const LoginPage(),
+        builder: (context, state) => LoginPage(
+          goToRegister: () => context.go('/register'),
+          onLoginSuccess: () => context.pushReplacementNamed('main'),
+        ),
       ),
       GoRoute(
         path: '/register',
         name: 'register',
-        builder: (context, state) => const RegisterPage(),
+        builder: (context, state) => RegisterPage(
+          onRegisterSuccess: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(context.l10n.authRegisterSuccessMessage)),
+            );
+            context.go('/login');
+          },
+          goToLogin: () => context.go('/login'),
+        ),
       ),
       GoRoute(
         path: '/story',
@@ -65,7 +78,13 @@ GoRouter appRouter(Ref ref) {
           name: 'add-story',
           builder: (context, state) {
             final cropStream = state.extra as Stream<InstaAssetsExportDetails>;
-            return AddStoryPage(cropStream: cropStream);
+            return AddStoryPage(
+              cropStream: cropStream,
+              onAddStorySuccess: () {
+                ref.read(addStoryProvider.notifier).resetState();
+                context.pushReplacementNamed('main');
+              },
+            );
           },
         ),
     ],

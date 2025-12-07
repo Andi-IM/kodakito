@@ -54,6 +54,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authLinkLoginNow => 'Login';
 
   @override
+  String get authRegisterSuccessMessage => 'Register success, please login';
+
+  @override
   String get storyBtnAddSemantic => 'Add new story';
 
   @override

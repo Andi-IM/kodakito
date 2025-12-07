@@ -54,6 +54,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get authLinkLoginNow => 'Masuk';
 
   @override
+  String get authRegisterSuccessMessage =>
+      'Register berhasil, silahkan login terlebih dahulu';
+
+  @override
   String get storyBtnAddSemantic => 'Tambah Cerita Baru';
 
   @override

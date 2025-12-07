@@ -16,10 +16,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [registerProvider.overrideWith(() => mockNotifier)],
-        child: const MaterialApp(
+        child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: RegisterPage(),
+          home: RegisterPage(onRegisterSuccess: () {}, goToLogin: () {}),
         ),
       ),
     );
@@ -41,10 +41,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [registerProvider.overrideWith(() => mockNotifier)],
-        child: const MaterialApp(
+        child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: RegisterPage(),
+          home: RegisterPage(onRegisterSuccess: () {}, goToLogin: () {}),
         ),
       ),
     );
@@ -88,10 +88,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [registerProvider.overrideWith(() => mockNotifier)],
-        child: const MaterialApp(
+        child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: RegisterPage(),
+          home: RegisterPage(onRegisterSuccess: () {}, goToLogin: () {}),
         ),
       ),
     );
@@ -136,10 +136,10 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [registerProvider.overrideWith(() => mockNotifier)],
-        child: const MaterialApp(
+        child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: RegisterPage(),
+          home: RegisterPage(onRegisterSuccess: () {}, goToLogin: () {}),
         ),
       ),
     );
