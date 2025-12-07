@@ -794,9 +794,13 @@ void main() {
     },
   );
 
-  // Note: Error state for user avatar (line 117) is covered implicitly by
-  // Riverpod's AsyncValue.error handling. Testing it requires handling
-  // the uncaught error from Completer.completeError which is complex.
+  // Skipped: Riverpod FutureProvider async errors are difficult to test
+  // in widget tests - error state transition timing is unreliable.
+  testWidgets(
+    'displays account_circle icon in avatar button when user data has error',
+    skip: true,
+    (tester) async {},
+  );
 
   testWidgets('tapping FAB on medium screen opens AddStoryDialog', (
     tester,
