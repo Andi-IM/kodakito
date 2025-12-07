@@ -1,8 +1,10 @@
-import 'package:dicoding_story/data/services/widget/image_picker_service.dart';
-import 'package:dicoding_story/data/services/widget/insta_image_picker_service.dart';
-import 'package:dicoding_story/data/services/widget/wechat_camera_picker_service.dart';
+import 'package:dicoding_story/data/services/widget/image_picker/image_picker_service.dart';
+import 'package:dicoding_story/data/services/widget/insta_image_picker/insta_image_picker_service.dart';
+import 'package:dicoding_story/data/services/widget/wechat_camera_picker/wechat_camera_picker_service.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
+import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
+import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/main/widgets/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -109,6 +111,72 @@ void main() {
     await tester.pump();
 
     verify(() => mockStories.fetchStories()).called(1);
+  });
+
+  testWidgets('displays ListView with StoryCards on compact screens', (
+    tester,
+  ) async {
+    final testStories = [
+      Story(
+        id: 'story-1',
+        name: 'Test User 1',
+        description: 'Test description 1',
+        photoUrl: 'https://example.com/photo1.jpg',
+        createdAt: DateTime(2024, 1, 1),
+        lat: null,
+        lon: null,
+      ),
+      Story(
+        id: 'story-2',
+        name: 'Test User 2',
+        description: 'Test description 2',
+        photoUrl: 'https://example.com/photo2.jpg',
+        createdAt: DateTime(2024, 1, 2),
+        lat: null,
+        lon: null,
+      ),
+    ];
+
+    final container = ProviderContainer.test(
+      overrides: [
+        storiesProvider.overrideWith(MockStories.new),
+        fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+        cameraPickerServiceProvider.overrideWithValue(mockCameraPickerService),
+        instaImagePickerServiceProvider.overrideWithValue(
+          mockInstaImagePickerService,
+        ),
+        imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    // Keep the provider alive so we verify the same instance
+    container.listen(storiesProvider, (_, __) {});
+    final mockStories = container.read(storiesProvider.notifier) as MockStories;
+    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+    // Set the state to loaded with stories
+    mockStories.setState(
+      StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+    );
+
+    await tester.pumpWidget(
+      pumpTestWidget(
+        tester,
+        container: container,
+        widthClass: WindowWidthClass.compact,
+      ),
+    );
+
+    // Allow widget tree to build
+    await tester.pump();
+
+    // Verify ListView is rendered (identified by key)
+    expect(find.byKey(const ValueKey('list')), findsOneWidget);
+
+    // Verify StoryCards are rendered
+    expect(find.byKey(const ValueKey('StoryCard_story-1')), findsOneWidget);
+    expect(find.byKey(const ValueKey('StoryCard_story-2')), findsOneWidget);
   });
 }
 

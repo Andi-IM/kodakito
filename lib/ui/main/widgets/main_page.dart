@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:dicoding_story/common/localizations.dart';
-import 'package:dicoding_story/data/services/widget/image_picker_service.dart';
-import 'package:dicoding_story/data/services/widget/insta_image_picker_service.dart';
-import 'package:dicoding_story/data/services/widget/wechat_camera_picker_service.dart';
+import 'package:dicoding_story/data/services/widget/image_picker/image_picker_service.dart';
+import 'package:dicoding_story/data/services/widget/insta_image_picker/insta_image_picker_service.dart';
+import 'package:dicoding_story/data/services/widget/wechat_camera_picker/wechat_camera_picker_service.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_dialog.dart';
