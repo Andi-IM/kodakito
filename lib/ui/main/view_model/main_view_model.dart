@@ -103,7 +103,7 @@ class AddStoryNotifier extends _$AddStoryNotifier with LogMixin {
   AddStoryRepository get _repository => ref.read(addStoryRepositoryProvider);
   @override
   AddStoryState build() {
-    return const AddStoryState.initial();
+    return const AddStoryInitial();
   }
 
   Future<void> addStory({
@@ -113,7 +113,7 @@ class AddStoryNotifier extends _$AddStoryNotifier with LogMixin {
     double? lon,
   }) async {
     log.info('Adding story: $description');
-    state = AddStoryState.loading();
+    state = const AddStoryLoading();
     final result = await _repository.addStory(
       description,
       photo,
@@ -127,16 +127,16 @@ class AddStoryNotifier extends _$AddStoryNotifier with LogMixin {
     result.fold(
       (failure) {
         log.warning('Failed to add story: ${failure.message}');
-        state = AddStoryState.failure(failure);
+        state = AddStoryFailure(failure);
       },
       (story) {
         log.info('Successfully added story');
-        state = AddStoryState.success();
+        state = const AddStorySuccess();
       },
     );
   }
 
   void resetState() {
-    state = const AddStoryState.initial();
+    state = const AddStoryInitial();
   }
 }

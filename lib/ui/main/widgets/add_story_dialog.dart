@@ -1,3 +1,5 @@
+import 'dart:typed_data' show Uint8List;
+
 import 'package:crop_your_image/crop_your_image.dart';
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
@@ -71,42 +73,34 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final addStoryState = ref.watch(addStoryProvider);
     final imageFile = ref.watch(imageFileProvider);
-    final isLoading = addStoryState.maybeWhen(
-      loading: () => true,
-      orElse: () => false,
-    );
-    final theme = Theme.of(context);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    bool isLoading = false;
 
-    ref.listen(addStoryProvider, (previous, next) {
-      next.when(
-        initial: () {},
-        loading: () {},
-        success: () {
-          // Clear the description
-          descriptionController.clear();
-          // Capture messenger reference before context is popped
-          final messenger = ScaffoldMessenger.of(context);
-          final localContext = context;
-          // Close the dialog
-          if (localContext.mounted) {
-            localContext.pop();
-          }
-          // Show success message
-          messenger.showSnackBar(
-            SnackBar(content: Text(localContext.l10n.addStorySuccessMessage)),
-          );
-          ref.read(storiesProvider.notifier).fetchStories();
-        },
-        failure: (failure) {
-          // Show error message
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(failure.message)));
-        },
-      );
+    ref.listen(addStoryProvider.select((value) => value), (prev, next) {
+      if (next is AddStoryLoading) {
+        isLoading = true;
+      }
+      if (next is AddStorySuccess) {
+        // Clear the description
+        descriptionController.clear();
+        // Capture messenger reference before context is popped
+        final messenger = ScaffoldMessenger.of(context);
+        final localContext = context;
+        // Close the dialog
+        if (localContext.mounted) {
+          localContext.pop();
+        }
+        // Show success message
+        messenger.showSnackBar(
+          SnackBar(content: Text(localContext.l10n.addStorySuccessMessage)),
+        );
+        ref.read(storiesProvider.notifier).fetchStories();
+      }
+      if (next is AddStoryFailure) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.exception.message)));
+      }
     });
 
     return AlertDialog(
@@ -123,45 +117,9 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              GestureDetector(
+              _AddStoryImageContainer(
+                imageFile: imageFile,
                 onTap: () => pickImage(context),
-                child: Semantics(
-                  label: context.l10n.addStoryImageLabel,
-                  button: true,
-                  child: Container(
-                    height: 200,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: theme.colorScheme.outline),
-                      borderRadius: BorderRadius.circular(16),
-                      image: imageFile != null
-                          ? DecorationImage(
-                              image: MemoryImage(imageFile),
-                              fit: BoxFit.cover,
-                            )
-                          : null,
-                    ),
-                    child: imageFile == null
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.image,
-                                size: 50,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                context.l10n.addStoryUploadPlaceholder,
-                                style: TextStyle(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          )
-                        : null,
-                  ),
-                ),
               ),
               const SizedBox(height: 16),
               TextField(
@@ -184,55 +142,125 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
           onPressed: isLoading ? null : () => context.pop(),
           child: Text(context.l10n.addStoryBtnCancel),
         ),
-        FilledButton(
-          onPressed: isLoading
-              ? null
-              : () async {
-                  final description = descriptionController.text.trim();
-                  if (description.isEmpty) {
-                    scaffoldMessenger.showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          context.l10n.addStoryErrorEmptyDescription,
-                        ),
-                      ),
-                    );
-                    return;
-                  }
-                  if (imageFile == null) {
-                    scaffoldMessenger.showSnackBar(
-                      SnackBar(
-                        content: Text(context.l10n.addStoryErrorEmptyImage),
-                      ),
-                    );
-                    return;
-                  }
-
-                  final file = await ref
-                      .read(imageFileProvider.notifier)
-                      .toFile();
-
-                  if (file != null) {
-                    // Call addStory
-                    await ref
-                        .read(addStoryProvider.notifier)
-                        .addStory(description: description, photo: file);
-                  }
-                },
-          child: isLoading
-              ? SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      theme.colorScheme.onPrimary,
-                    ),
-                  ),
-                )
-              : Text(context.l10n.addStoryBtnPost),
+        //
+        _AddStoryButton(
+          isLoading: isLoading,
+          descriptionController: descriptionController,
         ),
       ],
+    );
+  }
+}
+
+class _AddStoryButton extends ConsumerWidget {
+  const _AddStoryButton({
+    required this.isLoading,
+    required this.descriptionController,
+  });
+
+  final bool isLoading;
+  final TextEditingController descriptionController;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final imageFile = ref.watch(imageFileProvider);
+    final addStoryState = ref.watch(addStoryProvider);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    return FilledButton(
+      onPressed: isLoading
+          ? null
+          : () async {
+              final description = descriptionController.text.trim();
+              if (description.isEmpty) {
+                scaffoldMessenger.showSnackBar(
+                  SnackBar(
+                    content: Text(context.l10n.addStoryErrorEmptyDescription),
+                  ),
+                );
+                return;
+              }
+              if (imageFile == null) {
+                scaffoldMessenger.showSnackBar(
+                  SnackBar(content: Text(context.l10n.addStoryErrorEmptyImage)),
+                );
+                return;
+              }
+
+              final file = await ref.read(imageFileProvider.notifier).toFile();
+
+              if (file != null) {
+                // Call addStory
+                await ref
+                    .read(addStoryProvider.notifier)
+                    .addStory(description: description, photo: file);
+              }
+            },
+      child: addStoryState is AddStoryLoading
+          ? SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  theme.colorScheme.onPrimary,
+                ),
+              ),
+            )
+          : Text(context.l10n.addStoryBtnPost),
+    );
+  }
+}
+
+class _AddStoryImageContainer extends ConsumerWidget {
+  const _AddStoryImageContainer({required this.imageFile, required this.onTap});
+
+  final Uint8List? imageFile;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    return GestureDetector(
+      onTap: () => onTap(),
+      child: Semantics(
+        label: context.l10n.addStoryImageLabel,
+        button: true,
+        child: Container(
+          height: 200,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            border: Border.all(color: theme.colorScheme.outline),
+            borderRadius: BorderRadius.circular(16),
+            image: imageFile != null
+                ? DecorationImage(
+                    image: MemoryImage(imageFile!),
+                    fit: BoxFit.cover,
+                  )
+                : null,
+          ),
+          child: imageFile == null
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.image,
+                      size: 50,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      context.l10n.addStoryUploadPlaceholder,
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                )
+              : null,
+        ),
+      ),
     );
   }
 }

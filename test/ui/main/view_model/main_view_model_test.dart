@@ -25,13 +25,11 @@ void main() {
   late MockListRepository mockListRepository;
   late MockAddStoryRepository mockAddStoryRepository;
   late Listener<StoriesState> storiesListener;
-  late Listener<AddStoryState> addStoryListener;
 
   setUp(() {
     mockListRepository = MockListRepository();
     mockAddStoryRepository = MockAddStoryRepository();
     storiesListener = Listener<StoriesState>();
-    addStoryListener = Listener<AddStoryState>();
     registerFallbackValue(FakeFile());
 
     container = ProviderContainer(
@@ -168,9 +166,9 @@ void main() {
     const tLon = 10.0;
     final tResponse = DefaultResponse(error: false, message: 'Success');
 
-    test('initial state is AddStoryState.initial', () {
+    test('initial state is AddStoryInitial', () {
       final state = container.read(addStoryProvider);
-      expect(state, const AddStoryState.initial());
+      expect(state, isA<AddStoryInitial>());
     });
 
     test('addStory success updates state to success', () async {
@@ -184,11 +182,10 @@ void main() {
         ),
       ).thenAnswer((_) async => Right(tResponse));
 
-      container.listen(
-        addStoryProvider,
-        addStoryListener.call,
-        fireImmediately: true,
-      );
+      final states = <AddStoryState>[];
+      container.listen(addStoryProvider, (previous, next) {
+        states.add(next);
+      }, fireImmediately: true);
 
       // Act
       await container
@@ -201,17 +198,11 @@ void main() {
           );
 
       // Assert
-      verifyInOrder([
-        () => addStoryListener(null, const AddStoryState.initial()),
-        () => addStoryListener(
-          const AddStoryState.initial(),
-          const AddStoryState.loading(),
-        ),
-        () => addStoryListener(
-          const AddStoryState.loading(),
-          const AddStoryState.success(),
-        ),
-      ]);
+      expect(states.length, 3);
+      expect(states[0], isA<AddStoryInitial>());
+      expect(states[1], isA<AddStoryLoading>());
+      expect(states[2], isA<AddStorySuccess>());
+
       verify(
         () => mockAddStoryRepository.addStory(
           tDescription,
@@ -238,11 +229,10 @@ void main() {
         ),
       ).thenAnswer((_) async => Left(exception));
 
-      container.listen(
-        addStoryProvider,
-        addStoryListener.call,
-        fireImmediately: true,
-      );
+      final states = <AddStoryState>[];
+      container.listen(addStoryProvider, (previous, next) {
+        states.add(next);
+      }, fireImmediately: true);
 
       // Act
       await container
@@ -255,17 +245,12 @@ void main() {
           );
 
       // Assert
-      verifyInOrder([
-        () => addStoryListener(null, const AddStoryState.initial()),
-        () => addStoryListener(
-          const AddStoryState.initial(),
-          const AddStoryState.loading(),
-        ),
-        () => addStoryListener(
-          const AddStoryState.loading(),
-          AddStoryState.failure(exception),
-        ),
-      ]);
+      expect(states.length, 3);
+      expect(states[0], isA<AddStoryInitial>());
+      expect(states[1], isA<AddStoryLoading>());
+      expect(states[2], isA<AddStoryFailure>());
+      expect((states[2] as AddStoryFailure).exception, exception);
+
       verify(
         () => mockAddStoryRepository.addStory(
           tDescription,
@@ -282,7 +267,7 @@ void main() {
       container.read(addStoryProvider.notifier).resetState();
 
       final state = container.read(addStoryProvider);
-      expect(state, const AddStoryState.initial());
+      expect(state, isA<AddStoryInitial>());
     });
   });
 

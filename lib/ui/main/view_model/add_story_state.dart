@@ -1,12 +1,22 @@
 import 'package:dicoding_story/utils/http_exception.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'add_story_state.freezed.dart';
+sealed class AddStoryState {
+  const AddStoryState();
+}
 
-@freezed
-abstract class AddStoryState with _$AddStoryState {
-  const factory AddStoryState.initial() = Initial;
-  const factory AddStoryState.loading() = Loading;
-  const factory AddStoryState.success() = Loaded;
-  const factory AddStoryState.failure(AppException exception) = Failure;
+class AddStoryInitial extends AddStoryState {
+  const AddStoryInitial();
+}
+
+class AddStoryLoading extends AddStoryState {
+  const AddStoryLoading();
+}
+
+class AddStorySuccess extends AddStoryState {
+  const AddStorySuccess();
+}
+
+class AddStoryFailure extends AddStoryState {
+  final AppException exception;
+  const AddStoryFailure(this.exception);
 }

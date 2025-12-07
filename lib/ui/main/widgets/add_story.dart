@@ -35,24 +35,22 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
   Widget build(BuildContext context) {
     // Listen to add story state changes
     ref.listen(addStoryProvider, (previous, next) {
-      next.when(
-        initial: () {},
-        loading: () {},
-        success: () => widget.onAddStorySuccess(),
-        failure: (failure) {
-          // Show error message
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(failure.message),
-                backgroundColor: Colors.red,
-              ),
-            );
-            // Reset state so user can try again
-            ref.read(addStoryProvider.notifier).resetState();
-          }
-        },
-      );
+      if (next is AddStorySuccess) {
+        widget.onAddStorySuccess();
+      }
+      if (next is AddStoryFailure) {
+        // Show error message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(next.exception.message),
+              backgroundColor: Colors.red,
+            ),
+          );
+          // Reset state so user can try again
+          ref.read(addStoryProvider.notifier).resetState();
+        }
+      }
     });
 
     return Scaffold(
@@ -62,14 +60,9 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
           Consumer(
             builder: (context, ref, child) {
               final addStoryState = ref.watch(addStoryProvider);
-              final isLoading = addStoryState.maybeWhen(
-                loading: () => true,
-                orElse: () => false,
-              );
-
               return TextButton(
                 key: const Key('postButton'),
-                onPressed: isLoading
+                onPressed: addStoryState is AddStoryLoading
                     ? null
                     : () {
                         if (file != null) {
@@ -81,7 +74,7 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
                               );
                         }
                       },
-                child: isLoading
+                child: addStoryState is AddStoryLoading
                     ? const SizedBox(
                         width: 16,
                         height: 16,
@@ -145,10 +138,7 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
             Consumer(
               builder: (context, ref, child) {
                 final addStoryState = ref.watch(addStoryProvider);
-                final isLoading = addStoryState.maybeWhen(
-                  loading: () => true,
-                  orElse: () => false,
-                );
+                final isLoading = addStoryState is AddStoryLoading;
 
                 return TextField(
                   key: const Key('descriptionField'),
