@@ -140,6 +140,44 @@ class PatrolAddStoryRobot {
     await $.pumpAndSettle();
   }
 
+  Future<void> tapThemeDarkDropdown() async {
+    await $('Light').tap();
+    await $.pumpAndSettle();
+    await $('Dark').tap();
+    await $.pumpAndSettle();
+    await $('Dark').waitUntilVisible();
+    final finder = find.byKey(const ValueKey('themeOption'));
+    final Container widget = $.tester.widget<Container>(finder);
+    expect(widget.color, Color(0xff1a1111));
+  }
+
+  Future<void> tapThemeLightDropdown() async {
+    await $('Dark').tap();
+    await $.pumpAndSettle();
+    await $('Light').tap();
+    await $.pumpAndSettle();
+    await $('Light').waitUntilVisible();
+    final finder = find.byKey(const ValueKey('themeOption'));
+    final Container widget = $.tester.widget<Container>(finder);
+    expect(widget.color, Color(0xfffff8f7));
+  }
+
+  Future<void> tapIndonesianLanguage() async {
+    await $('Language').tap();
+    await $.pumpAndSettle();
+    await $('Indonesian').tap();
+    await $.pumpAndSettle();
+    await $('Bahasa').waitUntilVisible();
+  }
+
+  Future<void> tapEnglishLanguage() async {
+    await $('Bahasa').tap();
+    await $.pumpAndSettle();
+    await $('Bahasa Inggris').tap();
+    await $.pumpAndSettle();
+    await $('Language').waitUntilVisible();
+  }
+
   Future<void> tapLogoutButton() async {
     await $(#logoutButton).tap();
     await $.pumpAndSettle();

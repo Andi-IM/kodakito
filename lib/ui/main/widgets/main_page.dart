@@ -58,7 +58,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
           .pickImage(
             context,
             _pickFromWeChatCamera,
-            (cropStream) => context.pushNamed('crop', extra: cropStream),
+            (cropStream) => context.pushNamed('mobile-crop', extra: cropStream),
           );
       return;
     }

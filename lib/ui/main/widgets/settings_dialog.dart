@@ -103,7 +103,7 @@ class SettingsDialog extends ConsumerWidget {
               const SizedBox(height: 24),
 
               // Theme Option
-              _buildThemeOption(context, ref),
+              _buildThemeOption(const ValueKey('themeOption'), context, ref),
 
               const SizedBox(height: 16),
 
@@ -145,7 +145,7 @@ class SettingsDialog extends ConsumerWidget {
     );
   }
 
-  Widget _buildThemeOption(BuildContext context, WidgetRef ref) {
+  Widget _buildThemeOption(Key key, BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final currentTheme = ref.watch(appThemeProvider);
 
@@ -161,6 +161,7 @@ class SettingsDialog extends ConsumerWidget {
     }
 
     return Container(
+      key: key,
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
