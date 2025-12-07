@@ -19,7 +19,6 @@ class AddStoryImageContainer extends ConsumerStatefulWidget {
 
 class _AddStoryImageContainerState
     extends ConsumerState<AddStoryImageContainer> {
-  final cropController = CropController();
   void pickImage() async {
     final imageBytes = await widget.getImageFile();
     if (imageBytes != null) {
@@ -28,8 +27,7 @@ class _AddStoryImageContainerState
           context: context,
           builder: (context) => StoryCropDialog(
             imageBytes: imageBytes,
-            cropController: cropController,
-            ref: ref,
+            cropController: CropController(),
           ),
         );
       }

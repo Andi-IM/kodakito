@@ -7,20 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class StoryCropDialog extends StatelessWidget {
+class StoryCropDialog extends ConsumerWidget {
   const StoryCropDialog({
     super.key,
     required this.imageBytes,
     required this.cropController,
-    required this.ref,
   });
 
   final Uint8List imageBytes;
   final CropController cropController;
-  final WidgetRef ref;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return AlertDialog(
       content: SizedBox(
         width: 500,

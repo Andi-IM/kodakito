@@ -8,6 +8,7 @@ import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_dialog.dart';
+import 'package:dicoding_story/ui/main/widgets/add_story/wide/story_crop_dialog.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -507,6 +508,41 @@ void main() {
 
       // Verify success finally
       expect(find.text('Story posted successfully!'), findsOneWidget);
+    });
+
+    testWidgets('opens crop dialog when image is picked', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockAddStoryRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+          imageFileProvider.overrideWith(() => SafeImageFile()),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpTestWidget(
+        tester,
+        container: container,
+        child: AddStoryDialog(getImageFile: () async => validImageBytes),
+      );
+
+      // Verify Image Container exists
+      final imageContainer = find.byKey(
+        const ValueKey('addStoryImageContainer'),
+      );
+      expect(imageContainer, findsOneWidget);
+
+      // Tap Image Container to trigger pickImage
+      await tester.tap(imageContainer);
+      await tester.pump(); // Start async pick
+      await tester.pumpAndSettle(); // Wait for dialog to open
+
+      // Verify StoryCropDialog is shown
+      expect(find.byType(StoryCropDialog), findsOneWidget);
     });
   });
 }
