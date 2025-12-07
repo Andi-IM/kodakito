@@ -9,7 +9,6 @@ import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_image_co
 import 'package:dicoding_story/ui/main/widgets/add_story/wide/story_crop_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class AddStoryDialog extends ConsumerStatefulWidget {
   final Future<Uint8List?> Function() getImageFile;
@@ -48,27 +47,25 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
   @override
   Widget build(BuildContext context) {
     final imageFile = ref.watch(imageFileProvider.select((value) => value));
-    bool isLoading = false;
+    final addStoryState = ref.watch(addStoryProvider);
+    final isLoading = addStoryState is AddStoryLoading;
 
     ref.listen(addStoryProvider.select((value) => value), (prev, next) {
-      if (next is AddStoryLoading) {
-        isLoading = true;
-      }
       if (next is AddStorySuccess) {
+        ref.read(storiesProvider.notifier).fetchStories();
         // Clear the description
         descriptionController.clear();
         // Capture messenger reference before context is popped
         final messenger = ScaffoldMessenger.of(context);
         final localContext = context;
-        // Close the dialog
-        if (localContext.mounted) {
-          localContext.pop();
-        }
         // Show success message
         messenger.showSnackBar(
           SnackBar(content: Text(localContext.l10n.addStorySuccessMessage)),
         );
-        ref.read(storiesProvider.notifier).fetchStories();
+        // Close the dialog
+        if (localContext.mounted) {
+          Navigator.of(localContext).pop();
+        }
       }
       if (next is AddStoryFailure) {
         ScaffoldMessenger.of(
@@ -114,7 +111,7 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: isLoading ? null : () => context.pop(),
+          onPressed: isLoading ? null : () => Navigator.of(context).pop(),
           child: Text(context.l10n.addStoryBtnCancel),
         ),
         //

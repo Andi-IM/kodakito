@@ -116,8 +116,6 @@ class SettingsDialog extends ConsumerWidget {
                   if (context.mounted) {
                     if (success) {
                       context.goNamed('login');
-                    } else {
-                      context.pop();
                     }
                   }
                 },
@@ -127,7 +125,7 @@ class SettingsDialog extends ConsumerWidget {
 
               // Version
               Text(
-                context.l10n.settingsTextVersion('$versionAsync'),
+                context.l10n.settingsTextVersion('${versionAsync.value}'),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

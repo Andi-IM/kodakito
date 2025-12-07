@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:dicoding_story/common/localizations.dart';
-import 'package:dicoding_story/l10n/app_asset_picker_text_delegate.dart';
+import 'package:dicoding_story/data/services/widget/image_picker_service.dart';
+import 'package:dicoding_story/data/services/widget/insta_image_picker_service.dart';
+import 'package:dicoding_story/data/services/widget/wechat_camera_picker_service.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_dialog.dart';
@@ -12,9 +14,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
-import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 import 'package:window_size_classes/window_size_classes.dart';
 import 'package:m3e_collection/m3e_collection.dart';
 
@@ -42,84 +42,37 @@ class _MainScreenState extends ConsumerState<MainPage> {
     super.dispose();
   }
 
-  ResolutionPreset get cameraResolutionPreset =>
-      Platform.isAndroid ? ResolutionPreset.high : ResolutionPreset.max;
-
   Future<void> _pickFromWeChatCamera(BuildContext context) async {
     Feedback.forTap(context);
-    final AssetEntity? entity = await CameraPicker.pickFromCamera(
-      context,
-      locale: Localizations.maybeLocaleOf(context),
-      pickerConfig: CameraPickerConfig(
-        theme: Theme.of(context),
-        resolutionPreset: cameraResolutionPreset,
-        enableRecording: false,
-      ),
-    );
+    final AssetEntity? entity = await ref
+        .read(cameraPickerServiceProvider)
+        .pickImage(context);
     if (entity == null) return;
 
     if (context.mounted) {
-      await InstaAssetPicker.refreshAndSelectEntity(context, entity);
+      await ref
+          .read(instaImagePickerServiceProvider)
+          .refreshAndSelectEntity(context, entity);
     }
   }
 
   Future<void> showAddStoryDialog() async {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
-      InstaAssetPicker.pickAssets(
-        context,
-        pickerConfig: InstaAssetPickerConfig(
-          title: context.l10n.addStoryTitle,
-          closeOnComplete: true,
-          textDelegate: context.l10n.localeName == 'id'
-              ? IndonesianAssetPickerTextDelegate()
-              : null,
-          pickerTheme:
-              InstaAssetPicker.themeData(
-                Theme.of(context).colorScheme.primary,
-              ).copyWith(
-                appBarTheme: AppBarTheme(
-                  titleTextStyle: Theme.of(context).textTheme.titleLarge
-                      ?.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
-                ),
-              ),
-          actionsBuilder: (context, theme, height, unselectAll) => [
-            InstaPickerCircleIconButton.unselectAll(
-              onTap: unselectAll,
-              theme: theme,
-              size: height,
-            ),
-          ],
-          specialItemBuilder: (context, _, __) {
-            return Container(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              child: IconButton(
-                onPressed: () => _pickFromWeChatCamera(context),
-                icon: const Icon(Icons.camera_alt),
-              ),
-            );
-          },
-          specialItemPosition: SpecialItemPosition.prepend,
-        ),
-        maxAssets: 1,
-        onCompleted: (cropStream) {
-          return context.pushNamed('add-story', extra: cropStream);
-        },
-      );
+      ref
+          .read(instaImagePickerServiceProvider)
+          .pickImage(
+            context,
+            _pickFromWeChatCamera,
+            (cropStream) => context.pushNamed('add-story', extra: cropStream),
+          );
       return;
     }
 
     return showDialog(
       context: context,
       builder: (context) => AddStoryDialog(
-        getImageFile: () async {
-          XFile? image = await ImagePicker().pickImage(
-            source: ImageSource.gallery,
-          );
-
-          return image?.readAsBytes();
-        },
+        getImageFile: () async =>
+            await ref.read(imagePickerServiceProvider).pickImage(),
       ),
     );
   }
@@ -150,9 +103,8 @@ class _MainScreenState extends ConsumerState<MainPage> {
                     key: const ValueKey('avatarButton'),
                     onPressed: () => showDialog(
                       context: context,
-                      builder: (context) {
-                        return SettingsDialog();
-                      },
+                      useRootNavigator: true,
+                      builder: (context) => SettingsDialog(),
                     ),
                     icon: userAsync.when(
                       data: (name) => CircleAvatar(

@@ -42,6 +42,76 @@ void main() {
   late MockListRepository mockListRepository;
   String? mockPickedImagePath;
 
+  final validImageBytes = Uint8List.fromList([
+    0x89,
+    0x50,
+    0x4E,
+    0x47,
+    0x0D,
+    0x0A,
+    0x1A,
+    0x0A,
+    0x00,
+    0x00,
+    0x00,
+    0x0D,
+    0x49,
+    0x48,
+    0x44,
+    0x52,
+    0x00,
+    0x00,
+    0x00,
+    0x01,
+    0x00,
+    0x00,
+    0x00,
+    0x01,
+    0x08,
+    0x06,
+    0x00,
+    0x00,
+    0x00,
+    0x1F,
+    0x15,
+    0xC4,
+    0x89,
+    0x00,
+    0x00,
+    0x00,
+    0x0A,
+    0x49,
+    0x44,
+    0x41,
+    0x54,
+    0x78,
+    0x9C,
+    0x63,
+    0x00,
+    0x01,
+    0x00,
+    0x00,
+    0x05,
+    0x00,
+    0x01,
+    0x0D,
+    0x0A,
+    0x2D,
+    0xB4,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x49,
+    0x45,
+    0x4E,
+    0x44,
+    0xAE,
+    0x42,
+    0x60,
+    0x82,
+  ]);
+
   setUpAll(() async {
     registerFallbackValue(File('dummy'));
   });
@@ -56,7 +126,7 @@ void main() {
     // if we don't test Crop widget that requires valid image.
     // If we skip the Crop test, random bytes is fine for XFile.
     // SafeImageFile is used in other tests.
-    await file.writeAsBytes([1, 2, 3]);
+    await file.writeAsBytes(validImageBytes);
     mockPickedImagePath = file.absolute.path;
 
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -103,10 +173,23 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: child),
+          home: Scaffold(
+            body: Builder(
+              builder: (context) {
+                return ElevatedButton(
+                  onPressed: () {
+                    showDialog(context: context, builder: (context) => child);
+                  },
+                  child: const Text('Launch Dialog'),
+                );
+              },
+            ),
+          ),
         ),
       ),
     );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Launch Dialog'));
     await tester.pumpAndSettle();
   }
 
@@ -129,7 +212,7 @@ void main() {
       await pumpTestWidget(
         tester,
         container: container,
-        child: const AddStoryDialog(),
+        child: AddStoryDialog(getImageFile: () async => validImageBytes),
       );
 
       expect(find.text('Add Story'), findsOneWidget);
@@ -156,7 +239,7 @@ void main() {
       await pumpTestWidget(
         tester,
         container: container,
-        child: const AddStoryDialog(),
+        child: AddStoryDialog(getImageFile: () async => validImageBytes),
       );
 
       await tester.tap(find.text('Post'));
@@ -182,7 +265,7 @@ void main() {
       await pumpTestWidget(
         tester,
         container: container,
-        child: const AddStoryDialog(),
+        child: AddStoryDialog(getImageFile: () async => validImageBytes),
       );
 
       await tester.enterText(find.byType(TextField), 'Test Description');
@@ -218,21 +301,21 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      // Seed the image provider
-      container
-          .read(imageFileProvider.notifier)
-          .setImageFile(Uint8List.fromList([1, 2, 3]));
-
       await pumpTestWidget(
         tester,
         container: container,
-        child: const AddStoryDialog(),
+        child: AddStoryDialog(getImageFile: () async => validImageBytes),
       );
+
+      // Seed the image provider
+      container.read(imageFileProvider.notifier).setImageFile(validImageBytes);
+      await tester.pump();
 
       // Enter description
       await tester.enterText(find.byType(TextField), 'My New Story');
       await tester.pump();
 
+      // Verify dialog is closed (Add Story text title should be gone)
       // Tap Post
       await tester.tap(find.text('Post'));
 
@@ -284,16 +367,15 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      // Seed the image provider
-      container
-          .read(imageFileProvider.notifier)
-          .setImageFile(Uint8List.fromList([1, 2, 3]));
-
       await pumpTestWidget(
         tester,
         container: container,
-        child: const AddStoryDialog(),
+        child: AddStoryDialog(getImageFile: () async => validImageBytes),
       );
+
+      // Seed the image provider after dialog is open
+      container.read(imageFileProvider.notifier).setImageFile(validImageBytes);
+      await tester.pump();
 
       // Enter description
       await tester.enterText(find.byType(TextField), 'My Failed Story');
