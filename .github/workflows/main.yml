@@ -38,7 +38,7 @@ jobs:
       - name: touch and fill .env file
         run: |
           touch .env
-          echo "STORY_ENV=development" >> .env
+          echo "APP_ENV=development \n APP_URL=http://localhost:8000" >> .env
       - run: dart analyze lib
       - run: dart format lib --set-exit-if-changed
       - run: flutter test --coverage
