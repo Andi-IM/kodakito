@@ -32,6 +32,7 @@
     "addStoryDescriptionLabel" : "Deskripsi",
     "addStoryDescriptionHint" : "Ceritakan pengalamanmu...",
     "addStoryBtnCamera" : "Kamera",
+    "addStoryBtnCameraCrop" : "Potong",
     "addStoryBtnGallery" : "Galeri",
     "addStorySuccessMessage" : "Cerita berhasil diposting!",
     "addStoryErrorEmptyDescription" : "Silakan masukkan deskripsi",

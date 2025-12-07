@@ -254,6 +254,12 @@ abstract class AppLocalizations {
   /// **'Kamera'**
   String get addStoryBtnCamera;
 
+  /// No description provided for @addStoryBtnCameraCrop.
+  ///
+  /// In id, this message translates to:
+  /// **'Potong'**
+  String get addStoryBtnCameraCrop;
+
   /// No description provided for @addStoryBtnGallery.
   ///
   /// In id, this message translates to:

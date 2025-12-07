@@ -27,6 +27,7 @@
     "addStoryImageLabel" :"Story Photo",
     "addStoryUploadPlaceholder" :"Upload Image",
     "addStoryBtnCamera" : "Camera",
+    "addStoryBtnCameraCrop" : "Crop",
     "addStoryBtnGallery" : "Gallery",
     "addStoryDescriptionLabel" : "Description",
     "addStoryBtnCancel" : "Cancel",

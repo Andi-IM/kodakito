@@ -87,6 +87,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addStoryBtnCamera => 'Camera';
 
   @override
+  String get addStoryBtnCameraCrop => 'Crop';
+
+  @override
   String get addStoryBtnGallery => 'Gallery';
 
   @override

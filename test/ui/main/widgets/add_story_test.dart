@@ -6,7 +6,7 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/repository/add_story_repository.dart';
-import 'package:dicoding_story/ui/main/widgets/add_story.dart';
+import 'package:dicoding_story/ui/main/widgets/add_story/compact/add_story.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

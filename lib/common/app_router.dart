@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
-import 'package:dicoding_story/ui/main/widgets/add_story.dart';
+import 'package:dicoding_story/ui/main/widgets/add_story/compact/add_story.dart';
 import 'package:dicoding_story/ui/main/widgets/main_page.dart';
 import 'package:dicoding_story/ui/detail/widgets/story_detail_page.dart';
 import 'package:dicoding_story/ui/auth/widgets/login_page.dart';

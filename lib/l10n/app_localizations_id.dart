@@ -88,6 +88,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get addStoryBtnCamera => 'Kamera';
 
   @override
+  String get addStoryBtnCameraCrop => 'Potong';
+
+  @override
   String get addStoryBtnGallery => 'Galeri';
 
   @override

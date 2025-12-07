@@ -4,7 +4,7 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/l10n/app_asset_picker_text_delegate.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
-import 'package:dicoding_story/ui/main/widgets/add_story_dialog.dart';
+import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_dialog.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/widgets/settings_dialog.dart';
 import 'package:dicoding_story/ui/main/widgets/story_card.dart';
@@ -12,6 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 import 'package:window_size_classes/window_size_classes.dart';
@@ -109,7 +110,18 @@ class _MainScreenState extends ConsumerState<MainPage> {
       return;
     }
 
-    return showDialog(context: context, builder: (context) => AddStoryDialog());
+    return showDialog(
+      context: context,
+      builder: (context) => AddStoryDialog(
+        getImageFile: () async {
+          XFile? image = await ImagePicker().pickImage(
+            source: ImageSource.gallery,
+          );
+
+          return image?.readAsBytes();
+        },
+      ),
+    );
   }
 
   @override
