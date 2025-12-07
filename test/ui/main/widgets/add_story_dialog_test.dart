@@ -10,6 +10,7 @@ import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_dialog.dart';
+import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_image_container.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story/wide/story_crop_dialog.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/material.dart';
@@ -566,6 +567,147 @@ void main() {
 
       // Verify StoryCropDialog is shown
       expect(find.byType(StoryCropDialog), findsOneWidget);
+    });
+
+    group('AddStoryImageContainer', () {
+      testWidgets(
+        'pickImage navigates to add-story-crop when getImageFile returns bytes',
+        (tester) async {
+          tester.view.physicalSize = const Size(1000, 2000);
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(tester.view.resetPhysicalSize);
+
+          bool navigationCalled = false;
+          Uint8List? navigatedExtra;
+
+          final container = ProviderContainer(
+            overrides: [
+              imageFileProvider.overrideWith(() => SafeImageFile()),
+              webPlatformProvider.overrideWithValue(false),
+            ],
+          );
+          addTearDown(container.dispose);
+
+          final router = GoRouter(
+            initialLocation: '/',
+            routes: [
+              GoRoute(
+                path: '/',
+                name: 'add-story',
+                builder: (context, state) {
+                  return Scaffold(
+                    body: AddStoryImageContainer(
+                      key: const ValueKey('addStoryImageContainer'),
+                      getImageFile: () async => validImageBytes,
+                    ),
+                  );
+                },
+                routes: [
+                  GoRoute(
+                    path: 'crop',
+                    name: 'add-story-crop',
+                    builder: (context, state) {
+                      navigationCalled = true;
+                      navigatedExtra = state.extra as Uint8List?;
+                      return const SizedBox();
+                    },
+                  ),
+                ],
+              ),
+            ],
+          );
+
+          await tester.pumpWidget(
+            UncontrolledProviderScope(
+              container: container,
+              child: MaterialApp.router(
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                routerConfig: router,
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          // Tap AddStoryImageContainer to trigger pickImage
+          await tester.tap(
+            find.byKey(const ValueKey('addStoryImageContainer')),
+          );
+          await tester.pumpAndSettle();
+
+          // Verify navigation was called with the image bytes
+          expect(navigationCalled, isTrue);
+          expect(navigatedExtra, equals(validImageBytes));
+        },
+      );
+
+      testWidgets(
+        'pickImage does not navigate when getImageFile returns null',
+        (tester) async {
+          tester.view.physicalSize = const Size(1000, 2000);
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(tester.view.resetPhysicalSize);
+
+          bool navigationCalled = false;
+
+          final container = ProviderContainer(
+            overrides: [
+              imageFileProvider.overrideWith(() => SafeImageFile()),
+              webPlatformProvider.overrideWithValue(false),
+            ],
+          );
+          addTearDown(container.dispose);
+
+          final router = GoRouter(
+            initialLocation: '/',
+            routes: [
+              GoRoute(
+                path: '/',
+                name: 'add-story',
+                builder: (context, state) {
+                  return Scaffold(
+                    body: AddStoryImageContainer(
+                      key: const ValueKey('addStoryImageContainer'),
+                      getImageFile: () async => null, // Returns null
+                    ),
+                  );
+                },
+                routes: [
+                  GoRoute(
+                    path: 'crop',
+                    name: 'add-story-crop',
+                    builder: (context, state) {
+                      navigationCalled = true;
+                      return const SizedBox();
+                    },
+                  ),
+                ],
+              ),
+            ],
+          );
+
+          await tester.pumpWidget(
+            UncontrolledProviderScope(
+              container: container,
+              child: MaterialApp.router(
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                routerConfig: router,
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          // Tap AddStoryImageContainer to trigger pickImage
+          await tester.tap(
+            find.byKey(const ValueKey('addStoryImageContainer')),
+          );
+          await tester.pumpAndSettle();
+
+          // Verify navigation was NOT called
+          expect(navigationCalled, isFalse);
+        },
+      );
     });
 
     group('StoryCropDialog', () {
