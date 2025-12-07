@@ -6,6 +6,7 @@ import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/main/widgets/main_page.dart';
+import 'package:dicoding_story/ui/main/widgets/story_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -177,6 +178,193 @@ void main() {
     // Verify StoryCards are rendered
     expect(find.byKey(const ValueKey('StoryCard_story-1')), findsOneWidget);
     expect(find.byKey(const ValueKey('StoryCard_story-2')), findsOneWidget);
+  });
+
+  testWidgets('displays GridView with StoryCards on medium screens', (
+    tester,
+  ) async {
+    final testStories = [
+      Story(
+        id: 'story-1',
+        name: 'Test User 1',
+        description: 'Test description 1',
+        photoUrl: 'https://example.com/photo1.jpg',
+        createdAt: DateTime(2024, 1, 1),
+        lat: null,
+        lon: null,
+      ),
+      Story(
+        id: 'story-2',
+        name: 'Test User 2',
+        description: 'Test description 2',
+        photoUrl: 'https://example.com/photo2.jpg',
+        createdAt: DateTime(2024, 1, 2),
+        lat: null,
+        lon: null,
+      ),
+    ];
+
+    final container = ProviderContainer.test(
+      overrides: [
+        storiesProvider.overrideWith(MockStories.new),
+        fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+        cameraPickerServiceProvider.overrideWithValue(mockCameraPickerService),
+        instaImagePickerServiceProvider.overrideWithValue(
+          mockInstaImagePickerService,
+        ),
+        imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    // Keep the provider alive so we verify the same instance
+    container.listen(storiesProvider, (_, __) {});
+    final mockStories = container.read(storiesProvider.notifier) as MockStories;
+    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+    // Set the state to loaded with stories
+    mockStories.setState(
+      StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+    );
+
+    await tester.pumpWidget(
+      pumpTestWidget(
+        tester,
+        container: container,
+        widthClass: WindowWidthClass.medium, // Use medium width for GridView
+      ),
+    );
+
+    // Allow widget tree to build
+    await tester.pump();
+
+    // Verify GridView is rendered (identified by key)
+    expect(find.byKey(const ValueKey('grid')), findsOneWidget);
+
+    // Verify StoryCards are rendered in the grid
+    expect(find.byType(StoryCard), findsNWidgets(2));
+  });
+
+  testWidgets(
+    'tapping StoryCard navigates to story detail on compact screens',
+    (tester) async {
+      final testStories = [
+        Story(
+          id: 'story-1',
+          name: 'Test User 1',
+          description: 'Test description 1',
+          photoUrl: 'https://example.com/photo1.jpg',
+          createdAt: DateTime(2024, 1, 1),
+          lat: null,
+          lon: null,
+        ),
+      ];
+
+      final container = ProviderContainer.test(
+        overrides: [
+          storiesProvider.overrideWith(MockStories.new),
+          fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+          cameraPickerServiceProvider.overrideWithValue(
+            mockCameraPickerService,
+          ),
+          instaImagePickerServiceProvider.overrideWithValue(
+            mockInstaImagePickerService,
+          ),
+          imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      // Keep the provider alive
+      container.listen(storiesProvider, (_, __) {});
+      final mockStories =
+          container.read(storiesProvider.notifier) as MockStories;
+      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+      // Set the state to loaded with stories
+      mockStories.setState(
+        StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+      );
+
+      // Stub GoRouter.go
+      when(() => mockGoRouter.go(any())).thenReturn(null);
+
+      await tester.pumpWidget(
+        pumpTestWidget(
+          tester,
+          container: container,
+          widthClass: WindowWidthClass.compact,
+        ),
+      );
+
+      await tester.pump();
+
+      // Tap on the StoryCard
+      await tester.tap(find.byKey(const ValueKey('StoryCard_story-1')));
+      await tester.pump();
+
+      // Verify navigation was triggered with correct path
+      verify(() => mockGoRouter.go('/story/story-1')).called(1);
+    },
+  );
+
+  testWidgets('tapping StoryCard navigates to story detail on medium screens', (
+    tester,
+  ) async {
+    final testStories = [
+      Story(
+        id: 'story-1',
+        name: 'Test User 1',
+        description: 'Test description 1',
+        photoUrl: 'https://example.com/photo1.jpg',
+        createdAt: DateTime(2024, 1, 1),
+        lat: null,
+        lon: null,
+      ),
+    ];
+
+    final container = ProviderContainer.test(
+      overrides: [
+        storiesProvider.overrideWith(MockStories.new),
+        fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+        cameraPickerServiceProvider.overrideWithValue(mockCameraPickerService),
+        instaImagePickerServiceProvider.overrideWithValue(
+          mockInstaImagePickerService,
+        ),
+        imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    // Keep the provider alive
+    container.listen(storiesProvider, (_, __) {});
+    final mockStories = container.read(storiesProvider.notifier) as MockStories;
+    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+
+    // Set the state to loaded with stories
+    mockStories.setState(
+      StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+    );
+
+    // Stub GoRouter.go
+    when(() => mockGoRouter.go(any())).thenReturn(null);
+
+    await tester.pumpWidget(
+      pumpTestWidget(
+        tester,
+        container: container,
+        widthClass: WindowWidthClass.medium,
+      ),
+    );
+
+    await tester.pump();
+
+    // Tap on a StoryCard (first one)
+    await tester.tap(find.byType(StoryCard).first);
+    await tester.pump();
+
+    // Verify navigation was triggered with correct path
+    verify(() => mockGoRouter.go('/story/story-1')).called(1);
   });
 }
 
