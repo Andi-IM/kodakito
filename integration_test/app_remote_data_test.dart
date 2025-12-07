@@ -5,7 +5,7 @@ import 'package:dicoding_story/data/data_providers.dart'
     show authInterceptorProvider, cacheDatasourceProvider;
 import 'package:dicoding_story/data/services/remote/auth/auth_interceptor.dart';
 import 'package:dicoding_story/domain/models/cache/cache.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:faker/faker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -13,13 +13,12 @@ import 'package:mocktail_image_network/mocktail_image_network.dart';
 
 import 'fake/fake_cache_datasource.dart';
 import 'robot/login_robot.dart';
+import 'robot/register_robot.dart';
 import 'robot/view_story_robot.dart';
 
 /// This Integration Test launches the app with the remote configuration
 /// Make sure to set the environment variable to 'production' before running this test
 Future<void> main() async {
-  await dotenv.load(fileName: ".env");
-
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   final overrideEnv = envInfoProvider.overrideWithValue(
@@ -39,6 +38,31 @@ Future<void> main() async {
       );
     });
 
+    final userName = faker.person.name();
+    final userEmail = faker.internet.email();
+    final userPassword = faker.internet.password(length: 8);
+
+    testWidgets('Register - user can register and navigate to login page', (
+      tester,
+    ) async {
+      final registerRobot = RegisterRobot(tester);
+      await registerRobot.loadUI(
+        ProviderScope(
+          overrides: [overrideEnv],
+          observers: [Observer()],
+          child: MyApp(),
+        ),
+      );
+
+      await registerRobot.findRegisterPage();
+      await registerRobot.typeName(userName);
+      await registerRobot.typeEmail(userEmail);
+      await registerRobot.typePassword(userPassword);
+      await registerRobot.tapRegisterButton();
+      await registerRobot.checkSnackbar();
+      await registerRobot.checkLoginPage();
+    });
+
     testWidgets('Login flow - user can login and navigate to main page', (
       tester,
     ) async {
@@ -50,8 +74,8 @@ Future<void> main() async {
           child: MyApp(),
         ),
       );
-      await loginRobot.typeEmail(dotenv.get("TEST_EMAIL"));
-      await loginRobot.typePassword(dotenv.get("TEST_PASSWORD"));
+      await loginRobot.typeEmail(userEmail);
+      await loginRobot.typePassword(userPassword);
       final result = await loginRobot.tapLoginButton();
       result.fold((l) => fail('Should not return Left'), (r) {
         token = r.token;
