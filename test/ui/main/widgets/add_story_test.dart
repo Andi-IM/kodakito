@@ -55,7 +55,10 @@ void main() {
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: AddStoryPage(cropStream: streamController.stream),
+        home: AddStoryPage(
+          cropStream: streamController.stream,
+          onAddStorySuccess: () {},
+        ),
       ),
     );
   }
