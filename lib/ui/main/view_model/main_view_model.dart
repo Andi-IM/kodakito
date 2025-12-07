@@ -55,9 +55,7 @@ Future<File?> getCroppedImageFromPicker(
 class StoriesNotifier extends _$StoriesNotifier with LogMixin {
   ListRepository get _repository => ref.read(listRepositoryProvider);
   @override
-  StoriesState build() {
-    return const StoriesState.initial();
-  }
+  StoriesState build() => StoriesState.initial();
 
   Future<void> fetchStories() async {
     log.info('Fetching stories list');
@@ -82,7 +80,7 @@ class StoriesNotifier extends _$StoriesNotifier with LogMixin {
   }
 
   void resetState() {
-    state = const StoriesState.initial();
+    state = StoriesState.initial();
   }
 }
 
@@ -90,7 +88,12 @@ class MockImageFile extends _$ImageFile with Mock implements ImageFile {}
 
 class MockStories extends _$StoriesNotifier
     with Mock
-    implements StoriesNotifier {}
+    implements StoriesNotifier {
+  @override
+  StoriesState build() => StoriesState.initial();
+
+  void setState(StoriesState state) => this.state = state;
+}
 
 @riverpod
 Future<String> version(Ref ref) async {
