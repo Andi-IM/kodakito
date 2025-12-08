@@ -7,13 +7,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 
 class AddStoryPage extends ConsumerStatefulWidget {
-  final Function() onAddStorySuccess;
   const AddStoryPage({
     super.key,
     required this.cropStream,
-    required this.onAddStorySuccess,
+    this.onAddStorySuccess,
   });
 
+  final Function()? onAddStorySuccess;
   final Stream<InstaAssetsExportDetails> cropStream;
 
   @override
@@ -35,7 +35,7 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
     // Listen to add story state changes
     ref.listen(addStoryProvider, (previous, next) {
       if (next is AddStorySuccess) {
-        widget.onAddStorySuccess();
+        widget.onAddStorySuccess?.call();
       }
       if (next is AddStoryFailure) {
         // Show error message

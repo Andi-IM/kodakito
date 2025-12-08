@@ -63,7 +63,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: AddStoryPage(
           cropStream: streamController.stream,
-          onAddStorySuccess: onSuccess ?? () {},
+          onAddStorySuccess: onSuccess,
         ),
       ),
     );

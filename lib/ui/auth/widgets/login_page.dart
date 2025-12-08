@@ -10,13 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
-  final Function() goToRegister;
-  final Function() onLoginSuccess;
-  const LoginPage({
-    super.key,
-    required this.goToRegister,
-    required this.onLoginSuccess,
-  });
+  final Function()? goToRegister;
+  final Function()? onLoginSuccess;
+  const LoginPage({super.key, this.goToRegister, this.onLoginSuccess});
 
   @override
   ConsumerState<LoginPage> createState() => _LoginPageState();
@@ -32,7 +28,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   void initState() {
     super.initState();
     _tapRecognizer = TapGestureRecognizer()
-      ..onTap = () => widget.goToRegister();
+      ..onTap = () => widget.goToRegister?.call();
   }
 
   @override
@@ -51,7 +47,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           context,
         ).showSnackBar(SnackBar(content: Text(next.exception.message)));
       } else if (next is Loaded) {
-        widget.onLoginSuccess();
+        widget.onLoginSuccess?.call();
       }
     }));
     return Scaffold(

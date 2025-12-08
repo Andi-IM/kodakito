@@ -19,7 +19,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: RegisterPage(onRegisterSuccess: () {}, goToLogin: () {}),
+          home: RegisterPage(),
         ),
       ),
     );
@@ -44,7 +44,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: RegisterPage(onRegisterSuccess: () {}, goToLogin: () {}),
+          home: RegisterPage(),
         ),
       ),
     );
@@ -91,7 +91,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: RegisterPage(onRegisterSuccess: () {}, goToLogin: () {}),
+          home: RegisterPage(),
         ),
       ),
     );
@@ -139,7 +139,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: RegisterPage(onRegisterSuccess: () {}, goToLogin: () {}),
+          home: RegisterPage(),
         ),
       ),
     );

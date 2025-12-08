@@ -8,14 +8,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SettingsDialog extends ConsumerWidget {
   const SettingsDialog({
     super.key,
-    required this.onPop,
-    required this.onLogout,
-    required this.onLanguageDialogOpen,
+    this.onPop,
+    this.onLogout,
+    this.onLanguageDialogOpen,
   });
 
-  final Function onPop;
-  final Function onLogout;
-  final Function onLanguageDialogOpen;
+  final Function()? onPop;
+  final Function()? onLogout;
+  final Function()? onLanguageDialogOpen;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,7 +44,7 @@ class SettingsDialog extends ConsumerWidget {
                     alignment: Alignment.centerRight,
                     child: IconButton(
                       icon: const Icon(Icons.close),
-                      onPressed: () => onPop(),
+                      onPressed: () => onPop?.call(),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                     ),
@@ -124,7 +124,7 @@ class SettingsDialog extends ConsumerWidget {
                   final success = await ref.read(logoutProvider.future);
                   if (context.mounted) {
                     if (success) {
-                      onLogout();
+                      onLogout?.call();
                     }
                   }
                 },
@@ -224,7 +224,7 @@ class SettingsDialog extends ConsumerWidget {
   Widget _buildLanguageOption(
     BuildContext context,
     WidgetRef ref,
-    Function onLanguageDialogOpen,
+    Function()? onLanguageDialogOpen,
   ) {
     final currentLocale = ref.watch(appLanguageProvider);
 
@@ -239,7 +239,7 @@ class SettingsDialog extends ConsumerWidget {
       icon: Icons.language,
       title: context.l10n.settingsBtnLanguage,
       subtitle: getLanguageLabel(currentLocale),
-      onTap: () => onLanguageDialogOpen(),
+      onTap: () => onLanguageDialogOpen?.call(),
     );
   }
 
@@ -282,9 +282,9 @@ class SettingsDialog extends ConsumerWidget {
 }
 
 class LanguageDialog extends ConsumerWidget {
-  const LanguageDialog({super.key, required this.onPop});
+  const LanguageDialog({super.key, this.onPop});
 
-  final Function onPop;
+  final Function()? onPop;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -295,7 +295,7 @@ class LanguageDialog extends ConsumerWidget {
         groupValue: currentLocale,
         onChanged: (value) {
           ref.read(appLanguageProvider.notifier).changeLanguage(value);
-          onPop();
+          onPop?.call();
         },
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -317,7 +317,7 @@ class LanguageDialog extends ConsumerWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () => onPop(),
+          onPressed: () => onPop?.call(),
           child: Text(context.l10n.settingsBtnCancel),
         ),
       ],

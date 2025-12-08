@@ -734,7 +734,6 @@ void main() {
           child: StoryCropDialog(
             imageBytes: validImageBytes,
             cropController: mockCropController,
-            onPop: () {},
           ),
         );
 

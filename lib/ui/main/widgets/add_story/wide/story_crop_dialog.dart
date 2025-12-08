@@ -11,12 +11,12 @@ class StoryCropDialog extends ConsumerWidget {
     super.key,
     required this.imageBytes,
     required this.cropController,
-    required this.onPop,
+    this.onPop,
   });
 
   final Uint8List imageBytes;
   final CropController cropController;
-  final Function onPop;
+  final Function()? onPop;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,14 +33,14 @@ class StoryCropDialog extends ConsumerWidget {
                   .read(imageFileProvider.notifier)
                   .setImageFile(result.croppedImage);
             }
-            onPop();
+            onPop?.call();
           },
           aspectRatio: 1,
         ),
       ),
       actions: [
         TextButton(
-          onPressed: () => onPop(),
+          onPressed: () => onPop?.call(),
           child: Text(context.l10n.addStoryBtnCancel),
         ),
         FilledButton(

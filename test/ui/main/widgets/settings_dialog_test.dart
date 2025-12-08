@@ -426,7 +426,6 @@ void main() {
                           context: context,
                           builder: (context) => SettingsDialog(
                             onPop: () => Navigator.of(context).pop(),
-                            onLogout: () {},
                             onLanguageDialogOpen: () =>
                                 onLanguageDialogOpenCalled = true,
                           ),
@@ -542,7 +541,7 @@ void main() {
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: Scaffold(body: LanguageDialog(onPop: () {})),
+            home: Scaffold(body: LanguageDialog()),
           ),
         ),
       );
