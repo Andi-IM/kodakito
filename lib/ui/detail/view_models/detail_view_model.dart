@@ -2,8 +2,8 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:dicoding_story/data/data_providers.dart';
 import 'package:dicoding_story/data/services/remote/network_service.dart';
-import 'package:dicoding_story/domain/repository/detail_repository.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
+import 'package:dicoding_story/domain/repository/detail_repository.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
 import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:flutter/material.dart';

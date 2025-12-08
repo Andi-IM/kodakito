@@ -21,7 +21,9 @@ class EnvInfo {
   const EnvInfo(this.environment);
 
   String get appName => environment._appTitle;
+
   String get env => environment._env;
+
   bool get isProduction => environment == AppEnvironment.production;
 }
 
@@ -37,5 +39,6 @@ extension _EnvProperties on AppEnvironment {
   };
 
   String get _appTitle => _appTitles[this]!;
+
   String get _env => _envs[this]!;
 }

@@ -8,14 +8,19 @@ import 'package:dicoding_story/utils/http_exception.dart';
 
 abstract class CacheDatasource {
   String get key;
+
   Future<Either<AppException, Cache>> getToken();
+
   Future<bool> saveToken({required Cache cache});
+
   Future<bool> deleteToken();
+
   Future<bool> hasToken();
 }
 
 class CacheDatasourceImpl implements CacheDatasource {
   CacheDatasourceImpl({required this.storageService});
+
   final StorageService storageService;
 
   @override
