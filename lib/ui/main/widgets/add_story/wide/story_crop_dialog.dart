@@ -33,14 +33,14 @@ class StoryCropDialog extends ConsumerWidget {
                   .read(imageFileProvider.notifier)
                   .setImageFile(result.croppedImage);
             }
-            onPop?.call();
+            onPop!();
           },
           aspectRatio: 1,
         ),
       ),
       actions: [
         TextButton(
-          onPressed: () => onPop?.call(),
+          onPressed: () => onPop!(),
           child: Text(context.l10n.addStoryBtnCancel),
         ),
         FilledButton(

@@ -27,8 +27,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   void initState() {
     super.initState();
-    _tapRecognizer = TapGestureRecognizer()
-      ..onTap = () => widget.goToLogin?.call();
+    _tapRecognizer = TapGestureRecognizer()..onTap = () => widget.goToLogin!();
   }
 
   @override
@@ -48,7 +47,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
       if (next is Failure) {
         scaffold.showSnackBar(SnackBar(content: Text(next.exception.message)));
       } else if (next is Loaded) {
-        widget.onRegisterSuccess?.call();
+        widget.onRegisterSuccess!();
       }
     }));
     return Scaffold(

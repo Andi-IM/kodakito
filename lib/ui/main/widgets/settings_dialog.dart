@@ -44,7 +44,7 @@ class SettingsDialog extends ConsumerWidget {
                     alignment: Alignment.centerRight,
                     child: IconButton(
                       icon: const Icon(Icons.close),
-                      onPressed: () => onPop?.call(),
+                      onPressed: () => onPop!(),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                     ),
@@ -124,7 +124,7 @@ class SettingsDialog extends ConsumerWidget {
                   final success = await ref.read(logoutProvider.future);
                   if (context.mounted) {
                     if (success) {
-                      onLogout?.call();
+                      onLogout!();
                     }
                   }
                 },
@@ -239,7 +239,7 @@ class SettingsDialog extends ConsumerWidget {
       icon: Icons.language,
       title: context.l10n.settingsBtnLanguage,
       subtitle: getLanguageLabel(currentLocale),
-      onTap: () => onLanguageDialogOpen?.call(),
+      onTap: () => onLanguageDialogOpen!(),
     );
   }
 
@@ -295,7 +295,7 @@ class LanguageDialog extends ConsumerWidget {
         groupValue: currentLocale,
         onChanged: (value) {
           ref.read(appLanguageProvider.notifier).changeLanguage(value);
-          onPop?.call();
+          onPop!();
         },
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -317,7 +317,7 @@ class LanguageDialog extends ConsumerWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () => onPop?.call(),
+          onPressed: () => onPop!(),
           child: Text(context.l10n.settingsBtnCancel),
         ),
       ],
