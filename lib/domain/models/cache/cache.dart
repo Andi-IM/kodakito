@@ -1,40 +1,15 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class Cache extends Equatable {
-  final String token;
-  final String userName;
-  final String userId;
+part 'cache.freezed.dart';
+part 'cache.g.dart';
 
-  const Cache({
-    required this.token,
-    required this.userName,
-    required this.userId,
-  });
+@freezed
+abstract class Cache with _$Cache {
+  const factory Cache({
+    required String token,
+    required String userName,
+    required String userId,
+  }) = _Cache;
 
-  factory Cache.fromJson(Map<String, dynamic> json) => Cache(
-    token: json['token'],
-    userName: json['userName'],
-    userId: json['userId'],
-  );
-
-  Map<String, dynamic> toJson() => {
-    'token': token,
-    'userName': userName,
-    'userId': userId,
-  };
-
-  Cache copyWith({String? token, String? userName, String? userId}) {
-    return Cache(
-      token: token ?? this.token,
-      userName: userName ?? this.userName,
-      userId: userId ?? this.userId,
-    );
-  }
-
-  @override
-  String toString() =>
-      'Cache(token: $token, userName: $userName, userId: $userId)';
-
-  @override
-  List<Object?> get props => [token, userName, userId];
+  factory Cache.fromJson(Map<String, Object?> json) => _$CacheFromJson(json);
 }
