@@ -34,8 +34,6 @@ class EnvInfo {
   bool get isRelease => kReleaseMode;
 
   bool get isProfile => kProfileMode;
-
-
 }
 
 extension _EnvProperties on AppEnvironment {

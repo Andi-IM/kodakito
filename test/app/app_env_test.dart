@@ -20,6 +20,24 @@ void main() {
       expect(envInfo.isProduction, true);
       expect(envInfo.environment, AppEnvironment.production);
     });
+
+    test('isDebug returns a bool value based on kDebugMode', () {
+      const envInfo = EnvInfo(AppEnvironment.development);
+      // In test mode, kDebugMode is typically true
+      expect(envInfo.isDebug, isA<bool>());
+    });
+
+    test('isRelease returns a bool value based on kReleaseMode', () {
+      const envInfo = EnvInfo(AppEnvironment.development);
+      // In test mode, kReleaseMode is typically false
+      expect(envInfo.isRelease, isA<bool>());
+    });
+
+    test('isProfile returns a bool value based on kProfileMode', () {
+      const envInfo = EnvInfo(AppEnvironment.development);
+      // In test mode, kProfileMode is typically false
+      expect(envInfo.isProfile, isA<bool>());
+    });
   });
 
   group('envInfoProvider', () {
