@@ -389,6 +389,286 @@ void main() {
       expect(version, '1.0.0+1');
     });
   });
+
+  group('overrideWithValue', () {
+    group('imageFileProvider', () {
+      test(
+        'overrideWith allows providing custom initial state via build()',
+        () {
+          final testBytes = Uint8List.fromList([10, 20, 30]);
+
+          final testContainer = ProviderContainer(
+            overrides: [
+              imageFileProvider.overrideWith(
+                () => TestableImageFile(testBytes),
+              ),
+            ],
+          );
+          addTearDown(testContainer.dispose);
+
+          final state = testContainer.read(imageFileProvider);
+          expect(state, testBytes);
+        },
+      );
+
+      test('overrideWith with null initial state', () {
+        final testContainer = ProviderContainer(
+          overrides: [
+            imageFileProvider.overrideWith(() => TestableImageFile(null)),
+          ],
+        );
+        addTearDown(testContainer.dispose);
+
+        final state = testContainer.read(imageFileProvider);
+        expect(state, isNull);
+      });
+
+      test('overrideWith notifier methods work correctly', () async {
+        final testContainer = ProviderContainer(
+          overrides: [
+            listRepositoryProvider.overrideWithValue(mockListRepository),
+            addStoryRepositoryProvider.overrideWithValue(
+              mockAddStoryRepository,
+            ),
+            webPlatformProvider.overrideWithValue(
+              true,
+            ), // Use web for XFile.fromData
+          ],
+        );
+        addTearDown(testContainer.dispose);
+
+        final imageBytes = Uint8List.fromList([1, 2, 3]);
+        testContainer.read(imageFileProvider.notifier).setImageFile(imageBytes);
+
+        final file = await testContainer
+            .read(imageFileProvider.notifier)
+            .toFile();
+
+        expect(file, isNotNull);
+        final bytes = await file!.readAsBytes();
+        expect(bytes, imageBytes);
+      });
+    });
+
+    group('storiesProvider', () {
+      test('overrideWith MockStories allows setting loaded state', () {
+        final mockStories = MockStories();
+
+        final testContainer = ProviderContainer(
+          overrides: [storiesProvider.overrideWith(() => mockStories)],
+        );
+        addTearDown(testContainer.dispose);
+
+        // Read to initialize the notifier first
+        testContainer.read(storiesProvider);
+
+        // Now set the desired state
+        mockStories.setState(
+          StoriesState(
+            state: StoriesConcreteState.loaded,
+            stories: [
+              Story(
+                id: 'test-1',
+                name: 'Test Story',
+                description: 'Test Description',
+                photoUrl: 'https://test.com/photo.jpg',
+                createdAt: DateTime(2024, 1, 1),
+                lat: 0,
+                lon: 0,
+              ),
+            ],
+          ),
+        );
+
+        final state = testContainer.read(storiesProvider);
+        expect(state.state, StoriesConcreteState.loaded);
+        expect(state.stories.length, 1);
+        expect(state.stories.first.id, 'test-1');
+      });
+
+      test('overrideWith MockStories with loading state', () {
+        final mockStories = MockStories();
+
+        final testContainer = ProviderContainer(
+          overrides: [storiesProvider.overrideWith(() => mockStories)],
+        );
+        addTearDown(testContainer.dispose);
+
+        // Read to initialize the notifier first
+        testContainer.read(storiesProvider);
+
+        mockStories.setState(
+          const StoriesState(state: StoriesConcreteState.loading),
+        );
+
+        final state = testContainer.read(storiesProvider);
+        expect(state.state, StoriesConcreteState.loading);
+        expect(state.stories, isEmpty);
+      });
+
+      test('overrideWith MockStories with failure state', () {
+        final mockStories = MockStories();
+
+        final testContainer = ProviderContainer(
+          overrides: [storiesProvider.overrideWith(() => mockStories)],
+        );
+        addTearDown(testContainer.dispose);
+
+        // Read to initialize the notifier first
+        testContainer.read(storiesProvider);
+
+        mockStories.setState(
+          const StoriesState(
+            state: StoriesConcreteState.failure,
+            message: 'Test error message',
+          ),
+        );
+
+        final state = testContainer.read(storiesProvider);
+        expect(state.state, StoriesConcreteState.failure);
+        expect(state.message, 'Test error message');
+      });
+
+      test('overrideWith MockStories setState updates state correctly', () {
+        final mockStories = MockStories();
+
+        final testContainer = ProviderContainer(
+          overrides: [storiesProvider.overrideWith(() => mockStories)],
+        );
+        addTearDown(testContainer.dispose);
+
+        // Initial state from build()
+        expect(
+          testContainer.read(storiesProvider),
+          const StoriesState.initial(),
+        );
+
+        // Update state via setState
+        mockStories.setState(
+          const StoriesState(state: StoriesConcreteState.loaded, stories: []),
+        );
+
+        // Read updated state
+        final state = testContainer.read(storiesProvider);
+        expect(state.state, StoriesConcreteState.loaded);
+        expect(state.stories, isEmpty);
+      });
+    });
+
+    group('addStoryProvider', () {
+      test('overrideWith allows providing custom initial state', () {
+        final testContainer = ProviderContainer(
+          overrides: [
+            addStoryProvider.overrideWith(
+              () => TestableAddStoryNotifier(const AddStoryInitial()),
+            ),
+          ],
+        );
+        addTearDown(testContainer.dispose);
+
+        final state = testContainer.read(addStoryProvider);
+        expect(state, isA<AddStoryInitial>());
+      });
+
+      test('overrideWith with loading state', () {
+        final testContainer = ProviderContainer(
+          overrides: [
+            addStoryProvider.overrideWith(
+              () => TestableAddStoryNotifier(const AddStoryLoading()),
+            ),
+          ],
+        );
+        addTearDown(testContainer.dispose);
+
+        final state = testContainer.read(addStoryProvider);
+        expect(state, isA<AddStoryLoading>());
+      });
+
+      test('overrideWith with success state', () {
+        final testContainer = ProviderContainer(
+          overrides: [
+            addStoryProvider.overrideWith(
+              () => TestableAddStoryNotifier(const AddStorySuccess()),
+            ),
+          ],
+        );
+        addTearDown(testContainer.dispose);
+
+        final state = testContainer.read(addStoryProvider);
+        expect(state, isA<AddStorySuccess>());
+      });
+
+      test('overrideWith with failure state', () {
+        final exception = AppException(
+          message: 'Override test failure',
+          statusCode: 400,
+          identifier: 'test',
+        );
+
+        final testContainer = ProviderContainer(
+          overrides: [
+            addStoryProvider.overrideWith(
+              () => TestableAddStoryNotifier(AddStoryFailure(exception)),
+            ),
+          ],
+        );
+        addTearDown(testContainer.dispose);
+
+        final state = testContainer.read(addStoryProvider);
+        expect(state, isA<AddStoryFailure>());
+        expect(
+          (state as AddStoryFailure).exception.message,
+          'Override test failure',
+        );
+      });
+
+      test('overrideWith testable notifier can update state', () {
+        final testableNotifier = TestableAddStoryNotifier(
+          const AddStoryInitial(),
+        );
+
+        final testContainer = ProviderContainer(
+          overrides: [addStoryProvider.overrideWith(() => testableNotifier)],
+        );
+        addTearDown(testContainer.dispose);
+
+        // Initial state
+        expect(testContainer.read(addStoryProvider), isA<AddStoryInitial>());
+
+        // Update state via testable notifier
+        testableNotifier.setTestState(const AddStoryLoading());
+        expect(testContainer.read(addStoryProvider), isA<AddStoryLoading>());
+
+        // Update to success
+        testableNotifier.setTestState(const AddStorySuccess());
+        expect(testContainer.read(addStoryProvider), isA<AddStorySuccess>());
+      });
+    });
+  });
+}
+
+/// Testable ImageFile notifier that allows custom initial state
+class TestableImageFile extends ImageFile {
+  final Uint8List? _initialState;
+
+  TestableImageFile(this._initialState);
+
+  @override
+  Uint8List? build() => _initialState;
+}
+
+/// Testable AddStoryNotifier that allows custom initial state and state updates
+class TestableAddStoryNotifier extends AddStoryNotifier {
+  final AddStoryState _initialState;
+
+  TestableAddStoryNotifier(this._initialState);
+
+  @override
+  AddStoryState build() => _initialState;
+
+  void setTestState(AddStoryState newState) {
+    state = newState;
+  }
 }
 
 class MockListRepository extends Mock implements ListRepository {}

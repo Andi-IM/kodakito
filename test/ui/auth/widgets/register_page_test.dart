@@ -3,6 +3,7 @@ import 'package:dicoding_story/ui/auth/view_models/auth_state.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/auth_button.dart';
 import 'package:dicoding_story/ui/auth/widgets/register_page.dart';
+import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -166,4 +167,81 @@ void main() {
     expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
     expect(find.byIcon(Icons.visibility_off_outlined), findsNothing);
   });
+
+  testWidgets('shows snackbar on register failure', (
+    WidgetTester tester,
+  ) async {
+    final mockNotifier = TestableRegisterNotifier();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [registerProvider.overrideWith(() => mockNotifier)],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: RegisterPage(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Simulate a failure state transition
+    mockNotifier.setTestState(
+      AuthState.failure(
+        AppException(
+          message: 'Email already exists',
+          statusCode: 400,
+          identifier: 'register',
+        ),
+      ),
+    );
+    await tester.pump();
+
+    // Verify snackbar is shown with error message
+    expect(find.byType(SnackBar), findsOneWidget);
+    expect(find.text('Email already exists'), findsOneWidget);
+  });
+
+  testWidgets('calls onRegisterSuccess when register succeeds', (
+    WidgetTester tester,
+  ) async {
+    final mockNotifier = TestableRegisterNotifier();
+    var registerSuccessCalled = false;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [registerProvider.overrideWith(() => mockNotifier)],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: RegisterPage(
+            onRegisterSuccess: () {
+              registerSuccessCalled = true;
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Verify callback not called yet
+    expect(registerSuccessCalled, isFalse);
+
+    // Simulate a loaded state transition
+    mockNotifier.setTestState(const AuthState.loaded());
+    await tester.pump();
+
+    // Verify onRegisterSuccess callback was called
+    expect(registerSuccessCalled, isTrue);
+  });
+}
+
+/// Testable RegisterNotifier that allows custom state updates
+class TestableRegisterNotifier extends Register {
+  @override
+  AuthState build() => const AuthState.initial();
+
+  void setTestState(AuthState newState) {
+    state = newState;
+  }
 }
