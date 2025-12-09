@@ -12,6 +12,7 @@ abstract class ImagePickerService {
   Future<Uint8List?> pickImage({ImageSource source = ImageSource.gallery});
 }
 
+// coverage:ignore-start
 class ImagePickerServiceImpl implements ImagePickerService {
   final ImagePicker _picker = ImagePicker();
 
@@ -23,3 +24,4 @@ class ImagePickerServiceImpl implements ImagePickerService {
     return pickedImage?.readAsBytes();
   }
 }
+// coverage:ignore-end

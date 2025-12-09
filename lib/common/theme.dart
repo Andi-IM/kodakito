@@ -62,6 +62,7 @@ class AppThemeNotifier extends StateNotifier<ThemeMode> {
   }
 }
 
+// coverage:ignore-start
 class MaterialTheme {
   final TextTheme textTheme;
 
@@ -446,3 +447,4 @@ class ColorFamily {
   final Color colorContainer;
   final Color onColorContainer;
 }
+// coverage:ignore-end

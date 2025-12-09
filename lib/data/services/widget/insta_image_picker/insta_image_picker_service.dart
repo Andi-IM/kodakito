@@ -17,14 +17,17 @@ abstract class InstaImagePickerService {
     Function(Stream<InstaAssetsExportDetails>) onCompleted,
   );
 
+  // coverage:ignore-start 
   Future<void> refreshAndSelectEntity(
     BuildContext context,
     AssetEntity entity,
   ) async {
     await InstaAssetPicker.refreshAndSelectEntity(context, entity);
   }
+  // coverage:ignore-end
 }
 
+// coverage:ignore-start
 class InstaImagePickerServiceImpl implements InstaImagePickerService {
   @override
   Future<void> pickImage(
@@ -80,3 +83,4 @@ class InstaImagePickerServiceImpl implements InstaImagePickerService {
     return InstaAssetPicker.refreshAndSelectEntity(context, entity);
   }
 }
+// coverage:ignore-end
