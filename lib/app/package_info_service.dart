@@ -16,3 +16,9 @@ class PackageInfoServiceImpl implements PackageInfoService {
     return await PackageInfo.fromPlatform();
   }
 }
+
+@riverpod
+Future<String> version(Ref ref) async {
+  final packageInfo = await ref.read(packageInfoProvider).getAppVersion();
+  return '${packageInfo.version}+${packageInfo.buildNumber}';
+}

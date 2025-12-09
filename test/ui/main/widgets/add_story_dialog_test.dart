@@ -530,45 +530,6 @@ void main() {
       expect(find.text('Story posted successfully!'), findsOneWidget);
     });
 
-    // Skip: Requires mocking imagePickerServiceProvider implementation
-    testWidgets('opens crop dialog when image is picked', skip: true, (
-      tester,
-    ) async {
-      tester.view.physicalSize = const Size(1000, 2000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-
-      final container = ProviderContainer(
-        overrides: [
-          addStoryRepositoryProvider.overrideWithValue(mockAddStoryRepository),
-          listRepositoryProvider.overrideWithValue(mockListRepository),
-          imageFileProvider.overrideWith(() => SafeImageFile()),
-          webPlatformProvider.overrideWithValue(false),
-        ],
-      );
-      addTearDown(container.dispose);
-
-      await pumpTestWidget(
-        tester,
-        container: container,
-        child: const AddStoryDialog(),
-      );
-
-      // Verify Image Container exists
-      final imageContainer = find.byKey(
-        const ValueKey('addStoryImageContainer'),
-      );
-      expect(imageContainer, findsOneWidget);
-
-      // Tap Image Container to trigger pickImage
-      await tester.tap(imageContainer);
-      await tester.pump(); // Start async pick
-      await tester.pumpAndSettle(); // Wait for dialog to open
-
-      // Verify StoryCropDialog is shown
-      expect(find.byType(StoryCropDialog), findsOneWidget);
-    });
-
     group('AddStoryImageContainer', () {
       testWidgets(
         'pickImage navigates to add-story-crop when getImageFile returns bytes',

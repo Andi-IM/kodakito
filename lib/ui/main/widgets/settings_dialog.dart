@@ -1,7 +1,7 @@
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/common/theme.dart';
+import 'package:dicoding_story/app/package_info_service.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
-import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

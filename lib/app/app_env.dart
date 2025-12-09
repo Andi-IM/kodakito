@@ -13,7 +13,7 @@ EnvInfo envInfo(Ref ref) {
   return EnvInfo(appEnvironment);
 }
 
-enum AppEnvironment { development, production }
+enum AppEnvironment { development, production, proDevelopment, pro }
 
 class EnvInfo {
   final AppEnvironment environment;

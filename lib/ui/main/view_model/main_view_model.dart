@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dicoding_story/data/services/platform/platform_provider.dart';
-import 'package:dicoding_story/data/services/widget/package_info/package_info_service.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
@@ -103,12 +102,6 @@ class MockStories extends _$StoriesNotifier
   StoriesState build() => StoriesState.initial();
 
   void setState(StoriesState newState) => state = newState;
-}
-
-@riverpod
-Future<String> version(Ref ref) async {
-  final packageInfo = await ref.read(packageInfoProvider).getAppVersion();
-  return '${packageInfo.version}+${packageInfo.buildNumber}';
 }
 
 @Riverpod()

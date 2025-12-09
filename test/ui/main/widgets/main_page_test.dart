@@ -716,32 +716,16 @@ void main() {
       capturedOnCompleted!(mockStream);
       await tester.pump();
 
-      // Verify pushNamed was called with 'crop' route and the stream as extra
+      // Verify pushNamed was called with 'mobile-crop' route and the stream as extra
       verify(
         () => mockGoRouter.pushNamed(
-          'crop',
+          'mobile-crop',
           pathParameters: any(named: 'pathParameters'),
           queryParameters: any(named: 'queryParameters'),
           extra: mockStream,
         ),
       ).called(1);
     },
-  );
-
-  // Skipped: Implementation changed to directly use .value instead of AsyncValue.when
-  // The avatar now always shows CircleAvatar without loading/error states.
-  testWidgets(
-    'displays loading indicator in avatar button when user data is loading',
-    skip: true,
-    (tester) async {},
-  );
-
-  // Skipped: Riverpod FutureProvider async errors are difficult to test
-  // in widget tests - error state transition timing is unreliable.
-  testWidgets(
-    'displays account_circle icon in avatar button when user data has error',
-    skip: true,
-    (tester) async {},
   );
 
   testWidgets('tapping FAB on medium screen opens AddStoryDialog', (

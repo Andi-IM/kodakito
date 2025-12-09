@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/common/globals.dart';
+import 'package:dicoding_story/app/package_info_service.dart';
 import 'package:dicoding_story/data/data_providers.dart';
 import 'package:dicoding_story/data/services/local/shared_prefs_storage_service.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
-import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/widgets/settings_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -193,47 +193,6 @@ void main() {
       verify(
         () => mockStorageService.set(APP_THEME_STORAGE_KEY, 'dark'),
       ).called(1);
-    });
-
-    // Skip: Language dialog is shown via route navigation requiring shell route
-    testWidgets('changes language', skip: true, (tester) async {
-      tester.view.physicalSize = const Size(1000, 2000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-
-      final container = ProviderContainer(
-        overrides: [
-          fetchUserDataProvider.overrideWith((ref) async => 'User'),
-          versionProvider.overrideWith((ref) async => '1.0.0'),
-          storageServiceProvider.overrideWithValue(mockStorageService),
-        ],
-      );
-      addTearDown(container.dispose);
-
-      await pumpTestWidget(tester, container: container);
-
-      // Find Language option
-      final languageOption = find.byKey(const Key('language'));
-      expect(languageOption, findsOneWidget);
-
-      // Tap it - navigates to language route
-      await tester.tap(languageOption);
-      await tester.pumpAndSettle();
-
-      // LanguageDialog appears (title from l10n.settingsBtnLanguagePrompt)
-      expect(find.byType(LanguageDialog), findsOneWidget);
-
-      // Select Indonesia (EN string 'Indonesian' from l10n.settingsBtnLanguageID)
-      await tester.tap(find.text('Indonesian'));
-      await tester.pumpAndSettle();
-
-      // Verify storage called
-      verify(
-        () => mockStorageService.set(APP_LANGUAGE_STORAGE_KEY, 'id'),
-      ).called(1);
-
-      // Verify language dialog closed
-      expect(find.byType(LanguageDialog), findsNothing);
     });
 
     testWidgets('logout triggers provider and calls onLogout callback', (
@@ -489,36 +448,6 @@ void main() {
       // Assuming l10n.settingsTextVersion is "Version $version" or similar.
       // We will look for the version string directly.
       expect(find.textContaining('1.2.3+4'), findsOneWidget);
-    });
-
-    // Skip: Language dialog is shown via route navigation requiring shell route
-    testWidgets('closes language dialog on cancel', skip: true, (tester) async {
-      tester.view.physicalSize = const Size(1000, 2000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-
-      final container = ProviderContainer(
-        overrides: [
-          fetchUserDataProvider.overrideWith((ref) async => 'User'),
-          versionProvider.overrideWith((ref) async => '1.0.0'),
-          storageServiceProvider.overrideWithValue(mockStorageService),
-        ],
-      );
-      addTearDown(container.dispose);
-
-      await pumpTestWidget(tester, container: container);
-
-      // Open Language Dialog via navigation
-      await tester.tap(find.byKey(const Key('language')));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(LanguageDialog), findsOneWidget);
-
-      // Tap Cancel
-      await tester.tap(find.text('Cancel'));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(LanguageDialog), findsNothing);
     });
   });
 

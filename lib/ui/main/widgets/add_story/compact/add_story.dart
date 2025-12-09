@@ -35,7 +35,7 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
     // Listen to add story state changes
     ref.listen(addStoryProvider, (previous, next) {
       if (next is AddStorySuccess) {
-        widget.onAddStorySuccess!();
+        widget.onAddStorySuccess?.call();
       }
       if (next is AddStoryFailure) {
         // Show error message

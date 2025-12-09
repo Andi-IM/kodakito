@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:dicoding_story/app/package_info_service.dart';
 import 'package:dicoding_story/data/services/platform/platform_provider.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
