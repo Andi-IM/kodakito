@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -8,6 +9,8 @@ EnvInfo envInfo(Ref ref) {
   final env = dotenv.get("APP_ENV", fallback: "development");
   final appEnvironment = switch (env) {
     "production" => AppEnvironment.production,
+    "proDevelopment" => AppEnvironment.proDevelopment,
+    "pro" => AppEnvironment.pro,
     _ => AppEnvironment.development,
   };
   return EnvInfo(appEnvironment);
@@ -25,6 +28,14 @@ class EnvInfo {
   String get env => environment._env;
 
   bool get isProduction => environment == AppEnvironment.production;
+
+  bool get isDebug => kDebugMode;
+
+  bool get isRelease => kReleaseMode;
+
+  bool get isProfile => kProfileMode;
+
+
 }
 
 extension _EnvProperties on AppEnvironment {
