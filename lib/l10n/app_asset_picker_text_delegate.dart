@@ -1,3 +1,4 @@
+// coverage:ignore-file
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 
 class IndonesianAssetPickerTextDelegate extends AssetPickerTextDelegate {
