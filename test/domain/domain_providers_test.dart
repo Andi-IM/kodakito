@@ -27,14 +27,9 @@ void main() {
 
     test('providers should exist and return correct repository types', () {
       // Arrange
+      EnvInfo.initialize(AppEnvironment.development);
       SharedPreferences.setMockInitialValues({});
-      final container = ProviderContainer(
-        overrides: [
-          envInfoProvider.overrideWithValue(
-            EnvInfo(AppEnvironment.development),
-          ),
-        ],
-      );
+      final container = ProviderContainer();
       addTearDown(container.dispose);
 
       // Act & Assert
@@ -54,12 +49,9 @@ void main() {
 
     test('providers should return remote repositories in production', () {
       // Arrange
+      EnvInfo.initialize(AppEnvironment.production);
       SharedPreferences.setMockInitialValues({});
-      final container = ProviderContainer(
-        overrides: [
-          envInfoProvider.overrideWithValue(EnvInfo(AppEnvironment.production)),
-        ],
-      );
+      final container = ProviderContainer();
       addTearDown(container.dispose);
 
       // Act & Assert
@@ -86,14 +78,9 @@ void main() {
 
     test('providers should return local/dev repositories in development', () {
       // Arrange
+      EnvInfo.initialize(AppEnvironment.development);
       SharedPreferences.setMockInitialValues({});
-      final container = ProviderContainer(
-        overrides: [
-          envInfoProvider.overrideWithValue(
-            EnvInfo(AppEnvironment.development),
-          ),
-        ],
-      );
+      final container = ProviderContainer();
       addTearDown(container.dispose);
 
       // Act & Assert

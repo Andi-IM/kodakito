@@ -1,39 +1,29 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-part 'app_env.g.dart';
-
-@riverpod
-EnvInfo envInfo(Ref ref) {
-  final env = dotenv.get("APP_ENV", fallback: "development");
-  final appEnvironment = switch (env) {
-    "production" => AppEnvironment.production,
-    "proDevelopment" => AppEnvironment.proDevelopment,
-    "pro" => AppEnvironment.pro,
-    _ => AppEnvironment.development,
-  };
-  return EnvInfo(appEnvironment);
-}
 
 enum AppEnvironment { development, production, proDevelopment, pro }
 
-class EnvInfo {
-  final AppEnvironment environment;
+abstract class EnvInfo {
+  static AppEnvironment _environment = AppEnvironment.development;
 
-  const EnvInfo(this.environment);
+  static AppEnvironment get environment => _environment;
 
-  String get appName => environment._appTitle;
+  static void initialize(AppEnvironment environment) {
+    EnvInfo._environment = environment;
+  }
 
-  String get env => environment._env;
+  static String get appName => _environment._appTitle;
 
-  bool get isProduction => environment == AppEnvironment.production;
+  static String get env => _environment._env;
 
-  bool get isDebug => kDebugMode;
+  static bool get isProduction =>
+      _environment == AppEnvironment.production ||
+      _environment == AppEnvironment.pro;
 
-  bool get isRelease => kReleaseMode;
+  static bool get isDebug => kDebugMode;
 
-  bool get isProfile => kProfileMode;
+  static bool get isRelease => kReleaseMode;
+
+  static bool get isProfile => kProfileMode;
 }
 
 extension _EnvProperties on AppEnvironment {

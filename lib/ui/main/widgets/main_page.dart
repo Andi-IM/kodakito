@@ -6,6 +6,7 @@ import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/widgets/story_card.dart';
+import 'package:dicoding_story/ui/main/widgets/story_card_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -26,13 +27,22 @@ class _MainScreenState extends ConsumerState<MainPage> {
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     Future.microtask(() {
       ref.read(storiesProvider.notifier).fetchStories();
     });
   }
 
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      ref.read(storiesProvider.notifier).fetchMoreStories();
+    }
+  }
+
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
@@ -147,6 +157,9 @@ class _MainScreenState extends ConsumerState<MainPage> {
                         ),
                 ),
               ),
+              // Show skeleton loading when fetching more stories
+              if (storiesAsync.isLoadingMore)
+                const SliverToBoxAdapter(child: StoryCardSkeleton()),
             ],
           );
 

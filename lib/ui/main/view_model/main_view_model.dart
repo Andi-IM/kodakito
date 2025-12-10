@@ -62,14 +62,16 @@ Future<File?> getCroppedImageFromPicker(
 
 @riverpod
 class StoriesNotifier extends _$StoriesNotifier with LogMixin {
+  static const int _pageSize = 10;
+
   ListRepository get _repository => ref.read(listRepositoryProvider);
   @override
   StoriesState build() => StoriesState.initial();
 
   Future<void> fetchStories() async {
     log.info('Fetching stories list');
-    state = state.copyWith(state: StoriesConcreteState.loading);
-    final result = await _repository.getListStories();
+    state = StoriesState(state: StoriesConcreteState.loading);
+    final result = await _repository.getListStories(page: 1, size: _pageSize);
     result.fold(
       (failure) {
         log.warning('Failed to fetch stories: ${failure.message}');
@@ -83,6 +85,45 @@ class StoriesNotifier extends _$StoriesNotifier with LogMixin {
         state = state.copyWith(
           state: StoriesConcreteState.loaded,
           stories: stories,
+          page: 1,
+          hasReachedEnd: stories.length < _pageSize,
+        );
+      },
+    );
+  }
+
+  Future<void> fetchMoreStories() async {
+    // Guard: don't fetch if already loading, loading more, or reached end
+    if (state.state == StoriesConcreteState.loading ||
+        state.state == StoriesConcreteState.loadingMore ||
+        state.hasReachedEnd) {
+      return;
+    }
+
+    final nextPage = state.page + 1;
+    log.info('Fetching more stories (page $nextPage)');
+    state = state.copyWith(state: StoriesConcreteState.loadingMore);
+
+    final result = await _repository.getListStories(
+      page: nextPage,
+      size: _pageSize,
+    );
+    result.fold(
+      (failure) {
+        log.warning('Failed to fetch more stories: ${failure.message}');
+        // Revert to loaded state on failure, keep existing stories
+        state = state.copyWith(
+          state: StoriesConcreteState.loaded,
+          message: failure.message,
+        );
+      },
+      (newStories) {
+        log.info('Successfully fetched ${newStories.length} more stories');
+        state = state.copyWith(
+          state: StoriesConcreteState.loaded,
+          stories: [...state.stories, ...newStories],
+          page: nextPage,
+          hasReachedEnd: newStories.length < _pageSize,
         );
       },
     );

@@ -61,7 +61,7 @@ void main() {
       const state = StoriesState.initial();
       expect(
         state.toString(),
-        'StoriesState(state: StoriesConcreteState.initial, stories: [], message: null)',
+        'StoriesState(state: StoriesConcreteState.initial, stories: [], message: null, page: 1, hasReachedEnd: false)',
       );
     });
 

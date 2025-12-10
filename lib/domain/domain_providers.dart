@@ -20,8 +20,7 @@ part 'domain_providers.g.dart';
 
 @riverpod
 AuthRepository authRepository(Ref ref) {
-  final env = ref.watch(envInfoProvider);
-  if (env.isProduction) {
+  if (EnvInfo.isProduction) {
     return AuthRepositoryRemote(
       authDataSource: ref.read(authDataSourceProvider),
     );
@@ -36,8 +35,7 @@ CacheRepository cacheRepository(Ref ref) =>
 
 @riverpod
 ListRepository listRepository(Ref ref) {
-  final env = ref.watch(envInfoProvider);
-  if (env.isProduction) {
+  if (EnvInfo.isProduction) {
     return ListRepositoryRemote(
       storyDataSource: ref.read(storyDataSourceProvider),
     );
@@ -50,8 +48,7 @@ ListRepository listRepository(Ref ref) {
 
 @riverpod
 DetailRepository detailRepository(Ref ref) {
-  final env = ref.watch(envInfoProvider);
-  if (env.isProduction) {
+  if (EnvInfo.isProduction) {
     return DetailRepositoryRemote(
       storyDataSource: ref.read(storyDataSourceProvider),
     );
@@ -64,8 +61,7 @@ DetailRepository detailRepository(Ref ref) {
 
 @riverpod
 AddStoryRepository addStoryRepository(Ref ref) {
-  final env = ref.watch(envInfoProvider);
-  if (env.isProduction) {
+  if (EnvInfo.isProduction) {
     return AddStoryRepositoryRemote(
       storyDataSource: ref.read(storyDataSourceProvider),
     );

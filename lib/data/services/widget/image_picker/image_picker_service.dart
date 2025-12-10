@@ -24,4 +24,5 @@ class ImagePickerServiceImpl implements ImagePickerService {
     return pickedImage?.readAsBytes();
   }
 }
+
 // coverage:ignore-end

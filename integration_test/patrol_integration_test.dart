@@ -1,5 +1,6 @@
 import 'package:dicoding_story/app/app.dart';
-import 'package:dicoding_story/main.dart';
+import 'package:dicoding_story/app/app_env.dart';
+import 'package:dicoding_story/app/init.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -12,7 +13,7 @@ void main() {
     framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
     config: PatrolTesterConfig(printLogs: true),
     ($) async {
-      await initApp();
+      await initApp(AppEnvironment.production);
       final robot = PatrolAddStoryRobot($);
 
       await robot.loadUI(ProviderScope(child: MyApp()));

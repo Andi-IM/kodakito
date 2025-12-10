@@ -7,7 +7,7 @@ bool _getTestMode() {
   // coverage:ignore-start
   if (kIsWeb) return false;
   // coverage:ignore-end
-  
+
   // Dynamically import dart:io only for non-web platforms
   return const bool.fromEnvironment('dart.vm.product') == false &&
       const bool.fromEnvironment('FLUTTER_TEST', defaultValue: false);

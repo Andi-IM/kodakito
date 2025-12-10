@@ -21,20 +21,15 @@ import 'robot/view_story_robot.dart';
 Future<void> main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  final overrideEnv = envInfoProvider.overrideWithValue(
-    EnvInfo(AppEnvironment.production),
-  );
+  // Initialize environment statically for tests
+  EnvInfo.initialize(AppEnvironment.production);
 
   String token = '';
 
   group('end-to-end test with remote data', () {
     testWidgets('should load app', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [overrideEnv],
-          observers: [Observer()],
-          child: MyApp(),
-        ),
+        ProviderScope(observers: [Observer()], child: MyApp()),
       );
     });
 
@@ -47,11 +42,7 @@ Future<void> main() async {
     ) async {
       final registerRobot = RegisterRobot(tester);
       await registerRobot.loadUI(
-        ProviderScope(
-          overrides: [overrideEnv],
-          observers: [Observer()],
-          child: MyApp(),
-        ),
+        ProviderScope(observers: [Observer()], child: MyApp()),
       );
 
       await registerRobot.findRegisterPage();
@@ -68,11 +59,7 @@ Future<void> main() async {
     ) async {
       final loginRobot = LoginRobot(tester);
       await loginRobot.loadUI(
-        ProviderScope(
-          overrides: [overrideEnv],
-          observers: [Observer()],
-          child: MyApp(),
-        ),
+        ProviderScope(observers: [Observer()], child: MyApp()),
       );
       await loginRobot.typeEmail(userEmail);
       await loginRobot.typePassword(userPassword);
@@ -103,7 +90,7 @@ Future<void> main() async {
 
       await viewStoryRobot.loadUI(
         ProviderScope(
-          overrides: [overrideEnv, overrideAuth, overrideCache],
+          overrides: [overrideAuth, overrideCache],
           observers: [Observer()],
           child: MyApp(),
         ),

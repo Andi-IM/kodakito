@@ -184,7 +184,10 @@ void main() {
     test('fetchStories success updates state to loaded', () async {
       // Arrange
       when(
-        () => mockListRepository.getListStories(),
+        () => mockListRepository.getListStories(
+          page: any(named: 'page'),
+          size: any(named: 'size'),
+        ),
       ).thenAnswer((_) async => Right(tStories));
 
       container.listen(
@@ -209,10 +212,20 @@ void main() {
         ),
         () => storiesListener(
           const StoriesState(state: StoriesConcreteState.loading),
-          StoriesState(state: StoriesConcreteState.loaded, stories: tStories),
+          StoriesState(
+            state: StoriesConcreteState.loaded,
+            stories: tStories,
+            page: 1,
+            hasReachedEnd: true,
+          ),
         ),
       ]);
-      verify(() => mockListRepository.getListStories()).called(1);
+      verify(
+        () => mockListRepository.getListStories(
+          page: any(named: 'page'),
+          size: any(named: 'size'),
+        ),
+      ).called(1);
     });
 
     test('fetchStories failure updates state to failure', () async {
@@ -223,7 +236,10 @@ void main() {
         identifier: 'fetch',
       );
       when(
-        () => mockListRepository.getListStories(),
+        () => mockListRepository.getListStories(
+          page: any(named: 'page'),
+          size: any(named: 'size'),
+        ),
       ).thenAnswer((_) async => Left(exception));
 
       container.listen(
@@ -250,7 +266,12 @@ void main() {
           ),
         ),
       ]);
-      verify(() => mockListRepository.getListStories()).called(1);
+      verify(
+        () => mockListRepository.getListStories(
+          page: any(named: 'page'),
+          size: any(named: 'size'),
+        ),
+      ).called(1);
     });
 
     test('resetState resets state to initial', () {

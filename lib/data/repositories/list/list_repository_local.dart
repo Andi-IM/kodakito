@@ -12,7 +12,10 @@ class ListRepositoryLocal implements ListRepository {
   final LocalDataService _localDataService;
 
   @override
-  Future<Either<AppException, List<Story>>> getListStories() async {
+  Future<Either<AppException, List<Story>>> getListStories({
+    int page = 1,
+    int size = 10,
+  }) async {
     try {
       await Future.delayed(const Duration(seconds: 1));
       final stories = await _localDataService.getListStories();

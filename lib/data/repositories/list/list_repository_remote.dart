@@ -12,7 +12,15 @@ class ListRepositoryRemote implements ListRepository {
     : _storyDataSource = storyDataSource;
 
   @override
-  Future<Either<AppException, List<Story>>> getListStories() async {
-    return await _storyDataSource.getAllStories();
+  Future<Either<AppException, List<Story>>> getListStories({
+    int page = 1,
+    int size = 10,
+    int location = 0,
+  }) async {
+    return await _storyDataSource.getAllStories(
+      page: page,
+      size: size,
+      location: location,
+    );
   }
 }

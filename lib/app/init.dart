@@ -1,26 +1,21 @@
 import 'dart:io' show Platform;
 
-import 'package:dicoding_story/app/app.dart';
-import 'package:dicoding_story/app/observer.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
+import 'app_env.dart';
 
 final logger = Logger('DEBUGLogger');
 
-void main() async {
-  await initApp();
-  runApp(ProviderScope(observers: [Observer()], child: MyApp()));
-}
-
-Future<void> initApp() async {
+Future<void> initApp(AppEnvironment environment) async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  EnvInfo.initialize(environment);
 
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen((record) {
