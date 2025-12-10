@@ -178,10 +178,12 @@ void main() {
 
     test('initial state is StoriesState.initial', () {
       final state = container.read(storiesProvider);
-      expect(state, const StoriesState.initial());
+      expect(state, StoriesState.initial());
+      expect(state.isInitialLoading, isFalse);
+      expect(state.stories, isEmpty);
+      expect(state.nextPage, 1);
     });
-
-    test('fetchStories success updates state to loaded', () async {
+    test('getStories success updates state correctly', () async {
       // Arrange
       when(
         () => mockListRepository.getListStories(
@@ -197,29 +199,15 @@ void main() {
       );
 
       // Act
-      // Trigger fetchStories by reading the provider (it runs in build)
-      // or calling it manually if we want to test the method specifically.
-      // Since it runs in build via microtask, we might need to wait.
-      // However, to test the logic deterministically, we can call the method manually.
-      await container.read(storiesProvider.notifier).fetchStories();
+      await container.read(storiesProvider.notifier).getStories();
 
-      // Assert
-      verifyInOrder([
-        () => storiesListener(null, const StoriesState.initial()),
-        () => storiesListener(
-          const StoriesState.initial(),
-          const StoriesState(state: StoriesConcreteState.loading),
-        ),
-        () => storiesListener(
-          const StoriesState(state: StoriesConcreteState.loading),
-          StoriesState(
-            state: StoriesConcreteState.loaded,
-            stories: tStories,
-            page: 1,
-            hasReachedEnd: true,
-          ),
-        ),
-      ]);
+      // Check final state
+      final finalState = container.read(storiesProvider);
+      expect(finalState.stories, tStories);
+      expect(finalState.isInitialLoading, isFalse);
+      expect(finalState.isLoadingMore, isFalse);
+      expect(finalState.hasError, isFalse);
+
       verify(
         () => mockListRepository.getListStories(
           page: any(named: 'page'),
@@ -228,7 +216,7 @@ void main() {
       ).called(1);
     });
 
-    test('fetchStories failure updates state to failure', () async {
+    test('getStories failure updates state with error', () async {
       // Arrange
       final exception = AppException(
         message: 'Fetch failed',
@@ -249,23 +237,13 @@ void main() {
       );
 
       // Act
-      await container.read(storiesProvider.notifier).fetchStories();
+      await container.read(storiesProvider.notifier).getStories();
 
       // Assert
-      verifyInOrder([
-        () => storiesListener(null, const StoriesState.initial()),
-        () => storiesListener(
-          const StoriesState.initial(),
-          const StoriesState(state: StoriesConcreteState.loading),
-        ),
-        () => storiesListener(
-          const StoriesState(state: StoriesConcreteState.loading),
-          StoriesState(
-            state: StoriesConcreteState.failure,
-            message: exception.message,
-          ),
-        ),
-      ]);
+      final finalState = container.read(storiesProvider);
+      expect(finalState.hasError, isTrue);
+      expect(finalState.errorMessage, exception.message);
+
       verify(
         () => mockListRepository.getListStories(
           page: any(named: 'page'),
@@ -274,13 +252,30 @@ void main() {
       ).called(1);
     });
 
+    test('getStories sets nextPage to null when no more items', () async {
+      // Arrange - return less than sizeItems (10)
+      when(
+        () => mockListRepository.getListStories(
+          page: any(named: 'page'),
+          size: any(named: 'size'),
+        ),
+      ).thenAnswer((_) async => Right(tStories)); // Only 1 story < 10
+
+      // Act
+      await container.read(storiesProvider.notifier).getStories();
+
+      // Assert
+      final finalState = container.read(storiesProvider);
+      expect(finalState.nextPage, isNull); // No more pages
+    });
+
     test('resetState resets state to initial', () {
       // Arrange
       // Set some state first
       container.read(storiesProvider.notifier).resetState();
 
       final state = container.read(storiesProvider);
-      expect(state, const StoriesState.initial());
+      expect(state, StoriesState.initial());
     });
   });
 
@@ -483,10 +478,9 @@ void main() {
         // Read to initialize the notifier first
         testContainer.read(storiesProvider);
 
-        // Now set the desired state
+        // Now set the desired state with stories loaded
         mockStories.setState(
           StoriesState(
-            state: StoriesConcreteState.loaded,
             stories: [
               Story(
                 id: 'test-1',
@@ -498,11 +492,17 @@ void main() {
                 lon: 0,
               ),
             ],
+            isInitialLoading: false,
+            isLoadingMore: false,
+            hasError: false,
+            errorMessage: null,
+            nextPage: 2,
+            sizeItems: 10,
           ),
         );
 
         final state = testContainer.read(storiesProvider);
-        expect(state.state, StoriesConcreteState.loaded);
+        expect(state.isInitialLoading, isFalse);
         expect(state.stories.length, 1);
         expect(state.stories.first.id, 'test-1');
       });
@@ -519,15 +519,15 @@ void main() {
         testContainer.read(storiesProvider);
 
         mockStories.setState(
-          const StoriesState(state: StoriesConcreteState.loading),
+          StoriesState.initial().copyWith(isInitialLoading: true),
         );
 
         final state = testContainer.read(storiesProvider);
-        expect(state.state, StoriesConcreteState.loading);
+        expect(state.isInitialLoading, isTrue);
         expect(state.stories, isEmpty);
       });
 
-      test('overrideWith MockStories with failure state', () {
+      test('overrideWith MockStories with error state', () {
         final mockStories = MockStories();
 
         final testContainer = ProviderContainer(
@@ -539,15 +539,16 @@ void main() {
         testContainer.read(storiesProvider);
 
         mockStories.setState(
-          const StoriesState(
-            state: StoriesConcreteState.failure,
-            message: 'Test error message',
+          StoriesState.initial().copyWith(
+            hasError: true,
+            errorMessage: 'Test error message',
+            isInitialLoading: false,
           ),
         );
 
         final state = testContainer.read(storiesProvider);
-        expect(state.state, StoriesConcreteState.failure);
-        expect(state.message, 'Test error message');
+        expect(state.hasError, isTrue);
+        expect(state.errorMessage, 'Test error message');
       });
 
       test('overrideWith MockStories setState updates state correctly', () {
@@ -559,19 +560,16 @@ void main() {
         addTearDown(testContainer.dispose);
 
         // Initial state from build()
-        expect(
-          testContainer.read(storiesProvider),
-          const StoriesState.initial(),
-        );
+        expect(testContainer.read(storiesProvider), StoriesState.initial());
 
         // Update state via setState
         mockStories.setState(
-          const StoriesState(state: StoriesConcreteState.loaded, stories: []),
+          StoriesState.initial().copyWith(isInitialLoading: false, stories: []),
         );
 
         // Read updated state
         final state = testContainer.read(storiesProvider);
-        expect(state.state, StoriesConcreteState.loaded);
+        expect(state.isInitialLoading, isFalse);
         expect(state.stories, isEmpty);
       });
     });

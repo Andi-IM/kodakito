@@ -117,7 +117,7 @@ void main() {
     // Keep the provider alive so we verify the same instance
     container.listen(storiesProvider, (_, __) {});
     final mockStories = container.read(storiesProvider.notifier);
-    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+    when(() => mockStories.getStories()).thenAnswer((_) async {});
 
     await tester.pumpWidget(
       pumpTestWidget(
@@ -130,7 +130,7 @@ void main() {
     // Allow microtask to run
     await tester.pump();
 
-    verify(() => mockStories.fetchStories()).called(1);
+    verify(() => mockStories.getStories()).called(1);
   });
 
   testWidgets('displays ListView with StoryCards on compact screens', (
@@ -173,11 +173,13 @@ void main() {
     // Keep the provider alive so we verify the same instance
     container.listen(storiesProvider, (_, __) {});
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
-    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+    when(() => mockStories.getStories()).thenAnswer((_) async {});
 
     // Set the state to loaded with stories
     mockStories.setState(
-      StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+      StoriesState.initial()
+          .copyWith(isInitialLoading: true)
+          .copyWith(isInitialLoading: false, stories: testStories),
     );
 
     await tester.pumpWidget(
@@ -239,11 +241,13 @@ void main() {
     // Keep the provider alive so we verify the same instance
     container.listen(storiesProvider, (_, __) {});
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
-    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+    when(() => mockStories.getStories()).thenAnswer((_) async {});
 
     // Set the state to loaded with stories
     mockStories.setState(
-      StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+      StoriesState.initial()
+          .copyWith(isInitialLoading: true)
+          .copyWith(isInitialLoading: false, stories: testStories),
     );
 
     await tester.pumpWidget(
@@ -298,11 +302,13 @@ void main() {
       container.listen(storiesProvider, (_, __) {});
       final mockStories =
           container.read(storiesProvider.notifier) as MockStories;
-      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+      when(() => mockStories.getStories()).thenAnswer((_) async {});
 
       // Set the state to loaded with stories
       mockStories.setState(
-        StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+        StoriesState.initial()
+            .copyWith(isInitialLoading: true)
+            .copyWith(isInitialLoading: false, stories: testStories),
       );
 
       // Stub GoRouter.go
@@ -358,11 +364,13 @@ void main() {
     // Keep the provider alive
     container.listen(storiesProvider, (_, __) {});
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
-    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+    when(() => mockStories.getStories()).thenAnswer((_) async {});
 
     // Set the state to loaded with stories
     mockStories.setState(
-      StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+      StoriesState.initial()
+          .copyWith(isInitialLoading: true)
+          .copyWith(isInitialLoading: false, stories: testStories),
     );
 
     // Stub GoRouter.go
@@ -419,7 +427,7 @@ void main() {
     // Keep the provider alive
     container.listen(storiesProvider, (_, __) {});
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
-    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+    when(() => mockStories.getStories()).thenAnswer((_) async {});
 
     // Stub the instaImagePickerService.pickImage method
     when(
@@ -428,7 +436,9 @@ void main() {
 
     // Set the state to loaded with stories
     mockStories.setState(
-      StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+      StoriesState.initial()
+          .copyWith(isInitialLoading: true)
+          .copyWith(isInitialLoading: false, stories: testStories),
     );
 
     await tester.pumpWidget(
@@ -485,7 +495,7 @@ void main() {
 
     container.listen(storiesProvider, (_, __) {});
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
-    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+    when(() => mockStories.getStories()).thenAnswer((_) async {});
 
     // Capture the pickFromCamera callback when pickImage is called
     when(
@@ -501,7 +511,9 @@ void main() {
     ).thenAnswer((_) async => null);
 
     mockStories.setState(
-      StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+      StoriesState.initial()
+          .copyWith(isInitialLoading: true)
+          .copyWith(isInitialLoading: false, stories: testStories),
     );
 
     await tester.pumpWidget(
@@ -572,7 +584,7 @@ void main() {
       container.listen(storiesProvider, (_, __) {});
       final mockStories =
           container.read(storiesProvider.notifier) as MockStories;
-      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+      when(() => mockStories.getStories()).thenAnswer((_) async {});
 
       // Capture the pickFromCamera callback when pickImage is called
       when(
@@ -593,7 +605,9 @@ void main() {
       ).thenAnswer((_) async {});
 
       mockStories.setState(
-        StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+        StoriesState.initial()
+            .copyWith(isInitialLoading: true)
+            .copyWith(isInitialLoading: false, stories: testStories),
       );
 
       await tester.pumpWidget(
@@ -667,7 +681,7 @@ void main() {
       container.listen(storiesProvider, (_, __) {});
       final mockStories =
           container.read(storiesProvider.notifier) as MockStories;
-      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+      when(() => mockStories.getStories()).thenAnswer((_) async {});
 
       // Capture the onCompleted callback when pickImage is called
       when(
@@ -689,7 +703,9 @@ void main() {
       ).thenAnswer((_) async => null);
 
       mockStories.setState(
-        StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+        StoriesState.initial()
+            .copyWith(isInitialLoading: true)
+            .copyWith(isInitialLoading: false, stories: testStories),
       );
 
       await tester.pumpWidget(
@@ -759,7 +775,7 @@ void main() {
     // Keep the provider alive
     container.listen(storiesProvider, (_, __) {});
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
-    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+    when(() => mockStories.getStories()).thenAnswer((_) async {});
 
     // Stub goRouter.pushNamed for AddStoryDialog
     when(
@@ -773,7 +789,9 @@ void main() {
 
     // Set the state to loaded with stories
     mockStories.setState(
-      StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+      StoriesState.initial()
+          .copyWith(isInitialLoading: true)
+          .copyWith(isInitialLoading: false, stories: testStories),
     );
 
     await tester.pumpWidget(
@@ -835,11 +853,13 @@ void main() {
       container.listen(storiesProvider, (_, __) {});
       final mockStories =
           container.read(storiesProvider.notifier) as MockStories;
-      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+      when(() => mockStories.getStories()).thenAnswer((_) async {});
 
       // Set the state to loaded with stories
       mockStories.setState(
-        StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+        StoriesState.initial()
+            .copyWith(isInitialLoading: true)
+            .copyWith(isInitialLoading: false, stories: testStories),
       );
 
       await tester.pumpWidget(
@@ -896,11 +916,13 @@ void main() {
       container.listen(storiesProvider, (_, __) {});
       final mockStories =
           container.read(storiesProvider.notifier) as MockStories;
-      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+      when(() => mockStories.getStories()).thenAnswer((_) async {});
 
       // Set the state to loaded with stories
       mockStories.setState(
-        StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+        StoriesState.initial()
+            .copyWith(isInitialLoading: true)
+            .copyWith(isInitialLoading: false, stories: testStories),
       );
 
       await tester.pumpWidget(
@@ -957,11 +979,13 @@ void main() {
       container.listen(storiesProvider, (_, __) {});
       final mockStories =
           container.read(storiesProvider.notifier) as MockStories;
-      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+      when(() => mockStories.getStories()).thenAnswer((_) async {});
 
       // Set the state to loaded with stories
       mockStories.setState(
-        StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+        StoriesState.initial()
+            .copyWith(isInitialLoading: true)
+            .copyWith(isInitialLoading: false, stories: testStories),
       );
 
       await tester.pumpWidget(
@@ -982,14 +1006,14 @@ void main() {
       // fetchStories was already called once during initialization
       // Clear mock to verify it's called again by onRefresh
       clearInteractions(mockStories);
-      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+      when(() => mockStories.getStories()).thenAnswer((_) async {});
 
       // Invoke the onRefresh callback directly
       await refreshIndicator.onRefresh();
       await tester.pump();
 
       // Verify fetchStories was called by the onRefresh callback
-      verify(() => mockStories.fetchStories()).called(1);
+      verify(() => mockStories.getStories()).called(1);
     },
   );
 
@@ -1022,7 +1046,7 @@ void main() {
     // Keep the provider alive
     container.listen(storiesProvider, (_, __) {});
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
-    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+    when(() => mockStories.getStories()).thenAnswer((_) async {});
 
     // Stub goRouter.push for SettingsDialog
     when(
@@ -1031,7 +1055,9 @@ void main() {
 
     // Set the state to loaded with stories
     mockStories.setState(
-      StoriesState(state: StoriesConcreteState.loaded, stories: testStories),
+      StoriesState.initial()
+          .copyWith(isInitialLoading: true)
+          .copyWith(isInitialLoading: false, stories: testStories),
     );
 
     await tester.pumpWidget(
@@ -1073,14 +1099,17 @@ void main() {
     // Keep the provider alive
     container.listen(storiesProvider, (_, __) {});
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
-    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+    when(() => mockStories.getStories()).thenAnswer((_) async {});
 
     // Set the state to failure
     mockStories.setState(
-      StoriesState(
-        state: StoriesConcreteState.failure,
-        message: 'Network error',
-      ),
+      StoriesState.initial()
+          .copyWith(isInitialLoading: true)
+          .copyWith(
+            isInitialLoading: false,
+            hasError: true,
+            errorMessage: 'Network error',
+          ),
     );
 
     await tester.pumpWidget(
@@ -1119,10 +1148,12 @@ void main() {
       container.listen(storiesProvider, (_, __) {});
       final mockStories =
           container.read(storiesProvider.notifier) as MockStories;
-      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+      when(() => mockStories.getStories()).thenAnswer((_) async {});
 
       // Set the state to loading
-      mockStories.setState(StoriesState(state: StoriesConcreteState.loading));
+      mockStories.setState(
+        StoriesState.initial().copyWith(isInitialLoading: true),
+      );
 
       await tester.pumpWidget(
         pumpTestWidget(
@@ -1170,10 +1201,12 @@ void main() {
       container.listen(storiesProvider, (_, __) {});
       final mockStories =
           container.read(storiesProvider.notifier) as MockStories;
-      when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+      when(() => mockStories.getStories()).thenAnswer((_) async {});
 
       // Set the state to loading
-      mockStories.setState(StoriesState(state: StoriesConcreteState.loading));
+      mockStories.setState(
+        StoriesState.initial().copyWith(isInitialLoading: true),
+      );
 
       await tester.pumpWidget(
         pumpTestWidget(
@@ -1218,10 +1251,12 @@ void main() {
 
     container.listen(storiesProvider, (_, __) {});
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
-    when(() => mockStories.fetchStories()).thenAnswer((_) async {});
+    when(() => mockStories.getStories()).thenAnswer((_) async {});
 
     // Set the state to loading
-    mockStories.setState(StoriesState(state: StoriesConcreteState.loading));
+    mockStories.setState(
+      StoriesState.initial().copyWith(isInitialLoading: true),
+    );
 
     await tester.pumpWidget(
       pumpTestWidget(

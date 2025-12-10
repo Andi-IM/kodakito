@@ -31,7 +31,7 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
 
     ref.listen(addStoryProvider.select((value) => value), (prev, next) {
       if (next is AddStorySuccess) {
-        ref.read(storiesProvider.notifier).fetchStories();
+        ref.read(storiesProvider.notifier).getStories();
         // Clear the description
         descriptionController.clear();
         // Capture messenger reference before context is popped

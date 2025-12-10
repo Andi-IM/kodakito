@@ -62,71 +62,63 @@ Future<File?> getCroppedImageFromPicker(
 
 @riverpod
 class StoriesNotifier extends _$StoriesNotifier with LogMixin {
-  static const int _pageSize = 10;
-
   ListRepository get _repository => ref.read(listRepositoryProvider);
   @override
   StoriesState build() => StoriesState.initial();
 
-  Future<void> fetchStories() async {
-    log.info('Fetching stories list');
-    state = StoriesState(state: StoriesConcreteState.loading);
-    final result = await _repository.getListStories(page: 1, size: _pageSize);
-    result.fold(
-      (failure) {
-        log.warning('Failed to fetch stories: ${failure.message}');
-        state = state.copyWith(
-          state: StoriesConcreteState.failure,
-          message: failure.message,
-        );
-      },
-      (stories) {
-        log.info('Successfully fetched ${stories.length} stories');
-        state = state.copyWith(
-          state: StoriesConcreteState.loaded,
-          stories: stories,
-          page: 1,
-          hasReachedEnd: stories.length < _pageSize,
-        );
-      },
-    );
-  }
+  Future<void> getStories() async {
+    if (state.isInitialLoading || state.isLoadingMore) return;
 
-  Future<void> fetchMoreStories() async {
-    // Guard: don't fetch if already loading, loading more, or reached end
-    if (state.state == StoriesConcreteState.loading ||
-        state.state == StoriesConcreteState.loadingMore ||
-        state.hasReachedEnd) {
-      return;
+    if (state.nextPage == null) return;
+
+    try {
+      if (state.nextPage == 1) {
+        state = state.copyWith(isInitialLoading: true, hasError: false);
+      } else {
+        state = state.copyWith(isLoadingMore: true, hasError: false);
+      }
+
+      final result = await _repository.getListStories(
+        page: state.nextPage!,
+        size: state.sizeItems,
+      );
+
+      result.fold(
+        (failure) {
+          log.warning('Failed to fetch stories: ${failure.message}');
+          state = state.copyWith(
+            hasError: true,
+            errorMessage: failure.message,
+            isInitialLoading: false,
+            isLoadingMore: false,
+          );
+        },
+        (stories) {
+          log.info('Successfully fetched ${stories.length} stories');
+          final allStories = [...state.stories, ...stories];
+          final nextPage = stories.length < state.sizeItems
+              ? null
+              : state.nextPage! + 1;
+
+          state = state.copyWith(
+            stories: allStories,
+            nextPage: nextPage,
+            isInitialLoading: false,
+            isLoadingMore: false,
+            hasError: false,
+            errorMessage: null,
+          );
+        },
+      );
+    } catch (e) {
+      log.warning('Failed to fetch stories: $e');
+      state = state.copyWith(
+        hasError: true,
+        errorMessage: e.toString(),
+        isInitialLoading: false,
+        isLoadingMore: false,
+      );
     }
-
-    final nextPage = state.page + 1;
-    log.info('Fetching more stories (page $nextPage)');
-    state = state.copyWith(state: StoriesConcreteState.loadingMore);
-
-    final result = await _repository.getListStories(
-      page: nextPage,
-      size: _pageSize,
-    );
-    result.fold(
-      (failure) {
-        log.warning('Failed to fetch more stories: ${failure.message}');
-        // Revert to loaded state on failure, keep existing stories
-        state = state.copyWith(
-          state: StoriesConcreteState.loaded,
-          message: failure.message,
-        );
-      },
-      (newStories) {
-        log.info('Successfully fetched ${newStories.length} more stories');
-        state = state.copyWith(
-          state: StoriesConcreteState.loaded,
-          stories: [...state.stories, ...newStories],
-          page: nextPage,
-          hasReachedEnd: newStories.length < _pageSize,
-        );
-      },
-    );
   }
 
   void resetState() {
