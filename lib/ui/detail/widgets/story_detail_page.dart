@@ -8,6 +8,7 @@ import 'package:dicoding_story/ui/detail/widgets/free/story_detail_compact_layou
 import 'package:dicoding_story/ui/detail/widgets/free/story_detail_medium_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 import 'package:window_size_classes/window_size_classes.dart';
 
 class StoryDetailPage extends ConsumerWidget {
@@ -41,7 +42,11 @@ class StoryDetailPage extends ConsumerWidget {
           ),
           centerTitle: true,
         ),
-        body: Center(child: CircularProgressIndicator()),
+        body: Center(
+          child: const LoadingIndicatorM3E(
+            variant: LoadingIndicatorM3EVariant.contained,
+          ),
+        ),
       ), // Handles null story or other unexpected states
     };
   }
@@ -79,7 +84,9 @@ class _StoryDetailContent extends ConsumerWidget {
           child: colorSchemeAsync.isLoading
               ? const Center(
                   key: ValueKey('loading'),
-                  child: CircularProgressIndicator(),
+                  child: LoadingIndicatorM3E(
+                    variant: LoadingIndicatorM3EVariant.contained,
+                  ),
                 )
               : SingleChildScrollView(
                   key: const ValueKey('content'),

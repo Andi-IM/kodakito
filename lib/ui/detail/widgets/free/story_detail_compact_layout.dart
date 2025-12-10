@@ -4,6 +4,7 @@ import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart' hide Config;
 import 'package:intl/intl.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 
 class StoryDetailCompactLayout extends StatelessWidget {
   final Story story;
@@ -41,7 +42,7 @@ class StoryDetailCompactLayout extends StatelessWidget {
                       return SizedBox(
                         height: 200,
                         child: Center(
-                          child: CircularProgressIndicator(
+                          child: CircularProgressIndicatorM3E(
                             value: downloadProgress.progress,
                           ),
                         ),

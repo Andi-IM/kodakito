@@ -4,6 +4,7 @@ import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:intl/intl.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 
 class StoryCard extends StatelessWidget {
   final Story story;
@@ -44,7 +45,7 @@ class StoryCard extends StatelessWidget {
                   },
                   progressIndicatorBuilder: (context, url, downloadProgress) {
                     return Center(
-                      child: CircularProgressIndicator(
+                      child: CircularProgressIndicatorM3E(
                         value: downloadProgress.progress,
                       ),
                     );
