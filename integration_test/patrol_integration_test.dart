@@ -1,6 +1,6 @@
 import 'package:dicoding_story/app/app.dart';
 import 'package:dicoding_story/app/app_env.dart';
-import 'package:dicoding_story/app/init.dart';
+import 'package:dicoding_story/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';

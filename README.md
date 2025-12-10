@@ -52,7 +52,6 @@ To run this project locally, follow these steps:
 3.  **Configure Environment Variables**:
     Create a `.env` file in the root directory and add the following variables:
     ```env
-    APP_ENV=production
     APP_URL=https://story-api.dicoding.dev/v1
     ```
 
@@ -64,7 +63,7 @@ To run this project locally, follow these steps:
 
 5.  **Run the application**:
     ```bash
-    flutter run
+    flutter run --flavor production
     ```
 
 ## Architecture & Design

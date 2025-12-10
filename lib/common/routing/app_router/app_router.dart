@@ -1,12 +1,16 @@
 import 'dart:io';
 
 import 'package:crop_your_image/crop_your_image.dart';
+import 'package:dicoding_story/app/app_env.dart';
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/common/routing/dialog_page.dart';
+import 'package:dicoding_story/data/services/platform/platform_provider.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/ui/auth/widgets/login_page.dart';
 import 'package:dicoding_story/ui/auth/widgets/register_page.dart';
-import 'package:dicoding_story/ui/detail/widgets/story_detail_page.dart';
+import 'package:dicoding_story/ui/detail/widgets/free/story_detail_page.dart';
+import 'package:dicoding_story/ui/detail/widgets/pro/story_detail_page_pro.dart'
+    show StoryDetailPagePro;
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story/compact/add_story.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_dialog.dart';
@@ -103,16 +107,14 @@ GoRouter appRouter(Ref ref) {
                 path: '/crop',
                 name: 'add-story-crop',
                 pageBuilder: (context, state) => DialogPage(
-                  builder: (context) => Consumer(
-                    builder: (context, ref, child) {
-                      final imageBytes = state.extra as Uint8List;
-                      return StoryCropDialog(
-                        imageBytes: imageBytes,
-                        cropController: CropController(),
-                        onPop: () => context.pop(),
-                      );
-                    },
-                  ),
+                  builder: (context) {
+                    final imageBytes = state.extra as Uint8List;
+                    return StoryCropDialog(
+                      imageBytes: imageBytes,
+                      cropController: CropController(),
+                      onPop: () => context.pop(),
+                    );
+                  },
                 ),
               ),
             ],
@@ -122,7 +124,21 @@ GoRouter appRouter(Ref ref) {
             name: 'detail',
             builder: (context, state) {
               final id = state.pathParameters['id']!;
-              return StoryDetailPage(id: id);
+
+              return Consumer(
+                builder: (context, ref, child) {
+                  final isSupport = ref.watch(supportMapsProvider);
+
+                  if ((EnvInfo.environment == AppEnvironment.pro ||
+                          EnvInfo.environment ==
+                              AppEnvironment.proDevelopment) &&
+                      isSupport) {
+                    return StoryDetailPagePro(id: id);
+                  }
+
+                  return StoryDetailPage(id: id);
+                },
+              );
             },
           ),
         ],

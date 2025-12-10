@@ -1,5 +1,5 @@
 import 'package:dicoding_story/app/app.dart';
-import 'package:dicoding_story/app/init.dart';
+import 'package:dicoding_story/main.dart';
 import 'package:dicoding_story/app/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
