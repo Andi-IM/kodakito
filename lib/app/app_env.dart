@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-
+// coverage:ignore-file
 enum AppEnvironment { development, production, proDevelopment, pro }
 
 abstract class EnvInfo {

@@ -277,6 +277,100 @@ void main() {
       final state = container.read(storiesProvider);
       expect(state, StoriesState.initial());
     });
+
+    test('getStories sets isLoadingMore when nextPage > 1', () async {
+      // Arrange - First set state to simulate already loaded first page
+      final notifier = container.read(storiesProvider.notifier);
+
+      // Create 10 stories to simulate full page (sizeItems = 10)
+      final firstPageStories = List.generate(
+        10,
+        (index) => Story(
+          id: 'story-$index',
+          name: 'Story $index',
+          description: 'Description $index',
+          photoUrl: 'url$index',
+          createdAt: DateTime.now(),
+          lat: 0,
+          lon: 0,
+        ),
+      );
+
+      when(
+        () => mockListRepository.getListStories(
+          page: any(named: 'page'),
+          size: any(named: 'size'),
+        ),
+      ).thenAnswer((_) async => Right(firstPageStories));
+
+      // First call - loads page 1
+      await notifier.getStories();
+
+      // Verify nextPage is now 2
+      expect(container.read(storiesProvider).nextPage, 2);
+
+      // Second call - should trigger isLoadingMore branch (lines 77-79)
+      await notifier.getStories();
+
+      // Assert
+      final finalState = container.read(storiesProvider);
+      expect(finalState.stories.length, 20); // 10 + 10 stories
+      expect(finalState.nextPage, 3); // Incremented again
+    });
+
+    test(
+      'getStories increments nextPage when stories.length >= sizeItems',
+      () async {
+        // Arrange - Return exactly sizeItems (10) stories
+        final fullPageStories = List.generate(
+          10,
+          (index) => Story(
+            id: 'story-$index',
+            name: 'Story $index',
+            description: 'Description $index',
+            photoUrl: 'url$index',
+            createdAt: DateTime.now(),
+            lat: 0,
+            lon: 0,
+          ),
+        );
+
+        when(
+          () => mockListRepository.getListStories(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+          ),
+        ).thenAnswer((_) async => Right(fullPageStories));
+
+        // Act
+        await container.read(storiesProvider.notifier).getStories();
+
+        // Assert - nextPage should increment (lines 99-101)
+        final finalState = container.read(storiesProvider);
+        expect(finalState.nextPage, 2); // 1 + 1 = 2
+        expect(finalState.stories.length, 10);
+      },
+    );
+
+    test('getStories handles unexpected exception in catch block', () async {
+      // Arrange - Make repository throw an unexpected exception
+      when(
+        () => mockListRepository.getListStories(
+          page: any(named: 'page'),
+          size: any(named: 'size'),
+        ),
+      ).thenThrow(Exception('Unexpected network error'));
+
+      // Act
+      await container.read(storiesProvider.notifier).getStories();
+
+      // Assert - catch block should handle it (lines 113-121)
+      final finalState = container.read(storiesProvider);
+      expect(finalState.hasError, isTrue);
+      expect(finalState.errorMessage, contains('Unexpected network error'));
+      expect(finalState.isInitialLoading, isFalse);
+      expect(finalState.isLoadingMore, isFalse);
+    });
   });
 
   group('AddStoryNotifier', () {

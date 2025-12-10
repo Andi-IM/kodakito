@@ -10,6 +10,7 @@ import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/main/widgets/main_page.dart';
 import 'package:dicoding_story/ui/main/widgets/story_card.dart';
+import 'package:dicoding_story/ui/main/widgets/story_card_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -1280,6 +1281,122 @@ void main() {
       ),
     );
     expect(center.child, isA<LoadingIndicatorM3E>());
+  });
+
+  testWidgets('shows StoryCardSkeleton when isLoadingMore is true', (
+    tester,
+  ) async {
+    final container = ProviderContainer.test(
+      overrides: [
+        storiesProvider.overrideWith(MockStories.new),
+        fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+        cameraPickerServiceProvider.overrideWithValue(mockCameraPickerService),
+        instaImagePickerServiceProvider.overrideWithValue(
+          mockInstaImagePickerService,
+        ),
+        imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    container.listen(storiesProvider, (_, __) {});
+    final mockStories = container.read(storiesProvider.notifier) as MockStories;
+    when(() => mockStories.getStories()).thenAnswer((_) async {});
+
+    // Define test stories
+    final testStories = [
+      Story(
+        id: 'story-1',
+        name: 'Story 1',
+        description: 'Description 1',
+        photoUrl: 'https://example.com/photo1.jpg',
+        createdAt: DateTime.now(),
+        lat: 0,
+        lon: 0,
+      ),
+    ];
+
+    // Set state with isLoadingMore: true
+    mockStories.setState(
+      StoriesState.initial().copyWith(
+        isInitialLoading: false,
+        stories: testStories,
+        isLoadingMore: true,
+      ),
+    );
+
+    await tester.pumpWidget(
+      pumpTestWidget(
+        tester,
+        container: container,
+        widthClass: WindowWidthClass.compact,
+      ),
+    );
+
+    await tester.pump();
+
+    // Scroll down to make skeleton visible (skeleton is at bottom of list)
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -500));
+    await tester.pump();
+
+    // Verify StoryCardSkeleton is displayed
+    expect(find.byType(StoryCardSkeleton), findsOneWidget);
+  });
+
+  testWidgets('does not show StoryCardSkeleton when isLoadingMore is false', (
+    tester,
+  ) async {
+    final container = ProviderContainer.test(
+      overrides: [
+        storiesProvider.overrideWith(MockStories.new),
+        fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+        cameraPickerServiceProvider.overrideWithValue(mockCameraPickerService),
+        instaImagePickerServiceProvider.overrideWithValue(
+          mockInstaImagePickerService,
+        ),
+        imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    container.listen(storiesProvider, (_, __) {});
+    final mockStories = container.read(storiesProvider.notifier) as MockStories;
+    when(() => mockStories.getStories()).thenAnswer((_) async {});
+
+    // Define test stories
+    final testStories = [
+      Story(
+        id: 'story-1',
+        name: 'Story 1',
+        description: 'Description 1',
+        photoUrl: 'https://example.com/photo1.jpg',
+        createdAt: DateTime.now(),
+        lat: 0,
+        lon: 0,
+      ),
+    ];
+
+    // Set state with isLoadingMore: false
+    mockStories.setState(
+      StoriesState.initial().copyWith(
+        isInitialLoading: false,
+        stories: testStories,
+        isLoadingMore: false,
+      ),
+    );
+
+    await tester.pumpWidget(
+      pumpTestWidget(
+        tester,
+        container: container,
+        widthClass: WindowWidthClass.compact,
+      ),
+    );
+
+    await tester.pump();
+
+    // Verify StoryCardSkeleton is NOT displayed
+    expect(find.byType(StoryCardSkeleton), findsNothing);
   });
 }
 
