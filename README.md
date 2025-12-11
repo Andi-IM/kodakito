@@ -50,10 +50,20 @@ To run this project locally, follow these steps:
     ```
 
 3.  **Configure Environment Variables**:
-    Create a `.env` file in the root directory and add the following variables:
-    ```env
-    APP_URL=https://story-api.dicoding.dev/v1
+    
+    **For Flutter (Dart):**
+    Environment variables are passed at build time using `--dart-define`. The main variable is:
+    - `APP_URL`: The API base URL (default: `https://story-api.dicoding.dev/v1`)
+    
+    **For Android (Google Maps API Key):**
+    Create a `env/keys.json` file in the project root:
+    ```json
+    {
+        "APP_URL": "https://story-api.dicoding.dev/v1",
+        "MAPS_APIKEY": "your-google-maps-api-key"
+    }
     ```
+    > **Note**: The `env/keys.json` file is gitignored for security.
 
 4.  **Generate Code**:
     This project uses code generation for Riverpod, JSON serialization, and GoRouter. You must run the build runner to generate the necessary `.g.dart` files.
@@ -63,7 +73,11 @@ To run this project locally, follow these steps:
 
 5.  **Run the application**:
     ```bash
-    flutter run --flavor production
+    # Development flavor
+    flutter run --flavor dev --dart-define-from-file=env/keys.json
+
+    # Production flavor
+    flutter run --flavor prod --dart-define-from-file=env/keys.json
     ```
 
 ## Architecture & Design
