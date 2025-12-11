@@ -13,7 +13,7 @@
             "args": [
                 "--flavor",
                 "dev",
-                "--dart-define-from-file=",
+                "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
@@ -26,7 +26,7 @@
             "args": [
                 "--flavor",
                 "dev",
-                "--dart-define-from-file=",
+                "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
@@ -39,7 +39,7 @@
             "args": [
                 "--flavor",
                 "dev",
-                "--dart-define-from-file=",
+                "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
@@ -52,7 +52,7 @@
             "args": [
                 "--flavor",
                 "prod",
-                "--dart-define-from-file=",
+                "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
@@ -65,7 +65,7 @@
             "args": [
                 "--flavor",
                 "prod",
-                "--dart-define-from-file=",
+                "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
@@ -78,7 +78,7 @@
             "args": [
                 "--flavor",
                 "prod",
-                "--dart-define-from-file=",
+                "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
@@ -91,7 +91,7 @@
             "args": [
                 "--flavor",
                 "prodev",
-                "--dart-define-from-file=",
+                "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
@@ -104,7 +104,7 @@
             "args": [
                 "--flavor",
                 "prodev",
-                "--dart-define-from-file=",
+                "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
@@ -117,7 +117,7 @@
             "args": [
                 "--flavor",
                 "prodev",
-                "--dart-define-from-file=",
+                "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
@@ -130,7 +130,7 @@
             "args": [
                 "--flavor",
                 "pro",
-                "--dart-define-from-file=",
+                "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
@@ -143,7 +143,7 @@
             "args": [
                 "--flavor",
                 "pro",
-                "--dart-define-from-file=",
+                "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
@@ -156,7 +156,7 @@
             "args": [
                 "--flavor",
                 "pro",
-                "--dart-define-from-file=",
+                "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
