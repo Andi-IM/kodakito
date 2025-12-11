@@ -1,8 +1,23 @@
+import groovy.json.JsonSlurper
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+// Load environment variables from env.json
+val envFile = rootProject.file("../env/env.json")
+val envConfig: Map<String, String> = if (envFile.exists()) {
+    @Suppress("UNCHECKED_CAST")
+    JsonSlurper().parseText(envFile.readText()) as Map<String, String>
+} else {
+    emptyMap()
+}
+
+fun getEnvVariable(key: String): String {
+    return envConfig[key] ?: System.getenv(key) ?: ""
 }
 
 android {
@@ -81,3 +96,10 @@ dependencies {
 flutter {
     source = "../.."
 }
+
+// tasks.register("printEnvVariables") {
+//     doLast {
+//         println("APP_URL: ${getEnvVariable("APP_URL")}")
+//         println("MAPS_APIKEY: ${getEnvVariable("MAPS_APIKEY")}")
+//     }
+// }
