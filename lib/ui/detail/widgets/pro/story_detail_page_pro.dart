@@ -28,7 +28,7 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailPagePro> {
   // Controller for bottom sheet to track position
   final DraggableScrollableController _sheetController =
       DraggableScrollableController();
-  double _sheetExtent = 0.25; 
+  double _sheetExtent = 0.25;
 
   @override
   void initState() {

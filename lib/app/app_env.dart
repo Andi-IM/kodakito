@@ -26,7 +26,8 @@ abstract class EnvInfo {
 
   static bool get isProfile => kProfileMode;
 
-  static String get apiKey => const String.fromEnvironment('APP_URL', defaultValue: 'app-url');
+  static String get apiKey =>
+      const String.fromEnvironment('APP_URL', defaultValue: 'app-url');
 }
 
 extension _EnvProperties on AppEnvironment {

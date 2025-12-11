@@ -385,6 +385,36 @@ abstract class AppLocalizations {
   /// In id, this message translates to:
   /// **'Password harus terdiri dari minimal {length} karakter'**
   String validatorMinLength(int length);
+
+  /// No description provided for @addStoryAddLocation.
+  ///
+  /// In id, this message translates to:
+  /// **'Tambah Lokasi'**
+  String get addStoryAddLocation;
+
+  /// No description provided for @addStoryRemoveLocation.
+  ///
+  /// In id, this message translates to:
+  /// **'Hapus Lokasi'**
+  String get addStoryRemoveLocation;
+
+  /// No description provided for @locationPickerTitle.
+  ///
+  /// In id, this message translates to:
+  /// **'Pilih Lokasi'**
+  String get locationPickerTitle;
+
+  /// No description provided for @locationPickerConfirm.
+  ///
+  /// In id, this message translates to:
+  /// **'Konfirmasi'**
+  String get locationPickerConfirm;
+
+  /// No description provided for @locationPickerHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Ketuk peta untuk memilih lokasi, atau seret penanda'**
+  String get locationPickerHint;
 }
 
 class _AppLocalizationsDelegate

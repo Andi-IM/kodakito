@@ -71,5 +71,12 @@
                 "type": "int"
             }
         }
-    }
+    },
+
+    "@_LOCATION_FEATURE": {},
+    "addStoryAddLocation": "Tambah Lokasi",
+    "addStoryRemoveLocation": "Hapus Lokasi",
+    "locationPickerTitle": "Pilih Lokasi",
+    "locationPickerConfirm": "Konfirmasi",
+    "locationPickerHint": "Ketuk peta untuk memilih lokasi, atau seret penanda"
 }

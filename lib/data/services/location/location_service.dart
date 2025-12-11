@@ -8,6 +8,7 @@ LocationService locationService(Ref ref) => LocationServiceImpl();
 
 abstract class LocationService {
   Future<PlaceInfo> getCurrentLocation(double lat, double lng);
+  Future<PlaceInfo> retrieveCurrentLocation();
 }
 
 class LocationServiceImpl implements LocationService {
@@ -15,6 +16,13 @@ class LocationServiceImpl implements LocationService {
   Future<PlaceInfo> getCurrentLocation(double lat, double lng) async {
     final service = GeocodingService();
     final result = await service.getPlaceInfo(lat, lng);
+    return result;
+  }
+
+  @override
+  Future<PlaceInfo> retrieveCurrentLocation() async {
+    final service = GeocodingService();
+    final result = await service.getCurrentPlaceInfo();
     return result;
   }
 }

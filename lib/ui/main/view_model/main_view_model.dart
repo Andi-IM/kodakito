@@ -10,11 +10,42 @@ import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
+import 'package:latlong_to_place/latlong_to_place.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'main_view_model.g.dart';
+
+/// Provider for managing selected location for story
+@riverpod
+class SelectedLocation extends _$SelectedLocation {
+  @override
+  PlaceInfo? build() => null;
+
+  void setLocation(PlaceInfo? location) {
+    state = location;
+  }
+
+  void clear() {
+    state = null;
+  }
+}
+
+/// Provider for managing selected photo file for story
+@riverpod
+class SelectedPhotoFile extends _$SelectedPhotoFile {
+  @override
+  XFile? build() => null;
+
+  void setFile(XFile file) {
+    state = file;
+  }
+
+  void clear() {
+    state = null;
+  }
+}
 
 @riverpod
 class ImageFile extends _$ImageFile {

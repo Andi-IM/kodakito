@@ -13,6 +13,7 @@ import 'package:dicoding_story/ui/detail/widgets/pro/story_detail_page_pro.dart'
     show StoryDetailPagePro;
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story/compact/add_story.dart';
+import 'package:dicoding_story/ui/main/widgets/add_story/compact/location_picker_page.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_dialog.dart';
 import 'package:dicoding_story/ui/main/widgets/add_story/wide/story_crop_dialog.dart';
 import 'package:dicoding_story/ui/main/widgets/main_page.dart';
@@ -22,6 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
+import 'package:latlong_to_place/latlong_to_place.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
@@ -42,6 +44,7 @@ abstract class AppRoutes {
   static const String addStoryCrop = 'add-story-crop';
   static const String detail = 'detail';
   static const String mobileCrop = 'mobile-crop';
+  static const String locationPicker = 'location-picker';
 }
 
 // =============================================================================
@@ -84,6 +87,14 @@ extension AppRouterExtension on BuildContext {
   /// Navigate to mobile crop page with stream
   void goToMobileCrop(Stream<InstaAssetsExportDetails> cropStream) =>
       goNamed(AppRoutes.mobileCrop, extra: cropStream);
+
+  /// Navigate to location picker and return selected location
+  Future<PlaceInfo?> pushLocationPicker({PlaceInfo? initialLocation}) async {
+    return await pushNamed<PlaceInfo>(
+      AppRoutes.locationPicker,
+      extra: initialLocation,
+    );
+  }
 }
 
 // =============================================================================
@@ -92,6 +103,10 @@ extension AppRouterExtension on BuildContext {
 
 @riverpod
 GoRouter appRouter(Ref ref) {
+  final isProEnvironment =
+      EnvInfo.environment == AppEnvironment.pro ||
+      EnvInfo.environment == AppEnvironment.proDevelopment;
+
   return GoRouter(
     navigatorKey: _navigatorKey,
     initialLocation: '/login',
@@ -192,9 +207,6 @@ GoRouter appRouter(Ref ref) {
               return Consumer(
                 builder: (context, ref, child) {
                   final isSupport = ref.watch(supportMapsProvider);
-                  final isProEnvironment =
-                      EnvInfo.environment == AppEnvironment.pro ||
-                      EnvInfo.environment == AppEnvironment.proDevelopment;
                   final showProDetail =
                       isProEnvironment && isSupport && hasLocation;
 
@@ -226,6 +238,16 @@ GoRouter appRouter(Ref ref) {
                 context.pushReplacementMain();
               },
             );
+          },
+        ),
+
+      if (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
+        GoRoute(
+          path: '/location-picker',
+          name: AppRoutes.locationPicker,
+          builder: (context, state) {
+            final initialLocation = state.extra as PlaceInfo?;
+            return LocationPickerPage(initialLocation: initialLocation);
           },
         ),
     ],

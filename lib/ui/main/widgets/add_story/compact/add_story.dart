@@ -1,4 +1,5 @@
 import 'package:dicoding_story/common/localizations.dart';
+import 'package:dicoding_story/common/routing/app_router/app_router.dart';
 import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
 import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,6 @@ class AddStoryPage extends ConsumerStatefulWidget {
 
 class _AddStoryPageState extends ConsumerState<AddStoryPage> {
   final TextEditingController _descriptionController = TextEditingController();
-  XFile? file;
 
   @override
   void dispose() {
@@ -30,11 +30,26 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
     super.dispose();
   }
 
+  Future<void> _openLocationPicker() async {
+    final currentLocation = ref.read(selectedLocationProvider);
+    final result = await context.pushLocationPicker(
+      initialLocation: currentLocation,
+    );
+    if (result != null) {
+      ref.read(selectedLocationProvider.notifier).setLocation(result);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final selectedLocation = ref.watch(selectedLocationProvider);
+
     // Listen to add story state changes
     ref.listen(addStoryProvider, (previous, next) {
       if (next is AddStorySuccess) {
+        // Clear state when story is posted successfully
+        ref.read(selectedLocationProvider.notifier).clear();
+        ref.read(selectedPhotoFileProvider.notifier).clear();
         widget.onAddStorySuccess?.call();
       }
       if (next is AddStoryFailure) {
@@ -59,17 +74,20 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
           Consumer(
             builder: (context, ref, child) {
               final addStoryState = ref.watch(addStoryProvider);
+              final location = ref.watch(selectedLocationProvider);
+              final photoFile = ref.watch(selectedPhotoFileProvider);
               return TextButton(
                 key: const Key('postButton'),
-                onPressed: addStoryState is AddStoryLoading
+                onPressed: addStoryState is AddStoryLoading || photoFile == null
                     ? null
                     : () async {
-                        if (file == null) return;
                         ref
                             .read(addStoryProvider.notifier)
                             .addStory(
                               description: _descriptionController.text,
-                              photoFile: file!,
+                              photoFile: photoFile,
+                              lat: location?.latitude,
+                              lon: location?.longitude,
                             );
                       },
                 child: addStoryState is AddStoryLoading
@@ -95,12 +113,13 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
                 final croppedFile =
                     snapshot.data?.data.firstOrNull?.croppedFile;
                 if (croppedFile != null) {
-                  // Update file reference for posting
+                  // Update file reference in view model
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted && file?.path != croppedFile.path) {
-                      setState(() {
-                        file = XFile(croppedFile.path);
-                      });
+                    final currentFile = ref.read(selectedPhotoFileProvider);
+                    if (mounted && currentFile?.path != croppedFile.path) {
+                      ref
+                          .read(selectedPhotoFileProvider.notifier)
+                          .setFile(XFile(croppedFile.path));
                     }
                   });
 
@@ -150,6 +169,45 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
                 );
               },
             ),
+            const SizedBox(height: 16),
+            // Location picker button
+            Consumer(
+              builder: (context, ref, child) {
+                final addStoryState = ref.watch(addStoryProvider);
+                final isLoading = addStoryState is AddStoryLoading;
+                final location = ref.watch(selectedLocationProvider);
+
+                return OutlinedButton.icon(
+                  key: const Key('locationButton'),
+                  onPressed: isLoading ? null : _openLocationPicker,
+                  icon: Icon(
+                    location != null
+                        ? Icons.location_on
+                        : Icons.add_location_alt,
+                  ),
+                  label: Text(
+                    location != null
+                        ? '${location.city}, ${location.country}'
+                        : context.l10n.addStoryAddLocation,
+                  ),
+                );
+              },
+            ),
+            if (selectedLocation != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: TextButton(
+                  onPressed: () {
+                    ref.read(selectedLocationProvider.notifier).clear();
+                  },
+                  child: Text(
+                    context.l10n.addStoryRemoveLocation,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

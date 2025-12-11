@@ -69,5 +69,12 @@
                 "type": "int"
             }
         }
-    }
+    },
+
+    "@_LOCATION_FEATURE": {},
+    "addStoryAddLocation": "Add Location",
+    "addStoryRemoveLocation": "Remove Location",
+    "locationPickerTitle": "Choose Location",
+    "locationPickerConfirm": "Confirm",
+    "locationPickerHint": "Tap on the map to select a location, or drag the marker"
 }
