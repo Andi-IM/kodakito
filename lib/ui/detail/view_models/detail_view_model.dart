@@ -1,7 +1,8 @@
 import 'dart:typed_data' show Uint8List;
 
 import 'package:dicoding_story/data/data_providers.dart';
-import 'package:dicoding_story/data/services/remote/network_service.dart';
+import 'package:dicoding_story/data/services/api/remote/network_service.dart';
+import 'package:dicoding_story/data/services/location/location_service.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/repository/detail_repository.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
@@ -37,7 +38,18 @@ class DetailScreenContent extends _$DetailScreenContent with LogMixin {
       (story) async {
         log.info('Successfully fetched story detail');
         final imageBytes = await _networkImageProvider.get(story.photoUrl);
-        state = Loaded(story: story, imageBytes: imageBytes);
+        if (story.lat != null && story.lon != null) {
+          final location = await ref
+              .read(locationServiceProvider)
+              .getCurrentLocation(story.lat!, story.lon!);
+          state = Loaded(
+            story: story,
+            imageBytes: imageBytes,
+            location: location,
+          );
+        } else {
+          state = Loaded(story: story, imageBytes: imageBytes);
+        }
       },
     );
   }

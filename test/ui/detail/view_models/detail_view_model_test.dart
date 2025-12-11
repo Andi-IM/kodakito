@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:dicoding_story/data/services/remote/network_service.dart';
+import 'package:dicoding_story/data/services/api/remote/network_service.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockDetailRepository extends Mock implements DetailRepository {}

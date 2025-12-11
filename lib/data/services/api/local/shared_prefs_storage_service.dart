@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:dicoding_story/data/services/local/storage_service.dart';
+import 'package:dicoding_story/data/services/api/local/storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefsService implements StorageService {

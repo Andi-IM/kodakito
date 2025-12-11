@@ -1,4 +1,4 @@
-import 'package:dicoding_story/data/services/local/cache_datasource.dart';
+import 'package:dicoding_story/data/services/api/local/cache_datasource.dart';
 import 'package:dio/dio.dart';
 
 class AuthInterceptor extends Interceptor {

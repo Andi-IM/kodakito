@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/repositories/detail/detail_repository_remote.dart';
-import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
+import 'package:dicoding_story/data/services/api/remote/story/story_data_source.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter_test/flutter_test.dart';

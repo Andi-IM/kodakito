@@ -4,7 +4,7 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/common/globals.dart';
 import 'package:dicoding_story/app/package_info_service.dart';
 import 'package:dicoding_story/data/data_providers.dart';
-import 'package:dicoding_story/data/services/local/shared_prefs_storage_service.dart';
+import 'package:dicoding_story/data/services/api/local/shared_prefs_storage_service.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/main/widgets/settings_dialog.dart';
 import 'package:flutter/material.dart';

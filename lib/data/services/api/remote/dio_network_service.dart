@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
-import 'package:dicoding_story/data/services/remote/network_service.dart';
+import 'package:dicoding_story/data/services/api/remote/network_service.dart';
 import 'package:dicoding_story/domain/models/response.dart' as response;
 import 'package:dicoding_story/utils/exception_handler_mixin.dart';
 import 'package:dicoding_story/utils/http_exception.dart';

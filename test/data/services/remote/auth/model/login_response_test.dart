@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:dicoding_story/data/services/remote/auth/model/login_response/login_response.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/login_response/login_response.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

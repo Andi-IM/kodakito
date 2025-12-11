@@ -1,4 +1,4 @@
-import 'package:dicoding_story/data/services/local/shared_prefs_storage_service.dart';
+import 'package:dicoding_story/data/services/api/local/shared_prefs_storage_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -1,6 +1,6 @@
 import 'package:dicoding_story/common/globals.dart';
 import 'package:dicoding_story/common/theme.dart';
-import 'package:dicoding_story/data/services/local/storage_service.dart';
+import 'package:dicoding_story/data/services/api/local/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

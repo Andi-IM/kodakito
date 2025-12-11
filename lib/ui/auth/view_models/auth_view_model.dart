@@ -1,4 +1,4 @@
-import 'package:dicoding_story/data/services/remote/auth/model/login_response/login_response.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/login_response/login_response.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_state.dart';
 import 'package:dicoding_story/utils/http_exception.dart';

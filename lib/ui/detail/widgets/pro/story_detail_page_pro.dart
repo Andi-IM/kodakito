@@ -1,11 +1,14 @@
 import 'dart:typed_data';
 
+import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/detail/view_models/detail_view_model.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:latlong_to_place/latlong_to_place.dart';
 
 class StoryDetailPagePro extends ConsumerStatefulWidget {
   final String id;
@@ -171,14 +174,14 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailPagePro> {
           // Overlay loading indicator
           if (storyState is Initial || storyState is Loading)
             Container(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: .3),
               child: const Center(child: CircularProgressIndicator()),
             ),
 
           // Error state overlay
           if (storyState is Error)
             Container(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: .3),
               child: Center(
                 child: Card(
                   margin: const EdgeInsets.all(32),
@@ -218,6 +221,7 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailPagePro> {
           if (storyState is Loaded)
             _StoryBottomSheet(
               story: storyState.story,
+              location: storyState.location,
               imageBytes: storyState.imageBytes,
               colorScheme: colorScheme,
               controller: _sheetController,
@@ -230,12 +234,14 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailPagePro> {
 
 class _StoryBottomSheet extends StatelessWidget {
   final Story story;
+  final PlaceInfo? location;
   final Uint8List? imageBytes;
   final ColorScheme colorScheme;
   final DraggableScrollableController controller;
 
   const _StoryBottomSheet({
     required this.story,
+    required this.location,
     required this.imageBytes,
     required this.colorScheme,
     required this.controller,
@@ -255,7 +261,7 @@ class _StoryBottomSheet extends StatelessWidget {
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: .1),
                 blurRadius: 10,
                 offset: const Offset(0, -2),
               ),
@@ -273,7 +279,9 @@ class _StoryBottomSheet extends StatelessWidget {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: colorScheme.onPrimaryContainer.withOpacity(0.4),
+                      color: colorScheme.onPrimaryContainer.withValues(
+                        alpha: .4,
+                      ),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -307,11 +315,13 @@ class _StoryBottomSheet extends StatelessWidget {
                                 ),
                           ),
                           Text(
-                            _formatDate(story.createdAt),
+                            DateFormat.yMMMMEEEEd(
+                              context.l10n.localeName,
+                            ).format(story.createdAt),
                             style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(
                                   color: colorScheme.onPrimaryContainer
-                                      .withOpacity(0.7),
+                                      .withValues(alpha: .7),
                                 ),
                           ),
                         ],
@@ -332,7 +342,7 @@ class _StoryBottomSheet extends StatelessWidget {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: colorScheme.primary.withOpacity(0.15),
+                        color: colorScheme.primary.withValues(alpha: .15),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -345,7 +355,7 @@ class _StoryBottomSheet extends StatelessWidget {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            '${story.lat!.toStringAsFixed(4)}, ${story.lon!.toStringAsFixed(4)}',
+                            '${location?.city}, ${location?.state}',
                             style: TextStyle(
                               color: colorScheme.primary,
                               fontWeight: FontWeight.w500,
@@ -399,7 +409,9 @@ class _StoryBottomSheet extends StatelessWidget {
                   child: Text(
                     story.description,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onPrimaryContainer.withOpacity(0.8),
+                      color: colorScheme.onPrimaryContainer.withValues(
+                        alpha: .8,
+                      ),
                       height: 1.5,
                     ),
                   ),
@@ -412,33 +424,5 @@ class _StoryBottomSheet extends StatelessWidget {
         );
       },
     );
-  }
-
-  String _formatDate(DateTime date) {
-    final months = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember',
-    ];
-    final days = [
-      'Senin',
-      'Selasa',
-      'Rabu',
-      'Kamis',
-      'Jumat',
-      'Sabtu',
-      'Minggu',
-    ];
-    final dayName = days[date.weekday - 1];
-    return '$dayName, ${date.day} ${months[date.month - 1]} ${date.year}';
   }
 }

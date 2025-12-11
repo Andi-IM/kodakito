@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:dicoding_story/data/services/local/cache_datasource.dart';
-import 'package:dicoding_story/data/services/remote/auth/auth_interceptor.dart';
+import 'package:dicoding_story/data/services/api/local/cache_datasource.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/auth_interceptor.dart';
 import 'package:dicoding_story/domain/models/cache/cache.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:dio/dio.dart';

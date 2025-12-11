@@ -2,9 +2,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
-import 'package:dicoding_story/data/services/remote/network_service.dart';
-import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/default_response/default_response.dart';
+import 'package:dicoding_story/data/services/api/remote/network_service.dart';
+import 'package:dicoding_story/data/services/api/remote/story/story_data_source.dart';
 import 'package:dicoding_story/domain/models/response.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/utils/http_exception.dart';

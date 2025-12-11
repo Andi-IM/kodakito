@@ -3,7 +3,7 @@ import 'package:dicoding_story/app/app_env.dart';
 import 'package:dicoding_story/app/observer.dart';
 import 'package:dicoding_story/data/data_providers.dart'
     show authInterceptorProvider, cacheDatasourceProvider;
-import 'package:dicoding_story/data/services/remote/auth/auth_interceptor.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/auth_interceptor.dart';
 import 'package:dicoding_story/domain/models/cache/cache.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

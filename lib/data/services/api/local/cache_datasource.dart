@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/common/globals.dart';
-import 'package:dicoding_story/data/services/local/storage_service.dart';
+import 'package:dicoding_story/data/services/api/local/storage_service.dart';
 import 'package:dicoding_story/domain/models/cache/cache.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 

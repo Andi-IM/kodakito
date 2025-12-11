@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/domain/models/cache/cache.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/login_response/login_response.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/default_response/default_response.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/login_response/login_response.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/repository/auth_repository.dart';
 import 'package:dicoding_story/domain/repository/cache_repository.dart';

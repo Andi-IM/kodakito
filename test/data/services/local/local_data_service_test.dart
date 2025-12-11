@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:dicoding_story/data/services/local/local_data_service.dart';
+import 'package:dicoding_story/data/services/api/local/local_data_service.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

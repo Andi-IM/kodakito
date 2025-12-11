@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
-import 'package:dicoding_story/data/services/remote/auth/auth_data_source.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/login_request/login_request.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/login_response/login_response.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/register_request/register_request.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/auth_data_source.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/default_response/default_response.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/login_request/login_request.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/login_response/login_response.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/register_request/register_request.dart';
 import 'package:dicoding_story/domain/repository/auth_repository.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 

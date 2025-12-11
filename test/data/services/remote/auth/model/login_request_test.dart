@@ -1,4 +1,4 @@
-import 'package:dicoding_story/data/services/remote/auth/model/login_request/login_request.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/login_request/login_request.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,6 +1,8 @@
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'dart:typed_data' show Uint8List;
 
+import 'package:latlong_to_place/latlong_to_place.dart';
+
 sealed class StoryState {
   const StoryState();
 }
@@ -16,7 +18,8 @@ class Loading extends StoryState {
 class Loaded extends StoryState {
   final Story story;
   final Uint8List? imageBytes;
-  const Loaded({required this.story, required this.imageBytes});
+  final PlaceInfo? location;
+  const Loaded({required this.story, required this.imageBytes, this.location});
 }
 
 class Error extends StoryState {
