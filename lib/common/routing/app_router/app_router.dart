@@ -28,6 +28,68 @@ part 'app_router.g.dart';
 
 final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
+// =============================================================================
+// Route Names (Type-safe constants)
+// =============================================================================
+
+abstract class AppRoutes {
+  static const String login = 'login';
+  static const String register = 'register';
+  static const String main = 'main';
+  static const String settings = 'settings';
+  static const String language = 'language';
+  static const String addStory = 'add-story';
+  static const String addStoryCrop = 'add-story-crop';
+  static const String detail = 'detail';
+  static const String mobileCrop = 'mobile-crop';
+}
+
+// =============================================================================
+// Type-safe Route Navigation Extensions
+// =============================================================================
+
+extension AppRouterExtension on BuildContext {
+  /// Navigate to login page
+  void goToLogin() => goNamed(AppRoutes.login);
+
+  /// Navigate to register page
+  void goToRegister() => goNamed(AppRoutes.register);
+
+  /// Navigate to main page
+  void goToMain() => goNamed(AppRoutes.main);
+
+  /// Push main page (replacement)
+  void pushReplacementMain() => pushReplacementNamed(AppRoutes.main);
+
+  /// Navigate to settings dialog
+  void goToSettings() => goNamed(AppRoutes.settings);
+
+  /// Navigate to language dialog
+  void goToLanguage() => goNamed(AppRoutes.language);
+
+  /// Navigate to add story dialog
+  void goToAddStory() => goNamed(AppRoutes.addStory);
+
+  /// Navigate to add story crop dialog with image bytes
+  void goToAddStoryCrop(Uint8List imageBytes) =>
+      goNamed(AppRoutes.addStoryCrop, extra: imageBytes);
+
+  /// Navigate to story detail page
+  void goToDetail({required String id, bool hasLocation = false}) => goNamed(
+    AppRoutes.detail,
+    pathParameters: {'id': id},
+    queryParameters: {'hasLocation': hasLocation.toString()},
+  );
+
+  /// Navigate to mobile crop page with stream
+  void goToMobileCrop(Stream<InstaAssetsExportDetails> cropStream) =>
+      goNamed(AppRoutes.mobileCrop, extra: cropStream);
+}
+
+// =============================================================================
+// Router Provider
+// =============================================================================
+
 @riverpod
 GoRouter appRouter(Ref ref) {
   return GoRouter(
@@ -48,46 +110,46 @@ GoRouter appRouter(Ref ref) {
     routes: [
       GoRoute(
         path: '/login',
-        name: 'login',
+        name: AppRoutes.login,
         builder: (context, state) => LoginPage(
-          goToRegister: () => context.goNamed('register'),
-          onLoginSuccess: () => context.pushReplacementNamed('main'),
+          goToRegister: () => context.goToRegister(),
+          onLoginSuccess: () => context.pushReplacementMain(),
         ),
       ),
       GoRoute(
         path: '/register',
-        name: 'register',
+        name: AppRoutes.register,
         builder: (context, state) => RegisterPage(
           onRegisterSuccess: () {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(context.l10n.authRegisterSuccessMessage)),
             );
-            context.go('/login');
+            context.goToLogin();
           },
-          goToLogin: () => context.go('/login'),
+          goToLogin: () => context.goToLogin(),
         ),
       ),
       GoRoute(
         path: '/',
-        name: 'main',
+        name: AppRoutes.main,
         builder: (context, state) => const MainPage(),
         routes: [
           GoRoute(
-            path: '/settings',
-            name: 'settings',
+            path: 'settings',
+            name: AppRoutes.settings,
             pageBuilder: (context, state) {
               return DialogPage(
                 builder: (_) => SettingsDialog(
                   onPop: () => context.pop(),
-                  onLogout: () => context.goNamed('login'),
-                  onLanguageDialogOpen: () => context.goNamed('language'),
+                  onLogout: () => context.goToLogin(),
+                  onLanguageDialogOpen: () => context.goToLanguage(),
                 ),
               );
             },
             routes: [
               GoRoute(
-                path: '/language',
-                name: 'language',
+                path: 'language',
+                name: AppRoutes.language,
                 pageBuilder: (context, state) {
                   return DialogPage(
                     builder: (_) => LanguageDialog(onPop: () => context.pop()),
@@ -97,15 +159,15 @@ GoRouter appRouter(Ref ref) {
             ],
           ),
           GoRoute(
-            path: '/add-story',
-            name: 'add-story',
+            path: 'add-story',
+            name: AppRoutes.addStory,
             pageBuilder: (context, state) {
               return DialogPage(builder: (_) => const AddStoryDialog());
             },
             routes: [
               GoRoute(
-                path: '/crop',
-                name: 'add-story-crop',
+                path: 'crop',
+                name: AppRoutes.addStoryCrop,
                 pageBuilder: (context, state) => DialogPage(
                   builder: (context) {
                     final imageBytes = state.extra as Uint8List;
@@ -120,20 +182,27 @@ GoRouter appRouter(Ref ref) {
             ],
           ),
           GoRoute(
-            path: '/story/:id',
-            name: 'detail',
+            path: 'story/:id',
+            name: AppRoutes.detail,
             builder: (context, state) {
               final id = state.pathParameters['id']!;
+              final hasLocation =
+                  state.uri.queryParameters['hasLocation'] == 'true';
 
               return Consumer(
                 builder: (context, ref, child) {
                   final isSupport = ref.watch(supportMapsProvider);
+                  final isProEnvironment =
+                      EnvInfo.environment == AppEnvironment.pro ||
+                      EnvInfo.environment == AppEnvironment.proDevelopment;
+                  final showProDetail =
+                      isProEnvironment && isSupport && hasLocation;
 
-                  if ((EnvInfo.environment == AppEnvironment.pro ||
-                          EnvInfo.environment ==
-                              AppEnvironment.proDevelopment) &&
-                      isSupport) {
-                    return StoryDetailPagePro(id: id);
+                  if (showProDetail) {
+                    return StoryDetailPagePro(
+                      id: id,
+                      onBack: () => context.pop(),
+                    );
                   }
 
                   return StoryDetailPage(id: id);
@@ -147,14 +216,14 @@ GoRouter appRouter(Ref ref) {
       if (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
         GoRoute(
           path: '/crop',
-          name: 'mobile-crop',
+          name: AppRoutes.mobileCrop,
           builder: (context, state) {
             final cropStream = state.extra as Stream<InstaAssetsExportDetails>;
             return AddStoryPage(
               cropStream: cropStream,
               onAddStorySuccess: () {
                 ref.read(addStoryProvider.notifier).resetState();
-                context.pushReplacementNamed('main');
+                context.pushReplacementMain();
               },
             );
           },

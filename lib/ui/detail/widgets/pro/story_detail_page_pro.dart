@@ -9,10 +9,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong_to_place/latlong_to_place.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 
 class StoryDetailPagePro extends ConsumerStatefulWidget {
   final String id;
-  const StoryDetailPagePro({super.key, required this.id});
+  final Function onBack;
+  const StoryDetailPagePro({super.key, required this.id, required this.onBack});
 
   @override
   ConsumerState<StoryDetailPagePro> createState() => _StoryDetailPageProState();
@@ -26,7 +28,7 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailPagePro> {
   // Controller for bottom sheet to track position
   final DraggableScrollableController _sheetController =
       DraggableScrollableController();
-  double _sheetExtent = 0.25; // Initial extent
+  double _sheetExtent = 0.25; 
 
   @override
   void initState() {
@@ -139,43 +141,50 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailPagePro> {
               heroTag: "back",
               backgroundColor: colorScheme.surface,
               foregroundColor: colorScheme.onSurface,
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: (storyState is Initial || storyState is Loading)
+                  ? null
+                  : () => widget.onBack(),
               child: const Icon(Icons.arrow_back),
             ),
           ),
 
-          // Zoom controls (follows bottom sheet position)
-          Positioned(
-            bottom: screenHeight * _sheetExtent + 16,
-            right: 16,
-            child: Column(
-              children: [
-                FloatingActionButton.small(
-                  heroTag: "zoom-in",
-                  backgroundColor: colorScheme.surface,
-                  foregroundColor: colorScheme.onSurface,
-                  onPressed: () =>
-                      _mapController?.animateCamera(CameraUpdate.zoomIn()),
-                  child: const Icon(Icons.add),
-                ),
-                const SizedBox(height: 8),
-                FloatingActionButton.small(
-                  heroTag: "zoom-out",
-                  backgroundColor: colorScheme.surface,
-                  foregroundColor: colorScheme.onSurface,
-                  onPressed: () =>
-                      _mapController?.animateCamera(CameraUpdate.zoomOut()),
-                  child: const Icon(Icons.remove),
-                ),
-              ],
+          // Zoom controls (follows bottom sheet position) - only show when loaded
+          if (storyState is Loaded)
+            Positioned(
+              bottom: screenHeight * _sheetExtent + 16,
+              right: 16,
+              child: Column(
+                children: [
+                  FloatingActionButton.small(
+                    heroTag: "zoom-in",
+                    backgroundColor: colorScheme.surface,
+                    foregroundColor: colorScheme.onSurface,
+                    onPressed: () =>
+                        _mapController?.animateCamera(CameraUpdate.zoomIn()),
+                    child: const Icon(Icons.add),
+                  ),
+                  const SizedBox(height: 8),
+                  FloatingActionButton.small(
+                    heroTag: "zoom-out",
+                    backgroundColor: colorScheme.surface,
+                    foregroundColor: colorScheme.onSurface,
+                    onPressed: () =>
+                        _mapController?.animateCamera(CameraUpdate.zoomOut()),
+                    child: const Icon(Icons.remove),
+                  ),
+                ],
+              ),
             ),
-          ),
 
           // Overlay loading indicator
           if (storyState is Initial || storyState is Loading)
             Container(
               color: Colors.black.withValues(alpha: .3),
-              child: const Center(child: CircularProgressIndicator()),
+              child: const Center(
+                child: LoadingIndicatorM3E(
+                  variant: LoadingIndicatorM3EVariant.contained,
+                ),
+              ),
             ),
 
           // Error state overlay
@@ -347,6 +356,7 @@ class _StoryBottomSheet extends StatelessWidget {
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Icon(
                             Icons.location_on,
@@ -354,11 +364,13 @@ class _StoryBottomSheet extends StatelessWidget {
                             color: colorScheme.primary,
                           ),
                           const SizedBox(width: 6),
-                          Text(
-                            '${location?.city}, ${location?.state}',
-                            style: TextStyle(
-                              color: colorScheme.primary,
-                              fontWeight: FontWeight.w500,
+                          Flexible(
+                            child: Text(
+                              '${location?.city}, ${location?.state}',
+                              style: TextStyle(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ],

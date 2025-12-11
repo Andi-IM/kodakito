@@ -1,4 +1,5 @@
 import 'package:dicoding_story/common/localizations.dart';
+import 'package:dicoding_story/common/routing/app_router/app_router.dart';
 import 'package:dicoding_story/data/services/platform/platform_provider.dart';
 import 'package:dicoding_story/data/services/widget/insta_image_picker/insta_image_picker_service.dart';
 import 'package:dicoding_story/data/services/widget/wechat_camera_picker/wechat_camera_picker_service.dart';
@@ -161,7 +162,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
                         final story = stories[index];
                         return StoryCard(
                           story: story,
-                          onTap: () => context.go('/story/${story.id}'),
+                          onTap: () => context.goToDetail(id: story.id),
                         );
                       },
                     )
@@ -176,7 +177,10 @@ class _MainScreenState extends ConsumerState<MainPage> {
                         return StoryCard(
                           key: ValueKey('StoryCard_${story.id}'),
                           story: story,
-                          onTap: () => context.go('/story/${story.id}'),
+                          onTap: () => context.goToDetail(
+                            id: story.id,
+                            hasLocation: story.lat != null && story.lon != null,
+                          ),
                         );
                       },
                     ),
