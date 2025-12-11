@@ -4,7 +4,6 @@ import 'package:dicoding_story/app/app.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:logging/logging.dart';
@@ -30,15 +29,6 @@ Future<void> initApp(AppEnvironment environment) async {
   });
 
   final List<Future<void>> startupFutures = [];
-
-  // Platform.environment is not available on web
-  if (kIsWeb) {
-    startupFutures.add(dotenv.load(fileName: ".env"));
-  } else {
-    startupFutures.add(
-      dotenv.load(fileName: ".env", mergeWith: Platform.environment),
-    );
-  }
   startupFutures.add(SharedPreferences.getInstance());
 
   if (!kIsWeb && Platform.isWindows) {

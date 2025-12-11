@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+
 // coverage:ignore-file
 enum AppEnvironment { development, production, proDevelopment, pro }
 
@@ -24,6 +25,8 @@ abstract class EnvInfo {
   static bool get isRelease => kReleaseMode;
 
   static bool get isProfile => kProfileMode;
+
+  static String get apiKey => const String.fromEnvironment('APP_URL', defaultValue: 'app-url');
 }
 
 extension _EnvProperties on AppEnvironment {

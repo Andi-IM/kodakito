@@ -8,7 +8,7 @@ plugins {
 }
 
 // Load environment variables from env.json
-val envFile = rootProject.file("../env/env.json")
+val envFile = rootProject.file("../env/keys.json")
 val envConfig: Map<String, String> = if (envFile.exists()) {
     @Suppress("UNCHECKED_CAST")
     JsonSlurper().parseText(envFile.readText()) as Map<String, String>
@@ -47,6 +47,8 @@ android {
         multiDexEnabled = true
         testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
+
+        manifestPlaceholders["googleMapsApiKey"] = getEnvVariable("MAPS_APIKEY")
     }
 
     buildTypes {

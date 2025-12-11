@@ -1,3 +1,4 @@
+import 'package:dicoding_story/app/app_env.dart';
 import 'package:dicoding_story/common/globals.dart';
 import 'package:dicoding_story/data/services/local/cache_datasource.dart';
 import 'package:dicoding_story/data/services/local/local_data_service.dart';
@@ -9,7 +10,6 @@ import 'package:dicoding_story/data/services/remote/network_service.dart';
 import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'data_providers.g.dart';
@@ -42,7 +42,7 @@ DioNetworkService dioNetworkService(Ref ref) {
   if (!kTestMode) {
     // coverage:ignore-line
     final dioBaseOptions = BaseOptions(
-      baseUrl: dotenv.get("APP_URL", fallback: "localhost:8000"),
+      baseUrl: EnvInfo.apiKey,
       headers: {
         'accept': 'application/json',
         'Content-Type': 'application/json',

@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 // Platform.environment is not available on web, so we default to false
@@ -8,8 +10,8 @@ bool _getTestMode() {
   if (kIsWeb) return false;
   // coverage:ignore-end
 
-  // Dynamically import dart:io only for non-web platforms
-  return const bool.fromEnvironment('dart.vm.product') == false &&
+  // Check Platform.environment for FLUTTER_TEST (set by flutter test command)
+  return Platform.environment.containsKey('FLUTTER_TEST') ||
       const bool.fromEnvironment('FLUTTER_TEST', defaultValue: false);
 }
 

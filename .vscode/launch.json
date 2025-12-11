@@ -12,7 +12,9 @@
             "flutterMode": "debug",
             "args": [
                 "--flavor",
-                "dev"
+                "dev",
+                "--dart-define-from-file=",
+                "env/keys.json"
             ]
         },
         {
@@ -23,7 +25,9 @@
             "flutterMode": "profile",
             "args": [
                 "--flavor",
-                "dev"
+                "dev",
+                "--dart-define-from-file=",
+                "env/keys.json"
             ]
         },
         {
@@ -34,7 +38,9 @@
             "flutterMode": "release",
             "args": [
                 "--flavor",
-                "dev"
+                "dev",
+                "--dart-define-from-file=",
+                "env/keys.json"
             ]
         },
          {
@@ -45,7 +51,9 @@
             "flutterMode": "debug",
             "args": [
                 "--flavor",
-                "prod"
+                "prod",
+                "--dart-define-from-file=",
+                "env/keys.json"
             ]
         },
         {
@@ -56,7 +64,9 @@
             "flutterMode": "profile",
             "args": [
                 "--flavor",
-                "prod"
+                "prod",
+                "--dart-define-from-file=",
+                "env/keys.json"
             ]
         },
         {
@@ -67,7 +77,9 @@
             "flutterMode": "release",
             "args": [
                 "--flavor",
-                "prod"
+                "prod",
+                "--dart-define-from-file=",
+                "env/keys.json"
             ]
         },
          {
@@ -78,7 +90,9 @@
             "flutterMode": "debug",
             "args": [
                 "--flavor",
-                "prodev"
+                "prodev",
+                "--dart-define-from-file=",
+                "env/keys.json"
             ]
         },
         {
@@ -89,7 +103,9 @@
             "flutterMode": "profile",
             "args": [
                 "--flavor",
-                "prodev"
+                "prodev",
+                "--dart-define-from-file=",
+                "env/keys.json"
             ]
         },
         {
@@ -100,7 +116,9 @@
             "flutterMode": "release",
             "args": [
                 "--flavor",
-                "prodev"
+                "prodev",
+                "--dart-define-from-file=",
+                "env/keys.json"
             ]
         },
          {
@@ -111,7 +129,9 @@
             "flutterMode": "debug",
             "args": [
                 "--flavor",
-                "pro"
+                "pro",
+                "--dart-define-from-file=",
+                "env/keys.json"
             ]
         },
         {
@@ -122,7 +142,9 @@
             "flutterMode": "profile",
             "args": [
                 "--flavor",
-                "pro"
+                "pro",
+                "--dart-define-from-file=",
+                "env/keys.json"
             ]
         },
         {
@@ -133,7 +155,9 @@
             "flutterMode": "release",
             "args": [
                 "--flavor",
-                "pro"
+                "pro",
+                "--dart-define-from-file=",
+                "env/keys.json"
             ]
         },
     ]
