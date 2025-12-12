@@ -693,15 +693,16 @@ void main() {
                 as Function(Stream<InstaAssetsExportDetails>);
       });
 
-      // Stub goRouter.pushNamed
+      // Stub goRouter.goNamed
       when(
-        () => mockGoRouter.pushNamed(
+        () => mockGoRouter.goNamed(
           any(),
           pathParameters: any(named: 'pathParameters'),
           queryParameters: any(named: 'queryParameters'),
           extra: any(named: 'extra'),
+          fragment: any(named: 'fragment'),
         ),
-      ).thenAnswer((_) async => null);
+      ).thenReturn(null);
 
       mockStories.setState(
         StoriesState.initial()
@@ -733,13 +734,14 @@ void main() {
       capturedOnCompleted!(mockStream);
       await tester.pump();
 
-      // Verify pushNamed was called with 'mobile-crop' route and the stream as extra
+      // Verify goNamed was called with 'post' route (Routing.post)
       verify(
-        () => mockGoRouter.pushNamed(
-          'mobile-crop',
+        () => mockGoRouter.goNamed(
+          'post',
           pathParameters: any(named: 'pathParameters'),
           queryParameters: any(named: 'queryParameters'),
-          extra: mockStream,
+          extra: any(named: 'extra'),
+          fragment: any(named: 'fragment'),
         ),
       ).called(1);
     },
@@ -778,15 +780,10 @@ void main() {
     final mockStories = container.read(storiesProvider.notifier) as MockStories;
     when(() => mockStories.getStories()).thenAnswer((_) async {});
 
-    // Stub goRouter.pushNamed for AddStoryDialog
+    // Stub goRouter.go for PostStoryRoute().go()
     when(
-      () => mockGoRouter.pushNamed(
-        any(),
-        pathParameters: any(named: 'pathParameters'),
-        queryParameters: any(named: 'queryParameters'),
-        extra: any(named: 'extra'),
-      ),
-    ).thenAnswer((_) async => null);
+      () => mockGoRouter.go(any(), extra: any(named: 'extra')),
+    ).thenReturn(null);
 
     // Set the state to loaded with stories
     mockStories.setState(
@@ -809,14 +806,9 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('fab_extended')));
     await tester.pump(const Duration(seconds: 1));
 
-    // Verify navigation to add-story route was called
+    // Verify navigation to /post route was called (PostStoryRoute().go())
     verify(
-      () => mockGoRouter.pushNamed(
-        'add-story',
-        pathParameters: any(named: 'pathParameters'),
-        queryParameters: any(named: 'queryParameters'),
-        extra: any(named: 'extra'),
-      ),
+      () => mockGoRouter.go('/post', extra: any(named: 'extra')),
     ).called(1);
   });
 

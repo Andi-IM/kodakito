@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/data_providers.dart';
+import 'package:dicoding_story/data/services/location/location_service.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/domain/repository/detail_repository.dart';
@@ -13,29 +14,35 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:dicoding_story/data/services/api/remote/network_service.dart';
+import 'package:latlong_to_place/latlong_to_place.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockDetailRepository extends Mock implements DetailRepository {}
 
 class MockNetworkImageService extends Mock implements NetworkImageService {}
 
+class MockLocationService extends Mock implements LocationService {}
+
 void main() {
   late MockDetailRepository mockRepository;
   late ProviderContainer container;
 
   late MockNetworkImageService mockNetworkImageService;
+  late MockLocationService mockLocationService;
 
   setUp(() {
     TestWidgetsFlutterBinding.ensureInitialized();
     mockRepository = MockDetailRepository();
     // ... setup
     mockNetworkImageService = MockNetworkImageService();
+    mockLocationService = MockLocationService();
     container = ProviderContainer(
       overrides: [
         detailRepositoryProvider.overrideWithValue(mockRepository),
         networkImageServiceProvider.overrideWith(
           (ref) => mockNetworkImageService,
         ),
+        locationServiceProvider.overrideWith((ref) => mockLocationService),
       ],
     );
   });
@@ -65,12 +72,26 @@ void main() {
   });
 
   test('fetchDetailStory success updates state to loaded', () async {
+    final tPlaceInfo = PlaceInfo(
+      formattedAddress: 'Test Address',
+      street: 'Test Street',
+      locality: 'Test Locality',
+      city: 'Test City',
+      state: 'Test State',
+      country: 'Test Country',
+      postalCode: '12345',
+      latitude: 0.0,
+      longitude: 0.0,
+    );
     when(
       () => mockRepository.getDetailStory('1'),
     ).thenAnswer((_) async => Right(tStory));
     when(
       () => mockNetworkImageService.get(any()),
     ).thenAnswer((_) async => Uint8List(0));
+    when(
+      () => mockLocationService.getCurrentLocation(any(), any()),
+    ).thenAnswer((_) async => tPlaceInfo);
 
     final sub = container.listen(detailScreenContentProvider('1'), (_, __) {});
 
@@ -113,12 +134,26 @@ void main() {
   });
 
   test('resetState resets state to initial', () async {
+    final tPlaceInfo = PlaceInfo(
+      formattedAddress: 'Test Address',
+      street: 'Test Street',
+      locality: 'Test Locality',
+      city: 'Test City',
+      state: 'Test State',
+      country: 'Test Country',
+      postalCode: '12345',
+      latitude: 0.0,
+      longitude: 0.0,
+    );
     when(
       () => mockRepository.getDetailStory('1'),
     ).thenAnswer((_) async => Right(tStory));
     when(
       () => mockNetworkImageService.get(any()),
     ).thenAnswer((_) async => Uint8List(0));
+    when(
+      () => mockLocationService.getCurrentLocation(any(), any()),
+    ).thenAnswer((_) async => tPlaceInfo);
 
     final sub = container.listen(detailScreenContentProvider('1'), (_, __) {});
 
