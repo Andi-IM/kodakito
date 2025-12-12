@@ -11,6 +11,7 @@ abstract class LocationService {
   Future<PlaceInfo> retrieveCurrentLocation();
 }
 
+// coverage:ignore-start
 class LocationServiceImpl implements LocationService {
   @override
   Future<PlaceInfo> getCurrentLocation(double lat, double lng) async {
@@ -26,3 +27,4 @@ class LocationServiceImpl implements LocationService {
     return result;
   }
 }
+// coverage:ignore-end

@@ -1010,6 +1010,74 @@ void main() {
     },
   );
 
+  testWidgets('scrolling to bottom of list triggers getStories for pagination', (
+    tester,
+  ) async {
+    // Create enough stories to make a scrollable list
+    final testStories = List.generate(
+      20,
+      (index) => Story(
+        id: 'story-$index',
+        name: 'Test User $index',
+        description: 'Test description $index',
+        photoUrl: 'https://example.com/photo$index.jpg',
+        createdAt: DateTime(2024, 1, index + 1),
+        lat: null,
+        lon: null,
+      ),
+    );
+
+    final container = ProviderContainer.test(
+      overrides: [
+        storiesProvider.overrideWith(MockStories.new),
+        fetchUserDataProvider.overrideWith((ref) => 'Test User'),
+        cameraPickerServiceProvider.overrideWithValue(mockCameraPickerService),
+        instaImagePickerServiceProvider.overrideWithValue(
+          mockInstaImagePickerService,
+        ),
+        imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    // Keep the provider alive
+    container.listen(storiesProvider, (_, __) {});
+    final mockStories = container.read(storiesProvider.notifier) as MockStories;
+    when(() => mockStories.getStories()).thenAnswer((_) async {});
+
+    // Set the state to loaded with stories
+    mockStories.setState(
+      StoriesState.initial()
+          .copyWith(isInitialLoading: true)
+          .copyWith(isInitialLoading: false, stories: testStories),
+    );
+
+    await tester.pumpWidget(
+      pumpTestWidget(
+        tester,
+        container: container,
+        widthClass: WindowWidthClass.compact,
+      ),
+    );
+
+    await tester.pump();
+
+    // Initial getStories was called in initState
+    verify(() => mockStories.getStories()).called(1);
+    clearInteractions(mockStories);
+    when(() => mockStories.getStories()).thenAnswer((_) async {});
+
+    // Scroll to the last story card to trigger the _onScroll listener at 90% threshold
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('StoryCard_story-19')),
+      500,
+      scrollable: find.byType(Scrollable).first,
+    );
+
+    // Verify getStories was called again due to scroll (lines 43-44)
+    verify(() => mockStories.getStories()).called(greaterThanOrEqualTo(1));
+  });
+
   testWidgets('tapping avatar button opens SettingsDialog', (tester) async {
     final testStories = [
       Story(

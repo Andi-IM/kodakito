@@ -68,4 +68,37 @@ void main() {
       expect(result, isFalse);
     });
   });
+
+  group('supportMapsProvider', () {
+    test('returns a bool value', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final result = container.read(supportMapsProvider);
+
+      expect(result, isA<bool>());
+    });
+
+    test('can be overridden with true', () {
+      final container = ProviderContainer(
+        overrides: [supportMapsProvider.overrideWithValue(true)],
+      );
+      addTearDown(container.dispose);
+
+      final result = container.read(supportMapsProvider);
+
+      expect(result, isTrue);
+    });
+
+    test('can be overridden with false', () {
+      final container = ProviderContainer(
+        overrides: [supportMapsProvider.overrideWithValue(false)],
+      );
+      addTearDown(container.dispose);
+
+      final result = container.read(supportMapsProvider);
+
+      expect(result, isFalse);
+    });
+  });
 }

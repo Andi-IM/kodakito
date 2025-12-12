@@ -106,6 +106,45 @@ void main() {
     verify(() => mockRepository.getDetailStory('1')).called(1);
   });
 
+  test(
+    'fetchDetailStory success without location updates state to loaded',
+    () async {
+      final storyWithoutLocation = Story(
+        id: '1',
+        name: 'Test Story',
+        description: 'Description',
+        photoUrl: 'url',
+        createdAt: DateTime(2022, 1, 1),
+        lat: null,
+        lon: null,
+      );
+      when(
+        () => mockRepository.getDetailStory('1'),
+      ).thenAnswer((_) async => Right(storyWithoutLocation));
+      when(
+        () => mockNetworkImageService.get(any()),
+      ).thenAnswer((_) async => Uint8List(0));
+
+      final sub = container.listen(
+        detailScreenContentProvider('1'),
+        (_, __) {},
+      );
+
+      // Wait for microtask to complete
+      await container.pump();
+      await Future.delayed(Duration.zero);
+
+      expect(
+        sub.read(),
+        isA<st.Loaded>()
+            .having((s) => s.story, 'story', storyWithoutLocation)
+            .having((s) => s.location, 'location', isNull),
+      );
+      verify(() => mockRepository.getDetailStory('1')).called(1);
+      verifyNever(() => mockLocationService.getCurrentLocation(any(), any()));
+    },
+  );
+
   test('fetchDetailStory failure updates state to error', () async {
     final tError = AppException(
       message: 'Network Error',
