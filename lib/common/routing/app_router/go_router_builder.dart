@@ -214,7 +214,7 @@ class LoginRoute extends GoRouteData with $LoginRoute {
     _log.info('Navigating to LoginRoute');
     return LoginScreen(
       goToRegister: () => context.goNamed(Routing.register),
-      onLoginSuccess: () => context.goNamed(Routing.home),
+      onLoginSuccess: () => context.pushNamed(Routing.home),
     );
   }
 }
@@ -228,7 +228,12 @@ class RegisterRoute extends GoRouteData with $RegisterRoute {
     _log.info('Navigating to RegisterRoute');
     return RegisterScreen(
       goToLogin: () => context.go(Routing.login),
-      onRegisterSuccess: () => context.go(Routing.home),
+      onRegisterSuccess: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Register success, please login')),
+        );
+        context.pop();
+      },
     );
   }
 }

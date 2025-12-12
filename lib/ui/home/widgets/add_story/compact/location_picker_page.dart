@@ -54,6 +54,7 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage>
         title: Text(context.l10n.locationPickerTitle),
         actions: [
           TextButton(
+            key: const Key('confirmLocationButton'),
             onPressed: () => context.pop(locationState.placeInfo),
             child: Text(context.l10n.locationPickerConfirm),
           ),

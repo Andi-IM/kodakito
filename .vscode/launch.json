@@ -159,6 +159,6 @@
                 "--dart-define-from-file",
                 "env/keys.json"
             ]
-        },
+        }
     ]
 }

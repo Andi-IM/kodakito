@@ -4,6 +4,7 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/data/services/map/map_controller_service.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/detail/view_models/detail_view_model.dart';
+import 'package:dicoding_story/ui/detail/view_models/story_detail_pro_view_model.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
 import 'package:dicoding_story/ui/detail/widgets/pro/story_detail_screen_pro.dart';
 import 'package:flutter/material.dart';
@@ -673,5 +674,270 @@ void main() {
       expect(find.byType(CircleAvatar), findsOneWidget);
       expect(find.text('T'), findsOneWidget);
     });
+
+    testWidgets('Retry button calls fetchDetailStory (covers L242-249)', (
+      tester,
+    ) async {
+      var fetchCalled = false;
+
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-1').overrideWith(() {
+            return _MockableDetailScreenContent(
+              const Error(errorMessage: 'Test error'),
+              onFetch: () => fetchCalled = true,
+            );
+          }),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+          ),
+        );
+        await tester.pump();
+      });
+
+      // Tap the Retry button
+      await tester.tap(find.text('Retry'));
+      await tester.pump();
+
+      expect(fetchCalled, isTrue);
+    });
+
+    testWidgets(
+      'Image.network has errorBuilder that shows error icon (covers L428-437)',
+      (tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            detailScreenContentProvider('story-1').overrideWith(
+              () => FakeDetailScreenContent(
+                Loaded(story: mockStoryWithLocation, imageBytes: null),
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        await mockNetworkImages(() async {
+          await tester.pumpWidget(
+            buildTestWidget(
+              container: container,
+              storyId: 'story-1',
+              onBack: () {},
+              mapOverride: fakeMapWidget,
+              mapControllerService: mockMapService,
+            ),
+          );
+          await tester.pump();
+        });
+
+        // Find the Image widget
+        final imageFinder = find.byType(Image);
+        expect(imageFinder, findsOneWidget);
+        final image = tester.widget<Image>(imageFinder);
+
+        // Verify it has an errorBuilder
+        expect(image.errorBuilder, isNotNull);
+
+        // Manually invoke the errorBuilder to verify its output
+        final errorWidget = image.errorBuilder!(
+          tester.element(find.byType(StoryDetailScreenPro)),
+          Exception('Test Error'),
+          StackTrace.empty,
+        );
+
+        // Pump the error widget to verify it displays correctly
+        await tester.pumpWidget(MaterialApp(home: Scaffold(body: errorWidget)));
+
+        expect(find.byIcon(Icons.image_not_supported), findsOneWidget);
+        expect(find.byType(Container), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'GoogleMap is created with correct configuration (covers L108-117)',
+      (tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            detailScreenContentProvider('story-1').overrideWith(
+              () => FakeDetailScreenContent(
+                Loaded(story: mockStoryWithLocation, imageBytes: null),
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        await mockNetworkImages(() async {
+          await tester.pumpWidget(
+            buildTestWidget(
+              container: container,
+              storyId: 'story-1',
+              onBack: () {},
+              // Don't provide mapOverride to test real GoogleMap creation
+              mapControllerService: mockMapService,
+            ),
+          );
+          await tester.pump();
+        });
+
+        // GoogleMap should be present
+        expect(find.byType(GoogleMap), findsOneWidget);
+
+        // Verify GoogleMap configuration
+        final googleMap = tester.widget<GoogleMap>(find.byType(GoogleMap));
+        expect(googleMap.myLocationButtonEnabled, isFalse);
+        expect(googleMap.zoomControlsEnabled, isFalse);
+        expect(googleMap.mapToolbarEnabled, isFalse);
+        expect(googleMap.markers.isNotEmpty, isTrue);
+        expect(googleMap.initialCameraPosition.target.latitude, -6.2088);
+        expect(googleMap.initialCameraPosition.target.longitude, 106.8456);
+        expect(googleMap.initialCameraPosition.zoom, 15);
+      },
+    );
+
+    testWidgets(
+      'GoogleMap onMapCreated calls mapService.setController (covers L115-117)',
+      (tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            detailScreenContentProvider('story-1').overrideWith(
+              () => FakeDetailScreenContent(
+                Loaded(story: mockStoryWithLocation, imageBytes: null),
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        await mockNetworkImages(() async {
+          await tester.pumpWidget(
+            buildTestWidget(
+              container: container,
+              storyId: 'story-1',
+              onBack: () {},
+              mapControllerService: mockMapService,
+            ),
+          );
+          await tester.pump();
+        });
+
+        // Get the GoogleMap and invoke its onMapCreated callback
+        final googleMap = tester.widget<GoogleMap>(find.byType(GoogleMap));
+        googleMap.onMapCreated!(FakeGoogleMapController());
+
+        verify(() => mockMapService.setController(any())).called(1);
+      },
+    );
+
+    testWidgets(
+      'Marker onTap calls mapService.animateToPosition (covers L90-93)',
+      (tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            detailScreenContentProvider('story-1').overrideWith(
+              () => FakeDetailScreenContent(
+                Loaded(story: mockStoryWithLocation, imageBytes: null),
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        await mockNetworkImages(() async {
+          await tester.pumpWidget(
+            buildTestWidget(
+              container: container,
+              storyId: 'story-1',
+              onBack: () {},
+              mapControllerService: mockMapService,
+            ),
+          );
+          await tester.pump();
+        });
+
+        // Get the GoogleMap and its markers
+        final googleMap = tester.widget<GoogleMap>(find.byType(GoogleMap));
+        expect(googleMap.markers.isNotEmpty, isTrue);
+
+        // Get the marker and invoke its onTap callback
+        final marker = googleMap.markers.first;
+        marker.onTap!();
+
+        verify(
+          () =>
+              mockMapService.animateToPosition(any(), zoom: any(named: 'zoom')),
+        ).called(1);
+      },
+    );
+
+    testWidgets('Sheet drag updates sheetExtentProvider (covers L72-77)', (
+      tester,
+    ) async {
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-1').overrideWith(
+            () => FakeDetailScreenContent(
+              Loaded(story: mockStoryWithLocation, imageBytes: null),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+            mapOverride: fakeMapWidget,
+            mapControllerService: mockMapService,
+          ),
+        );
+        await tester.pump();
+      });
+
+      // Initial extent should be 0.25 (as verified in view model test)
+      // Get initial extent from provider
+      expect(container.read(sheetExtentProvider), 0.25);
+
+      // Find the SingleChildScrollView inside the sheet to drag
+      final scrollableFinder = find.byType(SingleChildScrollView);
+      expect(scrollableFinder, findsOneWidget);
+
+      // Drag the sheet upwards
+      await tester.drag(
+        scrollableFinder,
+        const Offset(0, -300), // Drag up significantly
+      );
+      await tester.pumpAndSettle();
+
+      // Check if provider value has increased
+      final newExtent = container.read(sheetExtentProvider);
+      expect(newExtent, greaterThan(0.25));
+    });
   });
+}
+
+/// A mockable version of DetailScreenContent that tracks fetchDetailStory calls.
+class _MockableDetailScreenContent extends DetailScreenContent {
+  final StoryState initialState;
+  final VoidCallback? onFetch;
+
+  _MockableDetailScreenContent(this.initialState, {this.onFetch});
+
+  @override
+  StoryState build(String id) => initialState;
+
+  @override
+  Future<void> fetchDetailStory(String id) async {
+    onFetch?.call();
+  }
 }

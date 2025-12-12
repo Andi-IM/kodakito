@@ -1,3 +1,4 @@
+import 'package:dicoding_story/app/app_env.dart';
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/common/routing/app_router/go_router_builder.dart';
 import 'package:dicoding_story/ui/home/view_model/add_story_state.dart';
@@ -183,43 +184,46 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> with LogMixin {
             ),
             const SizedBox(height: 16),
             // Location picker button
-            Consumer(
-              builder: (context, ref, child) {
-                final addStoryState = ref.watch(addStoryProvider);
-                final isLoading = addStoryState is AddStoryLoading;
-                final location = ref.watch(selectedLocationProvider);
+            if (EnvInfo.environment == AppEnvironment.pro ||
+                EnvInfo.environment == AppEnvironment.proDevelopment) ...[
+              Consumer(
+                builder: (context, ref, child) {
+                  final addStoryState = ref.watch(addStoryProvider);
+                  final isLoading = addStoryState is AddStoryLoading;
+                  final location = ref.watch(selectedLocationProvider);
 
-                return OutlinedButton.icon(
-                  key: const Key('locationButton'),
-                  onPressed: isLoading ? null : _openLocationPicker,
-                  icon: Icon(
-                    location != null
-                        ? Icons.location_on
-                        : Icons.add_location_alt,
-                  ),
-                  label: Text(
-                    location != null
-                        ? '${location.city}, ${location.country}'
-                        : context.l10n.addStoryAddLocation,
-                  ),
-                );
-              },
-            ),
-            if (selectedLocation != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: TextButton(
-                  onPressed: () {
-                    ref.read(selectedLocationProvider.notifier).clear();
-                  },
-                  child: Text(
-                    context.l10n.addStoryRemoveLocation,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
+                  return OutlinedButton.icon(
+                    key: const Key('locationButton'),
+                    onPressed: isLoading ? null : _openLocationPicker,
+                    icon: Icon(
+                      location != null
+                          ? Icons.location_on
+                          : Icons.add_location_alt,
+                    ),
+                    label: Text(
+                      location != null
+                          ? '${location.city}, ${location.country}'
+                          : context.l10n.addStoryAddLocation,
+                    ),
+                  );
+                },
+              ),
+              if (selectedLocation != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: TextButton(
+                    onPressed: () {
+                      ref.read(selectedLocationProvider.notifier).clear();
+                    },
+                    child: Text(
+                      context.l10n.addStoryRemoveLocation,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                     ),
                   ),
                 ),
-              ),
+            ],
           ],
         ),
       ),

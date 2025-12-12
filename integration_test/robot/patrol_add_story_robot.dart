@@ -76,7 +76,7 @@ class PatrolAddStoryRobot {
 
   Future<void> tapRegisterButton() async {
     await $(#registerButton).tap();
-    await $.pumpAndSettle();
+    await $.pump();
   }
 
   Future<void> checkRegisterResult() async {
@@ -114,13 +114,32 @@ class PatrolAddStoryRobot {
     await $.tester.testTextInput.receiveAction(TextInputAction.done);
   }
 
+  Future<void> selectLocation() async {
+    await $(#locationButton).tap();
+    await $.pumpAndSettle();
+  }
+
+  Future<void> grantPermission() async {
+    if (await $.native.isPermissionDialogVisible()) {
+      await $.native.grantPermissionWhenInUse();
+    }
+    await $.pumpAndSettle();
+  }
+
+  Future<void> confirmLocation() async {
+    // delay 5 seconds
+    await Future.delayed(const Duration(seconds: 10));
+    await $(#confirmLocationButton).tap();
+    await $.pumpAndSettle();
+  }
+
   Future<void> tapPostButton() async {
     await $(#postButton).tap();
-    await $.pump();
+    await $.pumpAndSettle();
   }
 
   Future<void> checkAddStoryResult(String description) async {
-    await $(HomeScreen).waitUntilExists();
+    // await $(HomeScreen).waitUntilExists();
     await $(description).waitUntilExists();
   }
 

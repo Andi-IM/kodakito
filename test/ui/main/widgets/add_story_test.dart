@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:dicoding_story/app/app_env.dart';
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/data/services/api/remote/auth/model/default_response/default_response.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
@@ -58,6 +59,7 @@ void main() {
     testFile = File('${tempDir.path}/test_image.png');
     await testFile.create();
     registerFallbackValue(FakeXFile()); // For repository calls
+    EnvInfo.initialize(AppEnvironment.pro);
   });
 
   tearDownAll(() async {
@@ -418,6 +420,22 @@ void main() {
   });
 
   group('AddStoryPage Location Tests', () {
+    testWidgets('hides location button in development environment', (
+      tester,
+    ) async {
+      final oldEnv = EnvInfo.environment;
+      EnvInfo.initialize(AppEnvironment.development);
+      addTearDown(() => EnvInfo.initialize(oldEnv));
+
+      await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('locationButton')), findsNothing);
+
+      // Cleanup
+      await satisfyFirstWhere(tester);
+    });
+
     testWidgets('displays location button initially without location', (
       tester,
     ) async {
@@ -489,7 +507,6 @@ void main() {
     testWidgets('addStory is called with lat/lon when location is set', (
       tester,
     ) async {
-
       when(
         () => mockRepository.addStory(
           any(),
