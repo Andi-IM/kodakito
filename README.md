@@ -5,12 +5,16 @@ KodaKito is a cross-platform Flutter application designed to let users share and
 ## Features
 
 -   **Responsive UI**: Optimized layouts for different screen sizes using `window_size_classes`.
-    -   **Mobile**: List view for easy scrolling.
-    -   **Desktop/Web**: Grid view with a navigation rail for enhanced usability.
+    -   **Mobile**: List view with pull-to-refresh for easy scrolling.
+    -   **Desktop/Web**: Grid view for enhanced usability.
 -   **Story Management**:
-    -   View a list of stories from the community.
-    -   View detailed story information with hero animations.
-    -   Add new stories with image uploads.
+    -   View a list of stories from the community with infinite scroll pagination.
+    -   View detailed story information with dynamic color schemes extracted from images.
+    -   Add new stories with image uploads and optional location tagging.
+-   **Location Features** (Pro version):
+    -   Pick story location using Google Maps integration.
+    -   View story locations on interactive maps.
+    -   Geocoding to display city/country names.
 -   **Authentication**: Secure login and registration flow.
 -   **Modern Design**: Material 3 design elements with custom theming and typography.
 
@@ -19,10 +23,12 @@ KodaKito is a cross-platform Flutter application designed to let users share and
 -   **Framework**: [Flutter](https://flutter.dev/)
 -   **Language**: [Dart](https://dart.dev/)
 -   **State Management**: [Flutter Riverpod](https://riverpod.dev/)
--   **Navigation**: [GoRouter](https://pub.dev/packages/go_router)
--   **Networking**: Dio (implied/standard for this type of app, or http)
+-   **Navigation**: [GoRouter](https://pub.dev/packages/go_router) with `go_router_builder`
+-   **Networking**: [Dio](https://pub.dev/packages/dio)
+-   **Maps**: [google_maps_flutter](https://pub.dev/packages/google_maps_flutter)
+-   **Image Picking**: [insta_assets_picker](https://pub.dev/packages/insta_assets_picker), [wechat_camera_kit](https://pub.dev/packages/wechat_camera_kit)
 -   **UI Components**:
-    -   `navigation_rail_m3e` for adaptive navigation.
+    -   `m3e_collection` for Material 3 Expressive components.
     -   `window_size_classes` for responsive breakpoints.
     -   `palette_generator` for dynamic color schemes.
     -   `google_fonts` for typography.
@@ -103,23 +109,19 @@ This project has been refactored to follow **Clean Architecture** principles, en
 
 ### Navigation 2.0 with GoRouter
 
-This project utilizes `go_router` for a robust and declarative routing system (Navigation 2.0).
+This project utilizes `go_router` with `go_router_builder` for type-safe, declarative routing (Navigation 2.0).
 
--   **Router Configuration**: Defined in `lib/common/app_router.dart`, the `GoRouter` instance manages the app's navigation stack.
--   **ShellRoute**: A `ShellRoute` is used to implement a persistent bottom navigation bar (or navigation rail) that stays visible while switching between main tabs (Home, Bookmark, Profile). This ensures a smooth user experience where the main navigation context is preserved.
--   **Type-Safe Routes**: Routes are defined with clear paths and names, allowing for easy navigation using `context.go()` or `context.push()`.
+-   **Router Configuration**: Defined in `lib/common/routing/app_router/go_router_builder.dart`, the `GoRouter` instance manages the app's navigation stack.
+-   **Type-Safe Routes**: Routes are generated using `go_router_builder`, providing compile-time safety for route parameters.
+-   **Dialog Routes**: Custom `DialogPage` implementation for showing dialogs as routes.
 -   **Deep Linking**: The URL-based navigation structure supports deep linking, making it easy to navigate to specific content directly.
 
 ### Material 3 Expressive Design
 
 The application embraces the latest Material 3 design principles, focusing on adaptability and expression.
 
--   **Theming**: The app uses a custom `MaterialTheme` (generated via `palette_generator` or Material Theme Builder) with `useMaterial3: true` enabled in `lib/common/theme.dart`. This provides dynamic color schemes and modern component styling.
--   **Adaptive Navigation**:
-    -   The `MainNavigation` widget (`lib/presentation/main/widgets/main_navigation.dart`) intelligently switches between navigation modes based on screen width using `window_size_classes`.
-    -   **Mobile (< 600dp)**: Uses a standard `NavigationBar` at the bottom.
-    -   **Tablet/Desktop (>= 600dp)**: Uses `NavigationRailM3E` (Material 3 Expressive Navigation Rail) on the side. This rail supports expanded and collapsed states, optimizing screen real estate for larger displays.
--   **Responsive Layouts**: Screens like `MainScreen` adjust their content layout (e.g., switching from `ListView` to `GridView`) based on the available width, ensuring content looks great on any device.
+-   **Theming**: The app uses a custom `MaterialTheme` with `useMaterial3: true` enabled. Dynamic color schemes are extracted from story images using `palette_generator`.
+-   **Responsive Layouts**: Screens like `HomeScreen` adjust their content layout (e.g., switching from `ListView` to `GridView`) based on the available width, ensuring content looks great on any device.
 
 ## State Management
 
@@ -130,13 +132,39 @@ This project uses **Flutter Riverpod** for state management, leveraging its comp
 -   **Dependency Injection**: Riverpod is also used for dependency injection (DI), allowing us to easily swap implementations (e.g., for testing) by overriding providers.
 -   **Ref**: The `Ref` object is used to read other providers, enabling a reactive and composable architecture.
 
+## Logging
+
+The application uses the `logging` package with a custom `LogMixin` for comprehensive debugging:
+
+-   **View Models**: All Riverpod notifiers log state changes, API calls, and errors.
+-   **Page Widgets**: UI components log lifecycle events (init, dispose), user actions, and navigation.
+-   **Routing**: All route transitions are logged with route names and parameters.
+
+Log messages follow this pattern:
+- `INFO`: Normal operations (navigation, successful API calls)
+- `WARNING`: Recoverable errors (failed API calls, validation errors)
+- `SEVERE`: Critical errors (authentication failures, cache errors)
+
 ## Project Structure
 
--   `lib/common`: Shared utilities, constants, and router configuration.
--   `lib/data`: Data layer including models and repositories.
--   `lib/ui`: UI layer organized by feature (main, login, etc.).
--   `lib/domain`: Business logic and entities.
+```
+lib/
+├── app/              # App configuration and environment
+├── common/           # Shared utilities, constants, and router configuration
+│   └── routing/      # GoRouter configuration and route definitions
+├── data/             # Data layer
+│   └── services/     # API, cache, and platform services
+├── domain/           # Business logic and entities
+│   ├── models/       # Domain models (Story, Cache, etc.)
+│   └── repository/   # Repository interfaces
+├── ui/               # Presentation layer (organized by feature)
+│   ├── auth/         # Login and registration screens
+│   ├── detail/       # Story detail screens (free and pro)
+│   └── home/         # Home screen and add story widgets
+└── utils/            # Utility classes (logger_mixin, etc.)
+```
 
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
+
