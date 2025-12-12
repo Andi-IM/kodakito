@@ -84,11 +84,7 @@ class _MainScreenState extends ConsumerState<HomeScreen> with LogMixin {
           log.info('Navigating to post story route');
           context.goNamed(
             Routing.post,
-            extra: PostStoryRouteExtra(
-              cropStream: cropStream,
-              resetState: () =>
-                  ref.read(addStoryProvider.notifier).resetState(),
-            ),
+            extra: PostStoryRouteExtra(cropStream: cropStream),
           );
         },
       );

@@ -62,6 +62,7 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> with LogMixin {
         // Reset and re-fetch stories to show the newly added story
         ref.read(storiesProvider.notifier).resetState();
         ref.read(storiesProvider.notifier).getStories();
+        ref.read(addStoryProvider.notifier).resetState();
         widget.onAddStorySuccess?.call();
       }
       if (next is AddStoryFailure) {

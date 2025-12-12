@@ -4,7 +4,7 @@ import 'package:dicoding_story/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
-import 'robot/patrol_add_story_robot.dart';
+import 'robot/patrol_robot.dart';
 import 'package:faker/faker.dart';
 
 void main() {

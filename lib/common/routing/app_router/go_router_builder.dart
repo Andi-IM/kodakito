@@ -136,9 +136,8 @@ class LanguageRoute extends GoRouteData with $LanguageRoute {
 /// Extra data class for PostStoryRoute
 class PostStoryRouteExtra {
   final Stream<InstaAssetsExportDetails>? cropStream;
-  final VoidCallback? resetState;
 
-  const PostStoryRouteExtra({this.cropStream, this.resetState});
+  const PostStoryRouteExtra({this.cropStream});
 }
 
 @immutable
@@ -152,12 +151,10 @@ class PostStoryRoute extends GoRouteData with $PostStoryRoute {
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       _log.info('Building AddStoryPage (mobile)');
       final cropStream = extra?.cropStream;
-      final resetState = extra?.resetState;
       return MaterialPage(
         child: AddStoryPage(
           cropStream: cropStream!,
           onAddStorySuccess: () {
-            resetState?.call();
             context.go('/');
           },
         ),

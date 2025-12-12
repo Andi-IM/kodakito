@@ -45,18 +45,7 @@ void main() {
       const extra = PostStoryRouteExtra();
 
       expect(extra.cropStream, isNull);
-      expect(extra.resetState, isNull);
-    });
-
-    test('can be instantiated with resetState callback', () {
-      var callbackCalled = false;
-      final extra = PostStoryRouteExtra(
-        resetState: () => callbackCalled = true,
-      );
-
-      expect(extra.resetState, isNotNull);
-      extra.resetState!();
-      expect(callbackCalled, isTrue);
+      expect(extra.cropStream, isNull);
     });
   });
 
