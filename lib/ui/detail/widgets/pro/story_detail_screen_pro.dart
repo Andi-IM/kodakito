@@ -1,8 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:dicoding_story/common/localizations.dart';
+import 'package:dicoding_story/data/services/map/map_controller_service.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/detail/view_models/detail_view_model.dart';
+import 'package:dicoding_story/ui/detail/view_models/story_detail_pro_view_model.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
 import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +17,21 @@ import 'package:m3e_collection/m3e_collection.dart';
 class StoryDetailScreenPro extends ConsumerStatefulWidget {
   final String id;
   final Function onBack;
+
+  /// Optional map widget to use instead of GoogleMap.
+  /// Useful for widget tests where platform views are not supported.
+  final Widget? mapOverride;
+
+  /// Optional map controller service for dependency injection.
+  /// If not provided, a default [MapControllerServiceImpl] is created.
+  final MapControllerService? mapControllerService;
+
   const StoryDetailScreenPro({
     super.key,
     required this.id,
     required this.onBack,
+    this.mapOverride,
+    this.mapControllerService,
   });
 
   @override
@@ -28,19 +41,19 @@ class StoryDetailScreenPro extends ConsumerStatefulWidget {
 
 class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
     with LogMixin {
-  GoogleMapController? _mapController;
+  late final MapControllerService _mapService;
   Set<Marker> _markers = {};
   bool _markersInitialized = false;
 
   // Controller for bottom sheet to track position
   final DraggableScrollableController _sheetController =
       DraggableScrollableController();
-  double _sheetExtent = 0.25;
 
   @override
   void initState() {
     super.initState();
     log.info('StoryDetailScreenPro initialized for story: ${widget.id}');
+    _mapService = widget.mapControllerService ?? MapControllerServiceImpl();
     _sheetController.addListener(_onSheetChanged);
   }
 
@@ -49,14 +62,17 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
     log.info('StoryDetailScreenPro disposed');
     _sheetController.removeListener(_onSheetChanged);
     _sheetController.dispose();
+    // Only dispose if we created the service
+    if (widget.mapControllerService == null) {
+      _mapService.dispose();
+    }
     super.dispose();
   }
 
   void _onSheetChanged() {
     if (_sheetController.isAttached) {
-      setState(() {
-        _sheetExtent = _sheetController.size;
-      });
+      // Update provider state instead of using setState
+      ref.read(sheetExtentProvider.notifier).update(_sheetController.size);
     }
   }
 
@@ -73,9 +89,7 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
           infoWindow: InfoWindow(title: story.name),
           onTap: () {
             log.info('Marker tapped, zooming to position');
-            _mapController?.animateCamera(
-              CameraUpdate.newLatLngZoom(storyPosition, 18),
-            );
+            _mapService.animateToPosition(storyPosition, zoom: 18);
           },
         ),
       };
@@ -83,9 +97,30 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
     }
   }
 
+  Widget _buildGoogleMap(Story story) {
+    final storyPosition = LatLng(story.lat!, story.lon!);
+
+    // Use mapOverride if provided (for widget tests)
+    if (widget.mapOverride != null) {
+      return widget.mapOverride!;
+    }
+
+    return GoogleMap(
+      myLocationButtonEnabled: false,
+      zoomControlsEnabled: false,
+      mapToolbarEnabled: false,
+      markers: _markers,
+      initialCameraPosition: CameraPosition(target: storyPosition, zoom: 15),
+      onMapCreated: (GoogleMapController controller) {
+        _mapService.setController(controller);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final storyState = ref.watch(detailScreenContentProvider(widget.id));
+    final sheetExtent = ref.watch(sheetExtentProvider);
     final colorScheme = Theme.of(context).colorScheme;
     final screenHeight = MediaQuery.of(context).size.height;
 
@@ -99,23 +134,7 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
             Builder(
               builder: (context) {
                 _initializeMarkers(storyState.story);
-                final storyPosition = LatLng(
-                  storyState.story.lat!,
-                  storyState.story.lon!,
-                );
-                return GoogleMap(
-                  myLocationButtonEnabled: false,
-                  zoomControlsEnabled: false,
-                  mapToolbarEnabled: false,
-                  markers: _markers,
-                  initialCameraPosition: CameraPosition(
-                    target: storyPosition,
-                    zoom: 15,
-                  ),
-                  onMapCreated: (GoogleMapController controller) {
-                    _mapController = controller;
-                  },
-                );
+                return _buildGoogleMap(storyState.story);
               },
             )
           else if (storyState is Loaded)
@@ -162,7 +181,7 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
           // Zoom controls (follows bottom sheet position) - only show when loaded
           if (storyState is Loaded)
             Positioned(
-              bottom: screenHeight * _sheetExtent + 16,
+              bottom: screenHeight * sheetExtent + 16,
               right: 16,
               child: Column(
                 children: [
@@ -170,8 +189,7 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
                     heroTag: "zoom-in",
                     backgroundColor: colorScheme.surface,
                     foregroundColor: colorScheme.onSurface,
-                    onPressed: () =>
-                        _mapController?.animateCamera(CameraUpdate.zoomIn()),
+                    onPressed: () => _mapService.zoomIn(),
                     child: const Icon(Icons.add),
                   ),
                   const SizedBox(height: 8),
@@ -179,8 +197,7 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
                     heroTag: "zoom-out",
                     backgroundColor: colorScheme.surface,
                     foregroundColor: colorScheme.onSurface,
-                    onPressed: () =>
-                        _mapController?.animateCamera(CameraUpdate.zoomOut()),
+                    onPressed: () => _mapService.zoomOut(),
                     child: const Icon(Icons.remove),
                   ),
                 ],

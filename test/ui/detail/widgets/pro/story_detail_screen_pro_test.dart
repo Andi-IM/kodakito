@@ -1,0 +1,677 @@
+import 'dart:typed_data';
+
+import 'package:dicoding_story/common/localizations.dart';
+import 'package:dicoding_story/data/services/map/map_controller_service.dart';
+import 'package:dicoding_story/domain/models/story/story.dart';
+import 'package:dicoding_story/ui/detail/view_models/detail_view_model.dart';
+import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
+import 'package:dicoding_story/ui/detail/widgets/pro/story_detail_screen_pro.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong_to_place/latlong_to_place.dart';
+import 'package:m3e_collection/m3e_collection.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:mocktail_image_network/mocktail_image_network.dart';
+
+class FakeDetailScreenContent extends DetailScreenContent {
+  final StoryState initialState;
+  FakeDetailScreenContent(this.initialState);
+
+  @override
+  StoryState build(String id) => initialState;
+
+  @override
+  Future<void> fetchDetailStory(String id) async {}
+}
+
+/// Mock implementation of MapControllerService for testing.
+class MockMapControllerService extends Mock implements MapControllerService {}
+
+/// Fake GoogleMapController for mocktail fallback.
+class FakeGoogleMapController extends Fake implements GoogleMapController {}
+
+void main() {
+  late MockMapControllerService mockMapService;
+
+  setUpAll(() {
+    GoogleFonts.config.allowRuntimeFetching = false;
+    registerFallbackValue(CameraUpdate.zoomIn());
+    registerFallbackValue(const LatLng(0, 0));
+    registerFallbackValue(FakeGoogleMapController());
+  });
+
+  setUp(() {
+    mockMapService = MockMapControllerService();
+    when(() => mockMapService.isReady).thenReturn(true);
+    when(() => mockMapService.zoomIn()).thenAnswer((_) async {});
+    when(() => mockMapService.zoomOut()).thenAnswer((_) async {});
+    when(() => mockMapService.animateCamera(any())).thenAnswer((_) async {});
+    when(
+      () => mockMapService.animateToPosition(any(), zoom: any(named: 'zoom')),
+    ).thenAnswer((_) async {});
+    when(() => mockMapService.setController(any())).thenReturn(null);
+    when(() => mockMapService.dispose()).thenReturn(null);
+  });
+
+  final mockStoryWithLocation = Story(
+    id: 'story-1',
+    name: 'Test User',
+    description: 'This is a test description for the story.',
+    photoUrl: 'https://example.com/photo.jpg',
+    createdAt: DateTime(2024, 1, 15),
+    lat: -6.2088,
+    lon: 106.8456,
+  );
+
+  final mockStoryWithoutLocation = Story(
+    id: 'story-2',
+    name: 'Test User',
+    description: 'This is a test description.',
+    photoUrl: 'https://example.com/photo.jpg',
+    createdAt: DateTime(2024, 1, 15),
+    lat: null,
+    lon: null,
+  );
+
+  final mockPlaceInfo = PlaceInfo(
+    formattedAddress: 'Test Address',
+    street: 'Test Street',
+    locality: 'Test Locality',
+    city: 'Jakarta',
+    state: 'DKI Jakarta',
+    country: 'Indonesia',
+    postalCode: '12345',
+    latitude: -6.2088,
+    longitude: 106.8456,
+  );
+
+  /// Fake map widget to replace GoogleMap in tests.
+  Widget fakeMapWidget = Container(
+    key: const Key('fake_map'),
+    color: Colors.grey,
+    child: const Center(child: Text('Fake Map')),
+  );
+
+  Widget buildTestWidget({
+    required ProviderContainer container,
+    required String storyId,
+    required VoidCallback onBack,
+    Widget? mapOverride,
+    MapControllerService? mapControllerService,
+  }) {
+    return UncontrolledProviderScope(
+      container: container,
+      child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: StoryDetailScreenPro(
+          id: storyId,
+          onBack: onBack,
+          mapOverride: mapOverride,
+          mapControllerService: mapControllerService,
+        ),
+      ),
+    );
+  }
+
+  group('StoryDetailScreenPro', () {
+    testWidgets('displays loading indicator when state is Loading', (
+      tester,
+    ) async {
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider(
+            'story-1',
+          ).overrideWith(() => FakeDetailScreenContent(const Loading())),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+          ),
+        );
+        await tester.pump();
+      });
+
+      expect(find.byType(LoadingIndicatorM3E), findsOneWidget);
+    });
+
+    testWidgets('displays error message when state is Error', (tester) async {
+      const errorMessage = 'Failed to load story';
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-1').overrideWith(
+            () => FakeDetailScreenContent(
+              const Error(errorMessage: errorMessage),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+          ),
+        );
+        await tester.pump();
+      });
+
+      expect(find.text(errorMessage), findsOneWidget);
+      expect(find.byIcon(Icons.error_outline), findsOneWidget);
+      expect(find.text('Retry'), findsOneWidget);
+    });
+
+    testWidgets('displays back button', (tester) async {
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider(
+            'story-1',
+          ).overrideWith(() => FakeDetailScreenContent(const Loading())),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+          ),
+        );
+        await tester.pump();
+      });
+
+      expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+    });
+
+    testWidgets('back button is disabled during loading', (tester) async {
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider(
+            'story-1',
+          ).overrideWith(() => FakeDetailScreenContent(const Loading())),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+          ),
+        );
+        await tester.pump();
+      });
+
+      final backButton = tester.widget<FloatingActionButton>(
+        find.byType(FloatingActionButton).first,
+      );
+      expect(backButton.onPressed, isNull);
+    });
+
+    testWidgets('back button calls onBack when loaded', (tester) async {
+      var backCalled = false;
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-1').overrideWith(
+            () => FakeDetailScreenContent(
+              Loaded(story: mockStoryWithLocation, imageBytes: null),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () => backCalled = true,
+            mapOverride: fakeMapWidget,
+            mapControllerService: mockMapService,
+          ),
+        );
+        await tester.pump();
+      });
+
+      await tester.tap(find.byIcon(Icons.arrow_back));
+      await tester.pump();
+
+      expect(backCalled, isTrue);
+    });
+
+    testWidgets('uses mapOverride instead of GoogleMap when provided', (
+      tester,
+    ) async {
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-1').overrideWith(
+            () => FakeDetailScreenContent(
+              Loaded(
+                story: mockStoryWithLocation,
+                imageBytes: null,
+                location: mockPlaceInfo,
+              ),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+            mapOverride: fakeMapWidget,
+            mapControllerService: mockMapService,
+          ),
+        );
+        await tester.pump();
+      });
+
+      // Fake map should be displayed instead of GoogleMap
+      expect(find.byKey(const Key('fake_map')), findsOneWidget);
+      expect(find.text('Fake Map'), findsOneWidget);
+      expect(find.byType(GoogleMap), findsNothing);
+    });
+
+    testWidgets('displays no location message when story has no coordinates', (
+      tester,
+    ) async {
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-2').overrideWith(
+            () => FakeDetailScreenContent(
+              Loaded(story: mockStoryWithoutLocation, imageBytes: null),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-2',
+            onBack: () {},
+          ),
+        );
+        await tester.pump();
+      });
+
+      expect(find.byIcon(Icons.location_off), findsOneWidget);
+      expect(find.text('No location data'), findsOneWidget);
+    });
+
+    testWidgets('displays zoom controls when loaded', (tester) async {
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-1').overrideWith(
+            () => FakeDetailScreenContent(
+              Loaded(story: mockStoryWithLocation, imageBytes: null),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+            mapOverride: fakeMapWidget,
+            mapControllerService: mockMapService,
+          ),
+        );
+        await tester.pump();
+      });
+
+      expect(find.byIcon(Icons.add), findsOneWidget);
+      expect(find.byIcon(Icons.remove), findsOneWidget);
+    });
+
+    testWidgets('zoom in button calls mapService.zoomIn', (tester) async {
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-1').overrideWith(
+            () => FakeDetailScreenContent(
+              Loaded(story: mockStoryWithLocation, imageBytes: null),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+            mapOverride: fakeMapWidget,
+            mapControllerService: mockMapService,
+          ),
+        );
+        await tester.pump();
+      });
+
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pump();
+
+      verify(() => mockMapService.zoomIn()).called(1);
+    });
+
+    testWidgets('zoom out button calls mapService.zoomOut', (tester) async {
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-1').overrideWith(
+            () => FakeDetailScreenContent(
+              Loaded(story: mockStoryWithLocation, imageBytes: null),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+            mapOverride: fakeMapWidget,
+            mapControllerService: mockMapService,
+          ),
+        );
+        await tester.pump();
+      });
+
+      await tester.tap(find.byIcon(Icons.remove));
+      await tester.pump();
+
+      verify(() => mockMapService.zoomOut()).called(1);
+    });
+
+    testWidgets('displays DraggableScrollableSheet when loaded', (
+      tester,
+    ) async {
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-1').overrideWith(
+            () => FakeDetailScreenContent(
+              Loaded(story: mockStoryWithLocation, imageBytes: null),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+            mapOverride: fakeMapWidget,
+            mapControllerService: mockMapService,
+          ),
+        );
+        await tester.pump();
+      });
+
+      expect(find.byType(DraggableScrollableSheet), findsOneWidget);
+    });
+
+    testWidgets('displays story user name in bottom sheet', (tester) async {
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-1').overrideWith(
+            () => FakeDetailScreenContent(
+              Loaded(story: mockStoryWithLocation, imageBytes: null),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+            mapOverride: fakeMapWidget,
+            mapControllerService: mockMapService,
+          ),
+        );
+        await tester.pump();
+      });
+
+      expect(find.text('Test User'), findsOneWidget);
+    });
+
+    testWidgets('displays story description in bottom sheet', (tester) async {
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-1').overrideWith(
+            () => FakeDetailScreenContent(
+              Loaded(story: mockStoryWithLocation, imageBytes: null),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+            mapOverride: fakeMapWidget,
+            mapControllerService: mockMapService,
+          ),
+        );
+        await tester.pump();
+      });
+
+      expect(
+        find.text('This is a test description for the story.'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('displays location chip when location is available', (
+      tester,
+    ) async {
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-1').overrideWith(
+            () => FakeDetailScreenContent(
+              Loaded(
+                story: mockStoryWithLocation,
+                imageBytes: null,
+                location: mockPlaceInfo,
+              ),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+            mapOverride: fakeMapWidget,
+            mapControllerService: mockMapService,
+          ),
+        );
+        await tester.pump();
+      });
+
+      expect(find.byIcon(Icons.location_on), findsOneWidget);
+      expect(find.text('Jakarta, DKI Jakarta'), findsOneWidget);
+    });
+
+    testWidgets('displays image from imageBytes when available', (
+      tester,
+    ) async {
+      // Create a simple 1x1 red PNG
+      final imageBytes = Uint8List.fromList([
+        0x89,
+        0x50,
+        0x4E,
+        0x47,
+        0x0D,
+        0x0A,
+        0x1A,
+        0x0A,
+        0x00,
+        0x00,
+        0x00,
+        0x0D,
+        0x49,
+        0x48,
+        0x44,
+        0x52,
+        0x00,
+        0x00,
+        0x00,
+        0x01,
+        0x00,
+        0x00,
+        0x00,
+        0x01,
+        0x08,
+        0x02,
+        0x00,
+        0x00,
+        0x00,
+        0x90,
+        0x77,
+        0x53,
+        0xDE,
+        0x00,
+        0x00,
+        0x00,
+        0x0C,
+        0x49,
+        0x44,
+        0x41,
+        0x54,
+        0x08,
+        0xD7,
+        0x63,
+        0xF8,
+        0xFF,
+        0xFF,
+        0x3F,
+        0x00,
+        0x05,
+        0xFE,
+        0x02,
+        0xFE,
+        0xDC,
+        0xCC,
+        0x59,
+        0xE7,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x49,
+        0x45,
+        0x4E,
+        0x44,
+        0xAE,
+        0x42,
+        0x60,
+        0x82,
+      ]);
+
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-1').overrideWith(
+            () => FakeDetailScreenContent(
+              Loaded(story: mockStoryWithLocation, imageBytes: imageBytes),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+            mapOverride: fakeMapWidget,
+            mapControllerService: mockMapService,
+          ),
+        );
+        await tester.pump();
+      });
+
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is Image && widget.image is MemoryImage,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('displays user avatar with first letter', (tester) async {
+      final container = ProviderContainer(
+        overrides: [
+          detailScreenContentProvider('story-1').overrideWith(
+            () => FakeDetailScreenContent(
+              Loaded(story: mockStoryWithLocation, imageBytes: null),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await mockNetworkImages(() async {
+        await tester.pumpWidget(
+          buildTestWidget(
+            container: container,
+            storyId: 'story-1',
+            onBack: () {},
+            mapOverride: fakeMapWidget,
+            mapControllerService: mockMapService,
+          ),
+        );
+        await tester.pump();
+      });
+
+      expect(find.byType(CircleAvatar), findsOneWidget);
+      expect(find.text('T'), findsOneWidget);
+    });
+  });
+}

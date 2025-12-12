@@ -225,5 +225,29 @@ void main() {
       );
       expect(state.placeInfo, equals(testPlaceInfo));
     });
+
+    test('updateLocation sets isLoading false on error', () async {
+      when(
+        () => mockLocationService.retrieveCurrentLocation(),
+      ).thenAnswer((_) async => testPlaceInfo);
+      when(
+        () => mockLocationService.getCurrentLocation(any(), any()),
+      ).thenThrow(Exception('Failed to fetch place info'));
+
+      container.listen(locationPickerProvider(null), (_, __) {});
+
+      await container
+          .read(locationPickerProvider(null).notifier)
+          .updateLocation(const LatLng(1, 2));
+
+      final state = container.read(locationPickerProvider(null));
+
+      // Location should be updated
+      expect(state.selectedLocation, equals(const LatLng(1, 2)));
+      // PlaceInfo should be null (cleared and not fetched)
+      expect(state.placeInfo, isNull);
+      // isLoading should be false after error
+      expect(state.isLoading, isFalse);
+    });
   });
 }

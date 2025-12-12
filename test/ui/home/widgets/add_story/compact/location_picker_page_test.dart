@@ -13,8 +13,12 @@ class MockGoRouter extends Mock implements GoRouter {}
 
 class MockLocationPicker extends LocationPicker {
   LocationPickerState _state;
+  bool updateLocationCalled = false;
+  LatLng? lastUpdatedLocation;
+  bool moveToCurrentLocationCalled = false;
+  LatLng? moveToCurrentLocationResult;
 
-  MockLocationPicker(this._state);
+  MockLocationPicker(this._state, {this.moveToCurrentLocationResult});
 
   @override
   LocationPickerState build(PlaceInfo? initialLocation) => _state;
@@ -25,10 +29,16 @@ class MockLocationPicker extends LocationPicker {
   }
 
   @override
-  Future<void> updateLocation(LatLng latLng) async {}
+  Future<void> updateLocation(LatLng latLng) async {
+    updateLocationCalled = true;
+    lastUpdatedLocation = latLng;
+  }
 
   @override
-  Future<LatLng?> moveToCurrentLocation() async => null;
+  Future<LatLng?> moveToCurrentLocation() async {
+    moveToCurrentLocationCalled = true;
+    return moveToCurrentLocationResult;
+  }
 
   @override
   Future<void> fetchCurrentLocation() async {}
@@ -294,6 +304,159 @@ void main() {
       await tester.pump();
 
       verify(() => mockGoRouter.pop(placeInfo)).called(1);
+    });
+
+    testWidgets('GoogleMap onTap calls updateLocation', (tester) async {
+      final initialState = const LocationPickerState(
+        selectedLocation: LatLng(-6.2088, 106.8456),
+      );
+      final mockPicker = MockLocationPicker(initialState);
+
+      final container = ProviderContainer(
+        overrides: [
+          locationPickerProvider(null).overrideWith(() => mockPicker),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(buildTestWidget(container: container));
+      await tester.pump();
+
+      // Get the GoogleMap widget and invoke its onTap callback
+      final googleMap = tester.widget<GoogleMap>(find.byType(GoogleMap));
+      googleMap.onTap!(const LatLng(1.0, 2.0));
+      await tester.pump();
+
+      expect(mockPicker.updateLocationCalled, isTrue);
+      expect(mockPicker.lastUpdatedLocation, equals(const LatLng(1.0, 2.0)));
+    });
+
+    testWidgets('Marker onDragEnd calls updateLocation', (tester) async {
+      final initialState = const LocationPickerState(
+        selectedLocation: LatLng(-6.2088, 106.8456),
+      );
+      final mockPicker = MockLocationPicker(initialState);
+
+      final container = ProviderContainer(
+        overrides: [
+          locationPickerProvider(null).overrideWith(() => mockPicker),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(buildTestWidget(container: container));
+      await tester.pump();
+
+      // Get the GoogleMap widget and find the marker
+      final googleMap = tester.widget<GoogleMap>(find.byType(GoogleMap));
+      final marker = googleMap.markers.first;
+
+      // Invoke onDragEnd callback
+      marker.onDragEnd!(const LatLng(3.0, 4.0));
+      await tester.pump();
+
+      expect(mockPicker.updateLocationCalled, isTrue);
+      expect(mockPicker.lastUpdatedLocation, equals(const LatLng(3.0, 4.0)));
+    });
+
+    testWidgets('my location button calls moveToCurrentLocation', (
+      tester,
+    ) async {
+      final initialState = const LocationPickerState(
+        selectedLocation: LatLng(-6.2088, 106.8456),
+      );
+      final mockPicker = MockLocationPicker(
+        initialState,
+        moveToCurrentLocationResult: const LatLng(5.0, 6.0),
+      );
+
+      final container = ProviderContainer(
+        overrides: [
+          locationPickerProvider(null).overrideWith(() => mockPicker),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(buildTestWidget(container: container));
+      await tester.pump();
+
+      // Tap my location button
+      await tester.tap(find.byIcon(Icons.my_location));
+      await tester.pump();
+
+      expect(mockPicker.moveToCurrentLocationCalled, isTrue);
+    });
+
+    testWidgets('zoom in button can be tapped', (tester) async {
+      final initialState = const LocationPickerState(
+        selectedLocation: LatLng(-6.2088, 106.8456),
+      );
+
+      final container = ProviderContainer(
+        overrides: [
+          locationPickerProvider(
+            null,
+          ).overrideWith(() => MockLocationPicker(initialState)),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(buildTestWidget(container: container));
+      await tester.pump();
+
+      // Tap zoom in button - should not throw
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pump();
+
+      // No exception means the callback was executed
+      expect(find.byIcon(Icons.add), findsOneWidget);
+    });
+
+    testWidgets('zoom out button can be tapped', (tester) async {
+      final initialState = const LocationPickerState(
+        selectedLocation: LatLng(-6.2088, 106.8456),
+      );
+
+      final container = ProviderContainer(
+        overrides: [
+          locationPickerProvider(
+            null,
+          ).overrideWith(() => MockLocationPicker(initialState)),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(buildTestWidget(container: container));
+      await tester.pump();
+
+      // Tap zoom out button - should not throw
+      await tester.tap(find.byIcon(Icons.remove));
+      await tester.pump();
+
+      // No exception means the callback was executed
+      expect(find.byIcon(Icons.remove), findsOneWidget);
+    });
+
+    testWidgets('GoogleMap onMapCreated callback is set', (tester) async {
+      final initialState = const LocationPickerState(
+        selectedLocation: LatLng(-6.2088, 106.8456),
+      );
+
+      final container = ProviderContainer(
+        overrides: [
+          locationPickerProvider(
+            null,
+          ).overrideWith(() => MockLocationPicker(initialState)),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(buildTestWidget(container: container));
+      await tester.pump();
+
+      // Get the GoogleMap widget and verify onMapCreated is set
+      final googleMap = tester.widget<GoogleMap>(find.byType(GoogleMap));
+      expect(googleMap.onMapCreated, isNotNull);
     });
   });
 }

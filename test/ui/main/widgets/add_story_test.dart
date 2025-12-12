@@ -8,12 +8,14 @@ import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/ui/home/widgets/add_story/compact/add_story.dart';
+import 'package:dicoding_story/ui/home/view_model/home_view_model.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
+import 'package:latlong_to_place/latlong_to_place.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockInstaAssetsExportDetails extends Mock
@@ -24,6 +26,21 @@ class MockInstaAssetsExportData extends Mock implements InstaAssetsExportData {}
 class MockAddStoryRepository extends Mock implements AddStoryRepository {}
 
 class MockListRepository extends Mock implements ListRepository {}
+
+class MockSelectedLocation extends SelectedLocation {
+  @override
+  PlaceInfo? build() => PlaceInfo(
+    formattedAddress: 'Test Address',
+    street: 'Test Street',
+    locality: 'Test Locality',
+    city: 'Jakarta',
+    state: 'DKI Jakarta',
+    country: 'Indonesia',
+    postalCode: '12345',
+    latitude: -6.2,
+    longitude: 106.8,
+  );
+}
 
 class FakeXFile extends Fake implements XFile {}
 
@@ -397,6 +414,139 @@ void main() {
       await tester.pumpAndSettle();
       // Note: After success, the widget behavior may change due to onAddStorySuccess callback
       // The post-success UI state is tested in other tests
+    });
+  });
+
+  group('AddStoryPage Location Tests', () {
+    testWidgets('displays location button initially without location', (
+      tester,
+    ) async {
+      await tester.pumpWidget(createWidgetUnderTest());
+      await tester.pumpAndSettle();
+
+      // Location button should show add location icon and text
+      expect(find.byKey(const Key('locationButton')), findsOneWidget);
+      expect(find.byIcon(Icons.add_location_alt), findsOneWidget);
+      expect(find.text('Add Location'), findsOneWidget);
+
+      // Cleanup
+      await satisfyFirstWhere(tester);
+    });
+
+    testWidgets('displays location city and country when location is set', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            addStoryRepositoryProvider.overrideWithValue(mockRepository),
+            listRepositoryProvider.overrideWithValue(mockListRepository),
+            selectedLocationProvider.overrideWith(MockSelectedLocation.new),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: AddStoryPage(cropStream: streamController.stream),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Should display city and country (covers L202)
+      expect(find.text('Jakarta, Indonesia'), findsOneWidget);
+      expect(find.byIcon(Icons.location_on), findsOneWidget);
+
+      // Cleanup
+      await satisfyFirstWhere(tester);
+    });
+
+    testWidgets('shows remove location button when location is selected', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            addStoryRepositoryProvider.overrideWithValue(mockRepository),
+            listRepositoryProvider.overrideWithValue(mockListRepository),
+            selectedLocationProvider.overrideWith(MockSelectedLocation.new),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: AddStoryPage(cropStream: streamController.stream),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Remove location button should be visible (covers L209-219)
+      expect(find.text('Remove Location'), findsOneWidget);
+
+      // Cleanup
+      await satisfyFirstWhere(tester);
+    });
+
+    testWidgets('addStory is called with lat/lon when location is set', (
+      tester,
+    ) async {
+
+      when(
+        () => mockRepository.addStory(
+          any(),
+          any(),
+          lat: any(named: 'lat'),
+          lon: any(named: 'lon'),
+        ),
+      ).thenAnswer(
+        (_) async => Right(DefaultResponse(error: false, message: 'Success')),
+      );
+
+      await tester.runAsync(() async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              addStoryRepositoryProvider.overrideWithValue(mockRepository),
+              listRepositoryProvider.overrideWithValue(mockListRepository),
+              selectedLocationProvider.overrideWith(MockSelectedLocation.new),
+            ],
+            child: MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: AddStoryPage(cropStream: streamController.stream),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Add image via stream
+        when(() => mockData.croppedFile).thenReturn(testFile);
+        when(() => mockDetails.data).thenReturn([mockData]);
+        streamController.add(mockDetails);
+        await tester.pump();
+      });
+
+      await tester.pump();
+
+      // Enter description
+      await tester.enterText(
+        find.byKey(const Key('descriptionField')),
+        'Test with location',
+      );
+      await tester.pump();
+
+      // Tap post button
+      await tester.tap(find.byKey(const Key('postButton')));
+      await tester.pump();
+
+      // Verify repository was called with lat/lon (covers L101-102)
+      verify(
+        () => mockRepository.addStory(
+          'Test with location',
+          any(),
+          lat: -6.2,
+          lon: 106.8,
+        ),
+      ).called(1);
     });
   });
 }
