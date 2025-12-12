@@ -53,6 +53,9 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
         // Clear state when story is posted successfully
         ref.read(selectedLocationProvider.notifier).clear();
         ref.read(selectedPhotoFileProvider.notifier).clear();
+        // Reset and re-fetch stories to show the newly added story
+        ref.read(storiesProvider.notifier).resetState();
+        ref.read(storiesProvider.notifier).getStories();
         widget.onAddStorySuccess?.call();
       }
       if (next is AddStoryFailure) {

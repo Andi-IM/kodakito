@@ -198,8 +198,8 @@ class LoginRoute extends GoRouteData with $LoginRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return LoginScreen(
-      goToRegister: () => context.go(Routing.register),
-      onLoginSuccess: () => context.go(Routing.home),
+      goToRegister: () => context.goNamed(Routing.register),
+      onLoginSuccess: () => context.goNamed(Routing.home),
     );
   }
 }

@@ -41,6 +41,13 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage> {
     }
   }
 
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    _mapController = null;
+    super.dispose();
+  }
+
   Future<void> _fetchCurrentLocation() async {
     try {
       final location = await ref
@@ -143,6 +150,7 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage> {
                     final location = await ref
                         .read(locationServiceProvider)
                         .retrieveCurrentLocation();
+                    if (!mounted) return;
                     final newLatLng = LatLng(
                       location.latitude,
                       location.longitude,

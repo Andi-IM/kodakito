@@ -27,10 +27,10 @@ class _MainScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void initState() {
-    Future.microtask(
-      () async => await ref.read(storiesProvider.notifier).getStories(),
-    );
     super.initState();
+    Future.microtask(() async {
+      await ref.read(storiesProvider.notifier).getStories();
+    });
 
     _scrollController.addListener(_onScroll);
   }
@@ -75,7 +75,11 @@ class _MainScreenState extends ConsumerState<HomeScreen> {
             _pickFromWeChatCamera,
             (cropStream) => context.goNamed(
               Routing.post,
-              extra: PostStoryRouteExtra(cropStream: cropStream),
+              extra: PostStoryRouteExtra(
+                cropStream: cropStream,
+                resetState: () =>
+                    ref.read(addStoryProvider.notifier).resetState(),
+              ),
             ),
           );
       return;
