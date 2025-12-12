@@ -1,5 +1,5 @@
 import 'package:dicoding_story/common/localizations.dart';
-import 'package:dicoding_story/data/services/location/location_service.dart';
+import 'package:dicoding_story/ui/home/view_model/location_picker_view_model.dart';
 import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,31 +19,12 @@ class LocationPickerPage extends ConsumerStatefulWidget {
 
 class _LocationPickerPageState extends ConsumerState<LocationPickerPage>
     with LogMixin {
-  late LatLng _selectedLocation;
-  PlaceInfo? _placeInfo;
   GoogleMapController? _mapController;
-
-  // Default location (Jakarta, Indonesia)
-  static const LatLng _defaultLocation = LatLng(-6.2088, 106.8456);
 
   @override
   void initState() {
     super.initState();
     log.info('LocationPickerPage initialized');
-    // Convert PlaceInfo to LatLng if provided
-    if (widget.initialLocation != null) {
-      log.info('Using initial location: ${widget.initialLocation!.city}');
-      _selectedLocation = LatLng(
-        widget.initialLocation!.latitude,
-        widget.initialLocation!.longitude,
-      );
-      _placeInfo = widget.initialLocation;
-    } else {
-      _selectedLocation = _defaultLocation;
-      // Auto-detect GPS location if no initial location provided
-      log.info('No initial location, fetching current location');
-      _fetchCurrentLocation();
-    }
   }
 
   @override
@@ -54,53 +35,26 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage>
     super.dispose();
   }
 
-  Future<void> _fetchCurrentLocation() async {
-    try {
-      final location = await ref
-          .read(locationServiceProvider)
-          .retrieveCurrentLocation();
-      _placeInfo = location;
-      final newLatLng = LatLng(location.latitude, location.longitude);
-      if (mounted) {
-        setState(() {
-          _selectedLocation = newLatLng;
-        });
-        _mapController?.animateCamera(CameraUpdate.newLatLng(newLatLng));
-      }
-    } catch (_) {
-      // Location permission denied or error - keep default/initial location
-    }
-  }
-
-  /// Updates the selected location and fetches PlaceInfo for the given LatLng.
-  Future<void> _updateLocationWithPlaceInfo(LatLng latLng) async {
-    setState(() {
-      _selectedLocation = latLng;
-      _placeInfo = null; // Clear previous place info while loading
-    });
-
-    try {
-      final placeInfo = await ref
-          .read(locationServiceProvider)
-          .getCurrentLocation(latLng.latitude, latLng.longitude);
-      if (mounted) {
-        setState(() {
-          _placeInfo = placeInfo;
-        });
-      }
-    } catch (_) {
-      // Error fetching place info - keep showing coordinates
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final locationState = ref.watch(
+      locationPickerProvider(widget.initialLocation),
+    );
+
+    ref.listen(locationPickerProvider(widget.initialLocation), (prev, next) {
+      if (prev?.selectedLocation != next.selectedLocation) {
+        _mapController?.animateCamera(
+          CameraUpdate.newLatLng(next.selectedLocation),
+        );
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.locationPickerTitle),
         actions: [
           TextButton(
-            onPressed: () => context.pop(_placeInfo),
+            onPressed: () => context.pop(locationState.placeInfo),
             child: Text(context.l10n.locationPickerConfirm),
           ),
         ],
@@ -109,18 +63,23 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage>
         children: [
           GoogleMap(
             initialCameraPosition: CameraPosition(
-              target: _selectedLocation,
+              target: locationState.selectedLocation,
               zoom: 15,
             ),
             onMapCreated: (controller) => _mapController = controller,
-            onTap: (latLng) => _updateLocationWithPlaceInfo(latLng),
+            onTap: (latLng) => ref
+                .read(locationPickerProvider(widget.initialLocation).notifier)
+                .updateLocation(latLng),
             markers: {
               Marker(
                 markerId: const MarkerId('selected'),
-                position: _selectedLocation,
+                position: locationState.selectedLocation,
                 draggable: true,
-                onDragEnd: (newPosition) =>
-                    _updateLocationWithPlaceInfo(newPosition),
+                onDragEnd: (newPosition) => ref
+                    .read(
+                      locationPickerProvider(widget.initialLocation).notifier,
+                    )
+                    .updateLocation(newPosition),
               ),
             },
             myLocationEnabled: true,
@@ -153,20 +112,18 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage>
                 FloatingActionButton.small(
                   heroTag: 'my-location',
                   onPressed: () async {
-                    final location = await ref
-                        .read(locationServiceProvider)
-                        .retrieveCurrentLocation();
-                    if (!mounted) return;
-                    final newLatLng = LatLng(
-                      location.latitude,
-                      location.longitude,
-                    );
-                    setState(() {
-                      _selectedLocation = newLatLng;
-                    });
-                    _mapController?.animateCamera(
-                      CameraUpdate.newLatLng(newLatLng),
-                    );
+                    final newLatLng = await ref
+                        .read(
+                          locationPickerProvider(
+                            widget.initialLocation,
+                          ).notifier,
+                        )
+                        .moveToCurrentLocation();
+                    if (newLatLng != null) {
+                      _mapController?.animateCamera(
+                        CameraUpdate.newLatLng(newLatLng),
+                      );
+                    }
                   },
                   child: const Icon(Icons.my_location),
                 ),
@@ -197,15 +154,23 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage>
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.all(12),
-                child: Text(
-                  _placeInfo != null
-                      ? '${_placeInfo!.city}, ${_placeInfo!.state}'
-                      : '${_selectedLocation.latitude.toStringAsFixed(6)}, ${_selectedLocation.longitude.toStringAsFixed(6)}',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
+                child: locationState.isLoading
+                    ? const Center(
+                        child: SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                    : Text(
+                        locationState.placeInfo != null
+                            ? '${locationState.placeInfo!.city}, ${locationState.placeInfo!.state}'
+                            : '${locationState.selectedLocation.latitude.toStringAsFixed(6)}, ${locationState.selectedLocation.longitude.toStringAsFixed(6)}',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
               ),
             ),
           ),
