@@ -1,5 +1,6 @@
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/data/services/location/location_service.dart';
+import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +17,8 @@ class LocationPickerPage extends ConsumerStatefulWidget {
   ConsumerState<LocationPickerPage> createState() => _LocationPickerPageState();
 }
 
-class _LocationPickerPageState extends ConsumerState<LocationPickerPage> {
+class _LocationPickerPageState extends ConsumerState<LocationPickerPage>
+    with LogMixin {
   late LatLng _selectedLocation;
   PlaceInfo? _placeInfo;
   GoogleMapController? _mapController;
@@ -27,8 +29,10 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage> {
   @override
   void initState() {
     super.initState();
+    log.info('LocationPickerPage initialized');
     // Convert PlaceInfo to LatLng if provided
     if (widget.initialLocation != null) {
+      log.info('Using initial location: ${widget.initialLocation!.city}');
       _selectedLocation = LatLng(
         widget.initialLocation!.latitude,
         widget.initialLocation!.longitude,
@@ -37,12 +41,14 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage> {
     } else {
       _selectedLocation = _defaultLocation;
       // Auto-detect GPS location if no initial location provided
+      log.info('No initial location, fetching current location');
       _fetchCurrentLocation();
     }
   }
 
   @override
   void dispose() {
+    log.info('LocationPickerPage disposed');
     _mapController?.dispose();
     _mapController = null;
     super.dispose();

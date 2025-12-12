@@ -2,6 +2,7 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/common/routing/app_router/go_router_builder.dart';
 import 'package:dicoding_story/ui/home/view_model/add_story_state.dart';
 import 'package:dicoding_story/ui/home/view_model/home_view_model.dart';
+import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -23,22 +24,25 @@ class AddStoryPage extends ConsumerStatefulWidget {
   ConsumerState<AddStoryPage> createState() => _AddStoryPageState();
 }
 
-class _AddStoryPageState extends ConsumerState<AddStoryPage> {
+class _AddStoryPageState extends ConsumerState<AddStoryPage> with LogMixin {
   final TextEditingController _descriptionController = TextEditingController();
 
   @override
   void dispose() {
+    log.info('AddStoryPage disposed');
     _descriptionController.dispose();
     super.dispose();
   }
 
   Future<void> _openLocationPicker() async {
+    log.info('Opening location picker');
     final currentLocation = ref.read(selectedLocationProvider);
     final result = await context.pushNamed<PlaceInfo>(
       Routing.pickLocation,
       extra: currentLocation,
     );
     if (result != null) {
+      log.info('Location selected: ${result.city}');
       ref.read(selectedLocationProvider.notifier).setLocation(result);
     }
   }
@@ -50,6 +54,7 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
     // Listen to add story state changes
     ref.listen(addStoryProvider, (previous, next) {
       if (next is AddStorySuccess) {
+        log.info('Story added successfully');
         // Clear state when story is posted successfully
         ref.read(selectedLocationProvider.notifier).clear();
         ref.read(selectedPhotoFileProvider.notifier).clear();
@@ -59,6 +64,7 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
         widget.onAddStorySuccess?.call();
       }
       if (next is AddStoryFailure) {
+        log.warning('Story add failed: ${next.exception.message}');
         // Show error message
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

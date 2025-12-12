@@ -8,6 +8,7 @@ import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
 import 'package:dicoding_story/ui/home/view_model/home_view_model.dart';
 import 'package:dicoding_story/ui/home/widgets/story_card.dart';
 import 'package:dicoding_story/ui/home/widgets/story_card_skeleton.dart';
+import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,13 +23,15 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends ConsumerState<HomeScreen> {
+class _MainScreenState extends ConsumerState<HomeScreen> with LogMixin {
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    log.info('HomeScreen initialized');
     Future.microtask(() async {
+      log.info('Fetching initial stories');
       await ref.read(storiesProvider.notifier).getStories();
     });
 
@@ -36,7 +39,10 @@ class _MainScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _onScroll() {
-    if (_isBottom) ref.read(storiesProvider.notifier).getStories();
+    if (_isBottom) {
+      log.info('Reached bottom of list, loading more stories');
+      ref.read(storiesProvider.notifier).getStories();
+    }
   }
 
   bool get _isBottom {
@@ -48,6 +54,7 @@ class _MainScreenState extends ConsumerState<HomeScreen> {
 
   @override
   void dispose() {
+    log.info('HomeScreen disposed');
     _scrollController.dispose();
     super.dispose();
   }
@@ -67,24 +74,28 @@ class _MainScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> showAddStoryDialog({required bool isMobilePlatform}) async {
+    log.info('showAddStoryDialog called, isMobile: $isMobilePlatform');
     if (isMobilePlatform) {
-      ref
-          .read(instaImagePickerServiceProvider)
-          .pickImage(
-            context,
-            _pickFromWeChatCamera,
-            (cropStream) => context.goNamed(
-              Routing.post,
-              extra: PostStoryRouteExtra(
-                cropStream: cropStream,
-                resetState: () =>
-                    ref.read(addStoryProvider.notifier).resetState(),
-              ),
+      log.info('Opening mobile image picker');
+      ref.read(instaImagePickerServiceProvider).pickImage(
+        context,
+        _pickFromWeChatCamera,
+        (cropStream) {
+          log.info('Navigating to post story route');
+          context.goNamed(
+            Routing.post,
+            extra: PostStoryRouteExtra(
+              cropStream: cropStream,
+              resetState: () =>
+                  ref.read(addStoryProvider.notifier).resetState(),
             ),
           );
+        },
+      );
       return;
     }
 
+    log.info('Opening desktop add story dialog');
     PostStoryRoute().go(context);
   }
 

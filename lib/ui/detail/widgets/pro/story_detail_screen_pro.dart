@@ -4,6 +4,7 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/detail/view_models/detail_view_model.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
+import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -25,7 +26,8 @@ class StoryDetailScreenPro extends ConsumerStatefulWidget {
       _StoryDetailPageProState();
 }
 
-class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro> {
+class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
+    with LogMixin {
   GoogleMapController? _mapController;
   Set<Marker> _markers = {};
   bool _markersInitialized = false;
@@ -38,11 +40,13 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro> {
   @override
   void initState() {
     super.initState();
+    log.info('StoryDetailScreenPro initialized for story: ${widget.id}');
     _sheetController.addListener(_onSheetChanged);
   }
 
   @override
   void dispose() {
+    log.info('StoryDetailScreenPro disposed');
     _sheetController.removeListener(_onSheetChanged);
     _sheetController.dispose();
     super.dispose();
@@ -60,6 +64,7 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro> {
     if (_markersInitialized) return;
 
     if (story.lat != null && story.lon != null) {
+      log.info('Initializing markers for story: ${story.id}');
       final storyPosition = LatLng(story.lat!, story.lon!);
       _markers = {
         Marker(
@@ -67,6 +72,7 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro> {
           position: storyPosition,
           infoWindow: InfoWindow(title: story.name),
           onTap: () {
+            log.info('Marker tapped, zooming to position');
             _mapController?.animateCamera(
               CameraUpdate.newLatLngZoom(storyPosition, 18),
             );

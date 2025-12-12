@@ -19,59 +19,70 @@ part 'home_view_model.g.dart';
 
 /// Provider for managing selected location for story
 @riverpod
-class SelectedLocation extends _$SelectedLocation {
+class SelectedLocation extends _$SelectedLocation with LogMixin {
   @override
   PlaceInfo? build() => null;
 
   void setLocation(PlaceInfo? location) {
+    log.info('Setting location: ${location?.city}, ${location?.country}');
     state = location;
   }
 
   void clear() {
+    log.info('Clearing selected location');
     state = null;
   }
 }
 
 /// Provider for managing selected photo file for story
 @riverpod
-class SelectedPhotoFile extends _$SelectedPhotoFile {
+class SelectedPhotoFile extends _$SelectedPhotoFile with LogMixin {
   @override
   XFile? build() => null;
 
   void setFile(XFile file) {
+    log.info('Setting photo file: ${file.name}');
     state = file;
   }
 
   void clear() {
+    log.info('Clearing selected photo file');
     state = null;
   }
 }
 
 @riverpod
-class ImageFile extends _$ImageFile {
+class ImageFile extends _$ImageFile with LogMixin {
   @override
   Uint8List? build() {
     return null;
   }
 
   void setImageFile(Uint8List imageFile) {
+    log.info('Setting image file: ${imageFile.length} bytes');
     state = imageFile;
   }
 
   Future<XFile?> toFile() async {
     final bytes = state;
-    if (bytes == null) return null;
+    if (bytes == null) {
+      log.warning('Cannot convert to file: no image data');
+      return null;
+    }
 
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final nameFile = 'story_$timestamp.jpg';
+    log.info('Converting image to file: $nameFile');
 
     if (ref.read(webPlatformProvider)) {
+      log.info('Creating XFile from data (web platform)');
       return XFile.fromData(bytes, name: nameFile, mimeType: 'image/jpeg');
     }
 
     final tempDir = await getTemporaryDirectory();
     final file = File('${tempDir.path}/$nameFile');
     await file.writeAsBytes(bytes);
+    log.info('Created file at: ${file.path}');
 
     return XFile(file.path);
   }

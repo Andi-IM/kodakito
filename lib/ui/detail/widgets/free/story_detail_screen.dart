@@ -8,46 +8,57 @@ import 'package:dicoding_story/ui/detail/widgets/free/story_detail_compact_layou
 import 'package:dicoding_story/ui/detail/widgets/free/story_detail_medium_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:m3e_collection/m3e_collection.dart';
 import 'package:window_size_classes/window_size_classes.dart';
 
 class StoryDetailScreen extends ConsumerWidget {
+  static final _log = Logger('StoryDetailScreen');
   final String id;
 
   const StoryDetailScreen({super.key, required this.id});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    _log.info('Building StoryDetailScreen for story: $id');
     final storyState = ref.watch(detailScreenContentProvider(id));
     final theme = Theme.of(context);
 
     return switch (storyState) {
-      Error(errorMessage: final message) => Scaffold(
-        appBar: AppBar(
-          title: Text(
-            context.l10n.storyDetailTitle,
-            style: theme.textTheme.titleLarge,
+      Error(errorMessage: final message) => (() {
+        _log.warning('Story detail error: $message');
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              context.l10n.storyDetailTitle,
+              style: theme.textTheme.titleLarge,
+            ),
+            centerTitle: true,
           ),
-          centerTitle: true,
-        ),
-        body: Center(child: Text(message)),
-      ),
-      Loaded(story: final story, imageBytes: final imageBytes) =>
-        _StoryDetailContent(story: story, imageBytes: imageBytes),
-      _ => Scaffold(
-        appBar: AppBar(
-          title: Text(
-            context.l10n.storyDetailTitle,
-            style: theme.textTheme.titleLarge,
+          body: Center(child: Text(message)),
+        );
+      })(),
+      Loaded(story: final story, imageBytes: final imageBytes) => (() {
+        _log.info('Story detail loaded: ${story.name}');
+        return _StoryDetailContent(story: story, imageBytes: imageBytes);
+      })(),
+      _ => (() {
+        _log.info('Story detail loading...');
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              context.l10n.storyDetailTitle,
+              style: theme.textTheme.titleLarge,
+            ),
+            centerTitle: true,
           ),
-          centerTitle: true,
-        ),
-        body: Center(
-          child: const LoadingIndicatorM3E(
-            variant: LoadingIndicatorM3EVariant.contained,
+          body: Center(
+            child: const LoadingIndicatorM3E(
+              variant: LoadingIndicatorM3EVariant.contained,
+            ),
           ),
-        ),
-      ), // Handles null story or other unexpected states
+        );
+      })(),
     };
   }
 }

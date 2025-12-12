@@ -5,6 +5,7 @@ import 'package:dicoding_story/ui/auth/widgets/auth_button.dart';
 import 'package:dicoding_story/ui/auth/widgets/auth_fields.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart'
     show LogoWidget;
+import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +19,7 @@ class LoginScreen extends ConsumerStatefulWidget {
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> with LogMixin {
   late TapGestureRecognizer _tapRecognizer;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -27,8 +28,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    log.info('LoginScreen initialized');
     _tapRecognizer = TapGestureRecognizer()
-      ..onTap = () => widget.goToRegister!();
+      ..onTap = () {
+        log.info('Navigating to register screen');
+        widget.goToRegister!();
+      };
   }
 
   @override
@@ -43,10 +48,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     ref.listen(loginProvider.select((value) => value), ((previous, next) {
       // show snackbar on error
       if (next is Failure) {
+        log.warning('Login failed: ${next.exception.message}');
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(next.exception.message)));
       } else if (next is Loaded) {
+        log.info('Login successful, navigating to home');
         widget.onLoginSuccess!();
       }
     }));
@@ -102,6 +109,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               isLoading: isLoading,
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
+                                  log.info(
+                                    'Login button pressed, attempting login',
+                                  );
                                   ref
                                       .read(loginProvider.notifier)
                                       .login(

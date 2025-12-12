@@ -20,8 +20,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:latlong_to_place/latlong_to_place.dart';
+import 'package:logging/logging.dart';
 
 part 'go_router_builder.g.dart';
+
+final _log = Logger('AppRouter');
 
 abstract class Routing {
   static const String home = 'home';
@@ -66,6 +69,7 @@ class HomeScreenRoute extends GoRouteData with $HomeScreenRoute {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
+    _log.info('Navigating to HomeScreen');
     return const HomeScreen();
   }
 }
@@ -79,6 +83,7 @@ class DetailRoute extends GoRouteData with $DetailRoute {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
+    _log.info('Navigating to DetailRoute: id=$id, hasLocation=$hasLocation');
     final isProEnvironment =
         EnvInfo.environment == AppEnvironment.pro ||
         EnvInfo.environment == AppEnvironment.proDevelopment;
@@ -88,8 +93,10 @@ class DetailRoute extends GoRouteData with $DetailRoute {
         final isSuport = ref.watch(supportMapsProvider);
         final showProDetail = isProEnvironment && isSuport && hasLocation;
         if (showProDetail) {
+          _log.info('Showing StoryDetailScreenPro');
           return StoryDetailScreenPro(id: id, onBack: () => context.pop());
         }
+        _log.info('Showing StoryDetailScreen');
         return StoryDetailScreen(id: id);
       },
     );
@@ -102,6 +109,7 @@ class SettingsRoute extends GoRouteData with $SettingsRoute {
 
   @override
   Page<void> buildPage(_, state) {
+    _log.info('Navigating to SettingsRoute');
     return DialogPage(
       builder: (context) => SettingsDialog(
         onPop: () => context.pop(),
@@ -118,6 +126,7 @@ class LanguageRoute extends GoRouteData with $LanguageRoute {
 
   @override
   Page<void> buildPage(_, state) {
+    _log.info('Navigating to LanguageRoute');
     return DialogPage(
       builder: (context) => LanguageDialog(onPop: () => context.pop()),
     );
@@ -138,8 +147,10 @@ class PostStoryRoute extends GoRouteData with $PostStoryRoute {
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
+    _log.info('Navigating to PostStoryRoute');
     final extra = state.extra as PostStoryRouteExtra?;
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
+      _log.info('Building AddStoryPage (mobile)');
       final cropStream = extra?.cropStream;
       final resetState = extra?.resetState;
       return MaterialPage(
@@ -152,6 +163,7 @@ class PostStoryRoute extends GoRouteData with $PostStoryRoute {
         ),
       );
     }
+    _log.info('Building AddStoryDialog (desktop)');
     return DialogPage(builder: (_) => AddStoryDialog());
   }
 }
@@ -162,6 +174,7 @@ class CropStoryImageRoute extends GoRouteData with $CropStoryImageRoute {
 
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
+    _log.info('Navigating to CropStoryImageRoute');
     final imageBytes = state.extra as Uint8List;
     return MaterialPage(
       child: StoryCropDialog(
@@ -179,6 +192,7 @@ class LocationPickerRoute extends GoRouteData with $LocationPickerRoute {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
+    _log.info('Navigating to LocationPickerRoute');
     final initialLocation = state.extra as PlaceInfo?;
     return LocationPickerPage(initialLocation: initialLocation);
   }
@@ -197,6 +211,7 @@ class LoginRoute extends GoRouteData with $LoginRoute {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
+    _log.info('Navigating to LoginRoute');
     return LoginScreen(
       goToRegister: () => context.goNamed(Routing.register),
       onLoginSuccess: () => context.goNamed(Routing.home),
@@ -210,6 +225,7 @@ class RegisterRoute extends GoRouteData with $RegisterRoute {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
+    _log.info('Navigating to RegisterRoute');
     return RegisterScreen(
       goToLogin: () => context.go(Routing.login),
       onRegisterSuccess: () => context.go(Routing.home),
