@@ -8,10 +8,10 @@ import 'package:dicoding_story/data/services/api/remote/auth/model/default_respo
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
-import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
-import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_dialog.dart';
-import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_image_container.dart';
-import 'package:dicoding_story/ui/main/widgets/add_story/wide/story_crop_dialog.dart';
+import 'package:dicoding_story/ui/home/view_model/home_view_model.dart';
+import 'package:dicoding_story/ui/home/widgets/add_story/wide/add_story_dialog.dart';
+import 'package:dicoding_story/ui/home/widgets/add_story/wide/add_story_image_container.dart';
+import 'package:dicoding_story/ui/home/widgets/add_story/wide/story_crop_dialog.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

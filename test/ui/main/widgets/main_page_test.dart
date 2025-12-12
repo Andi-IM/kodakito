@@ -5,12 +5,12 @@ import 'package:dicoding_story/data/services/widget/image_picker/image_picker_se
 import 'package:dicoding_story/data/services/widget/insta_image_picker/insta_image_picker_service.dart';
 import 'package:dicoding_story/data/services/widget/wechat_camera_picker/wechat_camera_picker_service.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
-import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
-import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
+import 'package:dicoding_story/ui/home/view_model/home_view_model.dart';
+import 'package:dicoding_story/ui/home/view_model/stories_state.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
-import 'package:dicoding_story/ui/main/widgets/main_page.dart';
-import 'package:dicoding_story/ui/main/widgets/story_card.dart';
-import 'package:dicoding_story/ui/main/widgets/story_card_skeleton.dart';
+import 'package:dicoding_story/ui/home/widgets/home_screen.dart';
+import 'package:dicoding_story/ui/home/widgets/story_card.dart';
+import 'package:dicoding_story/ui/home/widgets/story_card_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -86,7 +86,7 @@ void main() {
                   : 1200,
               800,
             ),
-            child: const MainPage(),
+            child: const HomeScreen(),
           ),
         ),
       ),
@@ -535,7 +535,7 @@ void main() {
     expect(capturedPickFromCamera, isNotNull);
 
     // Invoke the captured _pickFromWeChatCamera callback
-    capturedPickFromCamera!(tester.element(find.byType(MainPage)));
+    capturedPickFromCamera!(tester.element(find.byType(HomeScreen)));
     await tester.pump();
 
     // Verify camera picker was called
@@ -629,7 +629,7 @@ void main() {
       expect(capturedPickFromCamera, isNotNull);
 
       // Invoke the captured _pickFromWeChatCamera callback
-      capturedPickFromCamera!(tester.element(find.byType(MainPage)));
+      capturedPickFromCamera!(tester.element(find.byType(HomeScreen)));
       await tester.pump();
 
       // Verify camera picker was called

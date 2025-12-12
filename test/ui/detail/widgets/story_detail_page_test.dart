@@ -2,7 +2,7 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/detail/view_models/detail_view_model.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
-import 'package:dicoding_story/ui/detail/widgets/free/story_detail_page.dart';
+import 'package:dicoding_story/ui/detail/widgets/free/story_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -50,7 +50,7 @@ void main() {
             child: const MaterialApp(
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
-              home: StoryDetailPage(id: 'story-1'),
+              home: StoryDetailScreen(id: 'story-1'),
             ),
           ),
         );
@@ -77,7 +77,7 @@ void main() {
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: StoryDetailPage(id: 'story-1'),
+            home: StoryDetailScreen(id: 'story-1'),
           ),
         ),
       );
@@ -128,7 +128,7 @@ void main() {
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: StoryDetailPage(id: 'story-1'),
+            home: StoryDetailScreen(id: 'story-1'),
           ),
         ),
       );
@@ -176,7 +176,7 @@ void main() {
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: StoryDetailPage(id: 'story-1'),
+            home: StoryDetailScreen(id: 'story-1'),
           ),
         ),
       );

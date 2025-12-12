@@ -11,10 +11,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:m3e_collection/m3e_collection.dart';
 import 'package:window_size_classes/window_size_classes.dart';
 
-class StoryDetailPage extends ConsumerWidget {
+class StoryDetailScreen extends ConsumerWidget {
   final String id;
 
-  const StoryDetailPage({super.key, required this.id});
+  const StoryDetailScreen({super.key, required this.id});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

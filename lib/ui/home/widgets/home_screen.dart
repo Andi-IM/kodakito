@@ -1,13 +1,13 @@
 import 'package:dicoding_story/common/localizations.dart';
-import 'package:dicoding_story/common/routing/app_router/app_router.dart';
+import 'package:dicoding_story/common/routing/app_router/go_router_builder.dart';
 import 'package:dicoding_story/data/services/platform/platform_provider.dart';
 import 'package:dicoding_story/data/services/widget/insta_image_picker/insta_image_picker_service.dart';
 import 'package:dicoding_story/data/services/widget/wechat_camera_picker/wechat_camera_picker_service.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
-import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
-import 'package:dicoding_story/ui/main/widgets/story_card.dart';
-import 'package:dicoding_story/ui/main/widgets/story_card_skeleton.dart';
+import 'package:dicoding_story/ui/home/view_model/home_view_model.dart';
+import 'package:dicoding_story/ui/home/widgets/story_card.dart';
+import 'package:dicoding_story/ui/home/widgets/story_card_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -15,23 +15,22 @@ import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:m3e_collection/m3e_collection.dart';
 import 'package:window_size_classes/window_size_classes.dart';
 
-class MainPage extends ConsumerStatefulWidget {
-  const MainPage({super.key});
+class HomeScreen extends ConsumerStatefulWidget {
+  const HomeScreen({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends ConsumerState<MainPage> {
+class _MainScreenState extends ConsumerState<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) async => ref.read(storiesProvider.notifier).getStories(),
+    Future.microtask(
+      () async => await ref.read(storiesProvider.notifier).getStories(),
     );
+    super.initState();
 
     _scrollController.addListener(_onScroll);
   }
@@ -74,12 +73,15 @@ class _MainScreenState extends ConsumerState<MainPage> {
           .pickImage(
             context,
             _pickFromWeChatCamera,
-            (cropStream) => context.pushNamed('mobile-crop', extra: cropStream),
+            (cropStream) => context.goNamed(
+              Routing.post,
+              extra: PostStoryRouteExtra(cropStream: cropStream),
+            ),
           );
       return;
     }
 
-    context.pushNamed('add-story');
+    PostStoryRoute().go(context);
   }
 
   @override
@@ -162,7 +164,7 @@ class _MainScreenState extends ConsumerState<MainPage> {
                         final story = stories[index];
                         return StoryCard(
                           story: story,
-                          onTap: () => context.goToDetail(id: story.id),
+                          onTap: () => DetailRoute(id: story.id).go(context),
                         );
                       },
                     )
@@ -177,10 +179,10 @@ class _MainScreenState extends ConsumerState<MainPage> {
                         return StoryCard(
                           key: ValueKey('StoryCard_${story.id}'),
                           story: story,
-                          onTap: () => context.goToDetail(
+                          onTap: () => DetailRoute(
                             id: story.id,
                             hasLocation: story.lat != null && story.lon != null,
-                          ),
+                          ).go(context),
                         );
                       },
                     ),

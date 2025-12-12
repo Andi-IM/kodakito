@@ -9,16 +9,16 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class LoginPage extends ConsumerStatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   final Function()? goToRegister;
   final Function()? onLoginSuccess;
-  const LoginPage({super.key, this.goToRegister, this.onLoginSuccess});
+  const LoginScreen({super.key, this.goToRegister, this.onLoginSuccess});
 
   @override
-  ConsumerState<LoginPage> createState() => _LoginPageState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginPageState extends ConsumerState<LoginPage> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   late TapGestureRecognizer _tapRecognizer;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();

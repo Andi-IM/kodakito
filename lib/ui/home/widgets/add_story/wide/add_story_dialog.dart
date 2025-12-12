@@ -1,9 +1,9 @@
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/data/services/widget/image_picker/image_picker_service.dart';
-import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
-import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
-import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_button.dart';
-import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_image_container.dart';
+import 'package:dicoding_story/ui/home/view_model/add_story_state.dart';
+import 'package:dicoding_story/ui/home/view_model/home_view_model.dart';
+import 'package:dicoding_story/ui/home/widgets/add_story/wide/add_story_button.dart';
+import 'package:dicoding_story/ui/home/widgets/add_story/wide/add_story_image_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

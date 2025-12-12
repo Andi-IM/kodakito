@@ -2,7 +2,7 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_state.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/auth_button.dart';
-import 'package:dicoding_story/ui/auth/widgets/login_page.dart';
+import 'package:dicoding_story/ui/auth/widgets/login_screen.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +20,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: LoginPage(),
+          home: LoginScreen(),
         ),
       ),
     );
@@ -42,7 +42,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: LoginPage(),
+          home: LoginScreen(),
         ),
       ),
     );
@@ -78,7 +78,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: LoginPage(),
+          home: LoginScreen(),
         ),
       ),
     );
@@ -112,7 +112,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: LoginPage(),
+          home: LoginScreen(),
         ),
       ),
     );
@@ -148,7 +148,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: LoginPage(),
+          home: LoginScreen(),
         ),
       ),
     );
@@ -183,7 +183,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: LoginPage(
+          home: LoginScreen(
             onLoginSuccess: () {
               loginSuccessCalled = true;
             },

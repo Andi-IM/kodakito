@@ -59,6 +59,27 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage> {
     }
   }
 
+  /// Updates the selected location and fetches PlaceInfo for the given LatLng.
+  Future<void> _updateLocationWithPlaceInfo(LatLng latLng) async {
+    setState(() {
+      _selectedLocation = latLng;
+      _placeInfo = null; // Clear previous place info while loading
+    });
+
+    try {
+      final placeInfo = await ref
+          .read(locationServiceProvider)
+          .getCurrentLocation(latLng.latitude, latLng.longitude);
+      if (mounted) {
+        setState(() {
+          _placeInfo = placeInfo;
+        });
+      }
+    } catch (_) {
+      // Error fetching place info - keep showing coordinates
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,21 +100,14 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage> {
               zoom: 15,
             ),
             onMapCreated: (controller) => _mapController = controller,
-            onTap: (latLng) {
-              setState(() {
-                _selectedLocation = latLng;
-              });
-            },
+            onTap: (latLng) => _updateLocationWithPlaceInfo(latLng),
             markers: {
               Marker(
                 markerId: const MarkerId('selected'),
                 position: _selectedLocation,
                 draggable: true,
-                onDragEnd: (newPosition) {
-                  setState(() {
-                    _selectedLocation = newPosition;
-                  });
-                },
+                onDragEnd: (newPosition) =>
+                    _updateLocationWithPlaceInfo(newPosition),
               ),
             },
             myLocationEnabled: true,
@@ -144,7 +158,7 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage> {
                 ),
                 const SizedBox(height: 8),
                 FloatingActionButton.small(
-                  heroTag: 'zoom-in',
+                  heroTag: 'location-picker-zoom-in',
                   onPressed: () {
                     _mapController?.animateCamera(CameraUpdate.zoomIn());
                   },
@@ -152,7 +166,7 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage> {
                 ),
                 const SizedBox(height: 8),
                 FloatingActionButton.small(
-                  heroTag: 'zoom-out',
+                  heroTag: 'location-picker-zoom-out',
                   onPressed: () {
                     _mapController?.animateCamera(CameraUpdate.zoomOut());
                   },

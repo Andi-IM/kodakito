@@ -4,8 +4,8 @@ import 'package:dicoding_story/data/services/platform/platform_provider.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
-import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
-import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
+import 'package:dicoding_story/ui/home/view_model/add_story_state.dart';
+import 'package:dicoding_story/ui/home/view_model/stories_state.dart';
 import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,7 +15,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'main_view_model.g.dart';
+part 'home_view_model.g.dart';
 
 /// Provider for managing selected location for story
 @riverpod

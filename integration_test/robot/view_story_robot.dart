@@ -1,6 +1,6 @@
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
-import 'package:dicoding_story/ui/main/widgets/story_card.dart';
+import 'package:dicoding_story/ui/home/widgets/story_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

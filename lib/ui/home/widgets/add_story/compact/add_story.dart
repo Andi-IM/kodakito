@@ -1,11 +1,13 @@
 import 'package:dicoding_story/common/localizations.dart';
-import 'package:dicoding_story/common/routing/app_router/app_router.dart';
-import 'package:dicoding_story/ui/main/view_model/add_story_state.dart';
-import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
+import 'package:dicoding_story/common/routing/app_router/go_router_builder.dart';
+import 'package:dicoding_story/ui/home/view_model/add_story_state.dart';
+import 'package:dicoding_story/ui/home/view_model/home_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:insta_assets_picker/insta_assets_picker.dart';
+import 'package:latlong_to_place/latlong_to_place.dart';
 
 class AddStoryPage extends ConsumerStatefulWidget {
   const AddStoryPage({
@@ -32,8 +34,9 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> {
 
   Future<void> _openLocationPicker() async {
     final currentLocation = ref.read(selectedLocationProvider);
-    final result = await context.pushLocationPicker(
-      initialLocation: currentLocation,
+    final result = await context.pushNamed<PlaceInfo>(
+      Routing.pickLocation,
+      extra: currentLocation,
     );
     if (result != null) {
       ref.read(selectedLocationProvider.notifier).setLocation(result);

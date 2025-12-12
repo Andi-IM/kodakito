@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/models/cache/cache.dart';
-import 'package:dicoding_story/ui/main/widgets/main_page.dart' show MainPage;
+import 'package:dicoding_story/ui/home/widgets/home_screen.dart' show HomeScreen;
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,7 +43,7 @@ class LoginRobot {
   }
 
   Future<void> checkLoginResult() async {
-    final mainPageFinder = find.byType(MainPage);
+    final mainPageFinder = find.byType(HomeScreen);
     expect(mainPageFinder, findsOneWidget);
     await tester.container().read(cacheRepositoryProvider).deleteToken();
     await tester.pumpAndSettle();

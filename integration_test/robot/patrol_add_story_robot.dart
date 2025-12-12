@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/models/cache/cache.dart';
-import 'package:dicoding_story/ui/main/widgets/main_page.dart';
+import 'package:dicoding_story/ui/home/widgets/home_screen.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -85,7 +85,7 @@ class PatrolAddStoryRobot {
   }
 
   Future<Either<AppException, Cache>> checkLoginResult() async {
-    await $(MainPage).waitUntilExists();
+    await $(HomeScreen).waitUntilExists();
     await $.tester.pumpAndSettle();
     return await $.tester.container().read(cacheRepositoryProvider).getToken();
   }
@@ -120,7 +120,7 @@ class PatrolAddStoryRobot {
   }
 
   Future<void> checkAddStoryResult(String description) async {
-    await $(MainPage).waitUntilExists();
+    await $(HomeScreen).waitUntilExists();
     await $(description).waitUntilExists();
   }
 

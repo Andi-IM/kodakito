@@ -1,5 +1,5 @@
 import 'package:dicoding_story/domain/models/story/story.dart';
-import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
+import 'package:dicoding_story/ui/home/view_model/stories_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

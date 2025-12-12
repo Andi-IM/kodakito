@@ -20,7 +20,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: RegisterPage(),
+          home: RegisterScreen(),
         ),
       ),
     );
@@ -45,7 +45,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: RegisterPage(),
+          home: RegisterScreen(),
         ),
       ),
     );
@@ -92,7 +92,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: RegisterPage(),
+          home: RegisterScreen(),
         ),
       ),
     );
@@ -140,7 +140,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: RegisterPage(),
+          home: RegisterScreen(),
         ),
       ),
     );
@@ -179,7 +179,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: RegisterPage(),
+          home: RegisterScreen(),
         ),
       ),
     );
@@ -214,7 +214,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: RegisterPage(
+          home: RegisterScreen(
             onRegisterSuccess: () {
               registerSuccessCalled = true;
             },

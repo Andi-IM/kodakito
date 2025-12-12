@@ -11,16 +11,21 @@ import 'package:intl/intl.dart';
 import 'package:latlong_to_place/latlong_to_place.dart';
 import 'package:m3e_collection/m3e_collection.dart';
 
-class StoryDetailPagePro extends ConsumerStatefulWidget {
+class StoryDetailScreenPro extends ConsumerStatefulWidget {
   final String id;
   final Function onBack;
-  const StoryDetailPagePro({super.key, required this.id, required this.onBack});
+  const StoryDetailScreenPro({
+    super.key,
+    required this.id,
+    required this.onBack,
+  });
 
   @override
-  ConsumerState<StoryDetailPagePro> createState() => _StoryDetailPageProState();
+  ConsumerState<StoryDetailScreenPro> createState() =>
+      _StoryDetailPageProState();
 }
 
-class _StoryDetailPageProState extends ConsumerState<StoryDetailPagePro> {
+class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro> {
   GoogleMapController? _mapController;
   Set<Marker> _markers = {};
   bool _markersInitialized = false;
