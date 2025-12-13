@@ -27,4 +27,5 @@ class LocationServiceImpl implements LocationService {
     return result;
   }
 }
+
 // coverage:ignore-end
