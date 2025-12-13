@@ -1,10 +1,14 @@
+import 'package:dicoding_story/ui/home/view_model/add_story_state.dart';
 import 'package:dicoding_story/ui/home/view_model/home_view_model.dart';
+import 'package:dicoding_story/ui/home/view_model/stories_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:insta_assets_picker/insta_assets_picker.dart';
 import 'package:latlong_to_place/latlong_to_place.dart';
 
 void main() {
   group('SelectedLocation', () {
+    // ... existing tests ...
     late ProviderContainer container;
 
     setUp(() {
@@ -80,6 +84,56 @@ void main() {
       // Clear
       container.read(selectedLocationProvider.notifier).clear();
       expect(container.read(selectedLocationProvider), isNull);
+    });
+  });
+
+  group('generated code coverage', () {
+    test('SelectedLocationProvider overrideWithValue returns Override', () {
+      final override = selectedLocationProvider.overrideWithValue(null);
+      expect(override, isNotNull);
+    });
+
+    test('SelectedPhotoFileProvider overrideWithValue returns Override', () {
+      final override = selectedPhotoFileProvider.overrideWithValue(null);
+      expect(override, isNotNull);
+    });
+
+    test('ImageFileProvider overrideWithValue returns Override', () {
+      final override = imageFileProvider.overrideWithValue(null);
+      expect(override, isNotNull);
+    });
+
+    test(
+      'getCroppedImageFromPickerProvider toString contains provider name and args',
+      () {
+        final stream = const Stream<InstaAssetsExportDetails>.empty();
+        final provider = getCroppedImageFromPickerProvider(stream);
+        expect(
+          provider.toString(),
+          contains('getCroppedImageFromPickerProvider'),
+        );
+      },
+    );
+
+    test('GetCroppedImageFromPickerFamily toString contains provider name', () {
+      expect(
+        getCroppedImageFromPickerProvider.toString(),
+        contains('getCroppedImageFromPickerProvider'),
+      );
+    });
+
+    test('StoriesNotifierProvider overrideWithValue returns Override', () {
+      final override = storiesProvider.overrideWithValue(
+        StoriesState.initial(),
+      );
+      expect(override, isNotNull);
+    });
+
+    test('AddStoryNotifierProvider overrideWithValue returns Override', () {
+      final override = addStoryProvider.overrideWithValue(
+        const AddStoryInitial(),
+      );
+      expect(override, isNotNull);
     });
   });
 }

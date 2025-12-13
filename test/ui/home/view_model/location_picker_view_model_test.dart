@@ -250,4 +250,56 @@ void main() {
       expect(state.isLoading, isFalse);
     });
   });
+  group('generated code coverage', () {
+    test('LocationPickerProvider toString contains provider name and args', () {
+      final provider = locationPickerProvider(null);
+      expect(provider.toString(), contains('locationPickerProvider'));
+    });
+
+    test('LocationPickerFamily toString contains provider name', () {
+      expect(
+        locationPickerProvider.toString(),
+        contains('locationPickerProvider'),
+      );
+    });
+
+    test('LocationPickerProvider overrideWithValue returns Override', () {
+      final provider = locationPickerProvider(null);
+      final override = provider.overrideWithValue(
+        const LocationPickerState(selectedLocation: LatLng(0, 0)),
+      );
+      expect(override, isNotNull);
+    });
+
+    test('LocationPicker initialLocation getter returns correct value', () {
+      // Using null
+      final container1 = ProviderContainer();
+      addTearDown(container1.dispose);
+      container1.listen(locationPickerProvider(null), (_, __) {});
+
+      final notifier1 = container1.read(locationPickerProvider(null).notifier);
+      expect(notifier1.initialLocation, isNull);
+
+      // Using value
+      final placeInfo = PlaceInfo(
+        formattedAddress: 'Test',
+        street: 'Street',
+        locality: 'Locality',
+        city: 'City',
+        state: 'State',
+        country: 'Country',
+        postalCode: '12345',
+        latitude: 1.0,
+        longitude: 2.0,
+      );
+      final container2 = ProviderContainer();
+      addTearDown(container2.dispose);
+      container2.listen(locationPickerProvider(placeInfo), (_, __) {});
+
+      final notifier2 = container2.read(
+        locationPickerProvider(placeInfo).notifier,
+      );
+      expect(notifier2.initialLocation, equals(placeInfo));
+    });
+  });
 }

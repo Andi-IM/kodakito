@@ -250,4 +250,69 @@ void main() {
       expect(result?.primary, isNotNull);
     });
   });
+
+  group('generated code coverage', () {
+    test(
+      'DetailScreenContentProvider toString contains provider name and args',
+      () {
+        final provider = detailScreenContentProvider('123');
+        expect(provider.toString(), contains('detailScreenContentProvider'));
+        expect(provider.toString(), contains('123'));
+      },
+    );
+
+    // Covers DetailScreenContentFamily.toString() (lines 85-86)
+    test('DetailScreenContentFamily toString contains provider name', () {
+      expect(
+        detailScreenContentProvider.toString(),
+        contains('detailScreenContentProvider'),
+      );
+    });
+
+    test('DetailScreenContentProvider overrideWithValue returns override', () {
+      final provider = detailScreenContentProvider('123');
+      const state = st.Initial();
+      final override = provider.overrideWithValue(state);
+      expect(override, isNotNull);
+    });
+
+    // Covers _$DetailScreenContent.id (line 91)
+    test('DetailScreenContent id returns initialized argument', () async {
+      when(() => mockRepository.getDetailStory(any())).thenAnswer((_) {
+        return Completer<Either<AppException, Story>>().future;
+      });
+
+      // Listen to the provider to trigger build and initialization of _$args
+      container.listen(detailScreenContentProvider('123'), (_, __) {});
+
+      // Wait for build to complete (microtask)
+      await container.pump();
+
+      final notifier = container.read(
+        detailScreenContentProvider('123').notifier,
+      );
+      expect(notifier.id, equals('123'));
+    });
+
+    test('DetailScreenContentProvider argument is correct', () {
+      final provider = detailScreenContentProvider('123');
+      expect(provider.argument, equals('123'));
+    });
+
+    test(
+      'storyColorSchemeProvider toString contains provider name and args',
+      () {
+        final bytes = Uint8List(0);
+        final provider = storyColorSchemeProvider(bytes);
+        expect(provider.toString(), contains('storyColorSchemeProvider'));
+        expect(provider.toString(), contains(bytes.toString()));
+      },
+    );
+    test('StoryColorSchemeFamily toString contains provider name', () {
+      expect(
+        storyColorSchemeProvider.toString(),
+        contains('storyColorSchemeProvider'),
+      );
+    });
+  });
 }

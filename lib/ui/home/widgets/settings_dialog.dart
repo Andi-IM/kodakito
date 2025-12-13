@@ -35,7 +35,6 @@ class SettingsDialog extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Header
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -53,7 +52,6 @@ class SettingsDialog extends ConsumerWidget {
               ),
               const SizedBox(height: 24),
 
-              // Avatar
               userAsync.when(
                 data: (name) {
                   final initial = name?.isNotEmpty == true
@@ -88,7 +86,6 @@ class SettingsDialog extends ConsumerWidget {
 
               const SizedBox(height: 16),
 
-              // Name
               userAsync.when(
                 data: (name) => Text(
                   'Halo, ${name ?? "User"}',
@@ -103,17 +100,14 @@ class SettingsDialog extends ConsumerWidget {
               const Divider(color: Colors.black12),
               const SizedBox(height: 24),
 
-              // Theme Option
               _buildThemeOption(const ValueKey('themeOption'), context, ref),
 
               const SizedBox(height: 16),
 
-              // Language Option
               _buildLanguageOption(context, ref, onLanguageDialogOpen),
 
               const SizedBox(height: 16),
 
-              // Logout Option
               _buildOptionItem(
                 key: const ValueKey('logoutButton'),
                 context: context,
@@ -132,7 +126,6 @@ class SettingsDialog extends ConsumerWidget {
 
               const SizedBox(height: 24),
 
-              // Version
               Text(
                 context.l10n.settingsTextVersion('${versionAsync.value}'),
                 style: theme.textTheme.bodySmall?.copyWith(

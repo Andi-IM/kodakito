@@ -33,16 +33,16 @@ class _AddStoryDialogState extends ConsumerState<AddStoryDialog> {
       if (next is AddStorySuccess) {
         ref.read(storiesProvider.notifier).resetState();
         ref.read(storiesProvider.notifier).getStories();
-        // Clear the description
+
         descriptionController.clear();
-        // Capture messenger reference before context is popped
+
         final messenger = ScaffoldMessenger.of(context);
         final localContext = context;
-        // Show success message
+
         messenger.showSnackBar(
           SnackBar(content: Text(localContext.l10n.addStorySuccessMessage)),
         );
-        // Close the dialog
+
         if (localContext.mounted) {
           localContext.pop();
         }

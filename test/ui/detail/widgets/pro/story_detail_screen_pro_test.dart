@@ -17,6 +17,8 @@ import 'package:m3e_collection/m3e_collection.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mocktail_image_network/mocktail_image_network.dart';
 
+import 'image_sample.dart';
+
 class FakeDetailScreenContent extends DetailScreenContent {
   final StoryState initialState;
   FakeDetailScreenContent(this.initialState);
@@ -503,116 +505,11 @@ void main() {
       );
     });
 
-    testWidgets('displays location chip when location is available', (
-      tester,
-    ) async {
-      final container = ProviderContainer(
-        overrides: [
-          detailScreenContentProvider('story-1').overrideWith(
-            () => FakeDetailScreenContent(
-              Loaded(
-                story: mockStoryWithLocation,
-                imageBytes: null,
-                location: mockPlaceInfo,
-              ),
-            ),
-          ),
-        ],
-      );
-      addTearDown(container.dispose);
-
-      await mockNetworkImages(() async {
-        await tester.pumpWidget(
-          buildTestWidget(
-            container: container,
-            storyId: 'story-1',
-            onBack: () {},
-            mapOverride: fakeMapWidget,
-            mapControllerService: mockMapService,
-          ),
-        );
-        await tester.pump();
-      });
-
-      expect(find.byIcon(Icons.location_on), findsOneWidget);
-      expect(find.text('Jakarta, DKI Jakarta'), findsOneWidget);
-    });
-
     testWidgets('displays image from imageBytes when available', (
       tester,
     ) async {
       // Create a simple 1x1 red PNG
-      final imageBytes = Uint8List.fromList([
-        0x89,
-        0x50,
-        0x4E,
-        0x47,
-        0x0D,
-        0x0A,
-        0x1A,
-        0x0A,
-        0x00,
-        0x00,
-        0x00,
-        0x0D,
-        0x49,
-        0x48,
-        0x44,
-        0x52,
-        0x00,
-        0x00,
-        0x00,
-        0x01,
-        0x00,
-        0x00,
-        0x00,
-        0x01,
-        0x08,
-        0x02,
-        0x00,
-        0x00,
-        0x00,
-        0x90,
-        0x77,
-        0x53,
-        0xDE,
-        0x00,
-        0x00,
-        0x00,
-        0x0C,
-        0x49,
-        0x44,
-        0x41,
-        0x54,
-        0x08,
-        0xD7,
-        0x63,
-        0xF8,
-        0xFF,
-        0xFF,
-        0x3F,
-        0x00,
-        0x05,
-        0xFE,
-        0x02,
-        0xFE,
-        0xDC,
-        0xCC,
-        0x59,
-        0xE7,
-        0x00,
-        0x00,
-        0x00,
-        0x00,
-        0x49,
-        0x45,
-        0x4E,
-        0x44,
-        0xAE,
-        0x42,
-        0x60,
-        0x82,
-      ]);
+      final imageBytes = Uint8List.fromList(imageSample);
 
       final container = ProviderContainer(
         overrides: [

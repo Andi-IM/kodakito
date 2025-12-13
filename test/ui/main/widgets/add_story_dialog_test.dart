@@ -250,6 +250,31 @@ void main() {
       expect(find.text('Post'), findsOneWidget);
     });
 
+    testWidgets('initializes with a specific key', (tester) async {
+      tester.view.physicalSize = const Size(1000, 2000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockAddStoryRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+          imageFileProvider.overrideWith(() => SafeImageFile()),
+          webPlatformProvider.overrideWithValue(false),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      const key = Key('specific_dialog_key');
+      await pumpTestWidget(
+        tester,
+        container: container,
+        child: const AddStoryDialog(key: key),
+      );
+
+      expect(find.byKey(key), findsOneWidget);
+    });
+
     testWidgets('shows error if description is empty', (tester) async {
       tester.view.physicalSize = const Size(1000, 2000);
       tester.view.devicePixelRatio = 1.0;
