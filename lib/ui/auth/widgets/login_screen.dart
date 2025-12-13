@@ -68,9 +68,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with LogMixin {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Logo Placeholder
-                  LogoWidget(maxWidth: 600),
-                  const SizedBox(height: 24),
+                  // Logo Placeholder (Hide when keyboard is visible)
+                  if (MediaQuery.of(context).viewInsets.bottom == 0) ...[
+                    LogoWidget(maxWidth: 600),
+                    const SizedBox(height: 24),
+                  ],
 
                   // Title
                   Text(
@@ -128,27 +130,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with LogMixin {
                   ),
                   const SizedBox(height: 24),
 
-                  // Register Link
-                  Center(
-                    child: RichText(
-                      text: TextSpan(
-                        text: context.l10n.authMsgNoAccount,
-                        style: Theme.of(context).textTheme.titleSmall,
-                        children: [
-                          TextSpan(
-                            text: context.l10n.authLinkRegisterNow,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.bold,
+                  // Register Link (Hide when keyboard is visible)
+                  if (MediaQuery.of(context).viewInsets.bottom == 0)
+                    Center(
+                      child: RichText(
+                        text: TextSpan(
+                          text: context.l10n.authMsgNoAccount,
+                          style: Theme.of(context).textTheme.titleSmall,
+                          children: [
+                            TextSpan(
+                              text: context.l10n.authLinkRegisterNow,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              recognizer: _tapRecognizer,
+                              semanticsIdentifier: 'to_register_button',
+                              semanticsLabel: 'Show Register',
                             ),
-                            recognizer: _tapRecognizer,
-                            semanticsIdentifier: 'to_register_button',
-                            semanticsLabel: 'Show Register',
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),

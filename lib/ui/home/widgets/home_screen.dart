@@ -128,6 +128,7 @@ class _MainScreenState extends ConsumerState<HomeScreen> with LogMixin {
     } else {
       final stories = storiesState.stories;
       final scrollView = CustomScrollView(
+        key: const ValueKey('home_scroll_view'),
         controller: _scrollController,
         slivers: [
           SliverAppBar(
@@ -153,52 +154,39 @@ class _MainScreenState extends ConsumerState<HomeScreen> with LogMixin {
               ),
             ],
           ),
-          SliverToBoxAdapter(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: isMedium
-                  ? GridView.builder(
-                      key: const ValueKey('grid'),
-                      padding: EdgeInsets.zero,
-                      gridDelegate:
-                          const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 400,
-                            mainAxisExtent: 400,
-                            childAspectRatio: 0.75,
-                            crossAxisSpacing: 16,
-                            mainAxisSpacing: 16,
-                          ),
-                      itemCount: stories.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        final story = stories[index];
-                        return StoryCard(
-                          story: story,
-                          onTap: () => DetailRoute(id: story.id).go(context),
-                        );
-                      },
-                    )
-                  : ListView.builder(
-                      key: const ValueKey('list'),
-                      padding: EdgeInsets.zero,
-                      itemCount: stories.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        final story = stories[index];
-                        return StoryCard(
-                          key: ValueKey('StoryCard_${story.id}'),
-                          story: story,
-                          onTap: () => DetailRoute(
-                            id: story.id,
-                            hasLocation: story.lat != null && story.lon != null,
-                          ).go(context),
-                        );
-                      },
-                    ),
+          if (isMedium)
+            SliverGrid(
+              key: const ValueKey('grid'),
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 400,
+                mainAxisExtent: 400,
+                childAspectRatio: 0.75,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+              ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final story = stories[index];
+                return StoryCard(
+                  story: story,
+                  onTap: () => DetailRoute(id: story.id).go(context),
+                );
+              }, childCount: stories.length),
+            )
+          else
+            SliverList(
+              key: const ValueKey('list'),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                final story = stories[index];
+                return StoryCard(
+                  key: ValueKey('storycard_$index'),
+                  story: story,
+                  onTap: () => DetailRoute(
+                    id: story.id,
+                    hasLocation: story.lat != null && story.lon != null,
+                  ).go(context),
+                );
+              }, childCount: stories.length),
             ),
-          ),
           // Show skeleton loading when fetching more stories
           if (storiesState.isLoadingMore)
             const SliverToBoxAdapter(child: StoryCardSkeleton()),

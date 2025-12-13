@@ -52,6 +52,10 @@ void main() {
       await robot.tapStory(description);
       await robot.checkStoryDetailIsDisplayedWithStory(description);
 
+      await robot.scrollToBottom();
+      await robot.scrollAgain();
+      await robot.scrollUp();
+
       await robot.tapAvatarButton();
 
       await robot.tapThemeDarkDropdown();

@@ -113,7 +113,7 @@ class SettingsRoute extends GoRouteData with $SettingsRoute {
     return DialogPage(
       builder: (context) => SettingsDialog(
         onPop: () => context.pop(),
-        onLogout: () => context.pushReplacementNamed(Routing.login),
+        onLogout: () => context.go(Routing.login),
         onLanguageDialogOpen: () => context.goNamed(Routing.language),
       ),
     );
@@ -211,7 +211,7 @@ class LoginRoute extends GoRouteData with $LoginRoute {
     _log.info('Navigating to LoginRoute');
     return LoginScreen(
       goToRegister: () => context.goNamed(Routing.register),
-      onLoginSuccess: () => context.pushNamed(Routing.home),
+      onLoginSuccess: () => context.goNamed(Routing.home),
     );
   }
 }

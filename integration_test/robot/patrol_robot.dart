@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/models/cache/cache.dart';
 import 'package:dicoding_story/ui/home/widgets/home_screen.dart';
+import 'package:dicoding_story/ui/home/widgets/story_card.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -51,32 +52,24 @@ class PatrolAddStoryRobot {
   }
 
   Future<void> typeName(String name) async {
-    await $(#nameField).tap();
     await $(#nameField).enterText(name);
-    await $.tester.testTextInput.receiveAction(TextInputAction.done);
   }
 
   Future<void> typeEmail(String email) async {
-    await $(#emailField).tap();
     await $(#emailField).enterText(email);
-    await $.tester.testTextInput.receiveAction(TextInputAction.done);
   }
 
   Future<void> typePassword(String password) async {
-    await $(#passwordField).tap();
     await $(#passwordField).enterText(password);
-    await $.tester.testTextInput.receiveAction(TextInputAction.done);
   }
 
   Future<Either<AppException, Cache>> tapLoginButton() async {
-    await $(#loginButton).tap();
-    await $.pumpAndSettle();
+    await $(#loginButton).tap(settlePolicy: SettlePolicy.settle);
     return await $.tester.container().read(cacheRepositoryProvider).getToken();
   }
 
   Future<void> tapRegisterButton() async {
-    await $(#registerButton).tap();
-    await $.pump();
+    await $(#registerButton).tap(settlePolicy: SettlePolicy.trySettle);
   }
 
   Future<void> checkRegisterResult() async {
@@ -127,7 +120,7 @@ class PatrolAddStoryRobot {
   }
 
   Future<void> confirmLocation() async {
-    // delay 5 seconds
+    // delay 10 seconds
     await Future.delayed(const Duration(seconds: 10));
     await $(#confirmLocationButton).tap();
     await $.pumpAndSettle();
@@ -154,7 +147,40 @@ class PatrolAddStoryRobot {
     await $.pumpAndSettle();
   }
 
+  Future<void> scrollToBottom() async {
+    // count story list
+    final storyList = $.tester.widgetList<StoryCard>(find.byType(StoryCard));
+    // Verify we can find some cards
+    expect(storyList, isNotEmpty);
+
+    // Scroll CustomScrollView until target is visible
+    await $.tester.scrollUntilVisible(
+      find.byKey(const ValueKey('storycard_9')),
+      500.0,
+    );
+    await $(const ValueKey('storycard_9')).waitUntilVisible();
+  }
+
+  Future<void> scrollAgain() async {
+    await $(
+      #storycard_10,
+    ).scrollTo(scrollDirection: AxisDirection.down, step: 500);
+    expect($(#storycard_10).visible, equals(true));
+
+    await Future.delayed(const Duration(seconds: 3));
+    // check list count
+    final storyList = $.tester.widgetList<StoryCard>(find.byType(StoryCard));
+    expect(storyList.length, moreOrLessEquals(20));
+  }
+
+  Future<void> scrollUp() async {
+    await $(
+      #storycard_0,
+    ).scrollTo(scrollDirection: AxisDirection.up, step: 500);
+  }
+
   Future<void> tapAvatarButton() async {
+    await $(#avatarButton).waitUntilVisible();
     await $(#avatarButton).tap();
     await $.pumpAndSettle();
   }
