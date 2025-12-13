@@ -50,7 +50,7 @@ void main() {
       await robot.checkAddStoryResult(description);
 
       await robot.tapStory(description);
-      await robot.checkStoryDetailIsDisplayedWithStory(description);
+      await robot.checkStoryDetailIsDisplayedWithStory(fakeName, description);
 
       await robot.scrollToBottom();
       await robot.scrollAgain();

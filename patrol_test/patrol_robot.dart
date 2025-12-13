@@ -135,34 +135,39 @@ class PatrolAddStoryRobot {
     await $.pumpAndSettle();
   }
 
-  Future<void> checkStoryDetailIsDisplayedWithStory(String description) async {
+  Future<void> checkStoryDetailIsDisplayedWithStory(
+    String name,
+    String description,
+  ) async {
     await $(description).waitUntilExists();
+    await $(name).waitUntilExists();
+    await $.platform.mobile.tapAt(Offset(0.5, 0.5));
     await $.platform.mobile.swipeBack();
     await $.pumpAndSettle();
   }
 
   Future<void> scrollToBottom() async {
-    await $(#storycard_10).scrollTo(
+    await $(find.byKey(const ValueKey('StoryCard_10'))).scrollTo(
       scrollDirection: AxisDirection.down,
-      step: 1000,
+      step: 1500,
       dragDuration: Duration(milliseconds: 160),
     );
 
-    expect($(#storycard_10).visible, equals(true));
+    expect($(find.byKey(const ValueKey('StoryCard_10'))).visible, equals(true));
   }
 
   Future<void> scrollAgain() async {
-    await $(#storycard_20).scrollTo(
+    await $(find.byKey(const ValueKey('StoryCard_20'))).scrollTo(
       scrollDirection: AxisDirection.down,
-      step: 1000,
+      step: 200,
       dragDuration: Duration(milliseconds: 160),
     );
 
-    expect($(#storycard_20).visible, equals(true));
+    expect($(find.byKey(const ValueKey('StoryCard_20'))).visible, equals(true));
   }
 
   Future<void> scrollUp() async {
-    await $(#storycard_0).scrollTo(
+    await $(find.byKey(const ValueKey('StoryCard_0'))).scrollTo(
       scrollDirection: AxisDirection.up,
       step: 2000,
       dragDuration: Duration(milliseconds: 160),
