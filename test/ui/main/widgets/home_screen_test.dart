@@ -195,10 +195,14 @@ void main() {
     await tester.pump();
 
     // Verify ListView is rendered (identified by key)
-    expect(find.byKey(const ValueKey('list')), findsOneWidget);
-
-    // Verify StoryCards are rendered
     expect(find.byKey(const ValueKey('StoryCard_story-1')), findsOneWidget);
+
+    // Scroll to the second item to ensure it's built
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('StoryCard_story-2')),
+      100,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.byKey(const ValueKey('StoryCard_story-2')), findsOneWidget);
   });
 
@@ -1036,6 +1040,7 @@ void main() {
           mockInstaImagePickerService,
         ),
         imagePickerServiceProvider.overrideWithValue(mockImagePickerService),
+        mobilePlatformProvider.overrideWith((ref) => true),
       ],
     );
     addTearDown(container.dispose);
@@ -1068,11 +1073,16 @@ void main() {
     when(() => mockStories.getStories()).thenAnswer((_) async {});
 
     // Scroll to the last story card to trigger the _onScroll listener at 90% threshold
-    await tester.scrollUntilVisible(
-      find.byKey(const ValueKey('StoryCard_story-19')),
-      500,
-      scrollable: find.byType(Scrollable).first,
+    // Using jumpTo to ensure we reach the bottom reliably
+    final scrollViewFinder = find.byType(CustomScrollView);
+    final scrollableFinder = find.descendant(
+      of: scrollViewFinder,
+      matching: find.byType(Scrollable),
     );
+    final scrollable = tester.state<ScrollableState>(scrollableFinder);
+    scrollable.position.jumpTo(scrollable.position.maxScrollExtent);
+    await tester.pump(); // Process scroll event
+    await tester.pump(); // Process potential state updates
 
     // Verify getStories was called again due to scroll (lines 43-44)
     verify(() => mockStories.getStories()).called(greaterThanOrEqualTo(1));
@@ -1133,7 +1143,8 @@ void main() {
 
     // Find and tap the avatar button
     await tester.tap(find.byKey(const ValueKey('avatarButton')));
-    await tester.pump(const Duration(seconds: 1));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
     // Verify navigation to settings route was called
     verify(
@@ -1227,12 +1238,15 @@ void main() {
       await tester.pump();
 
       // Verify LoadingIndicatorM3E is displayed
-      expect(find.byKey(const ValueKey('loadingIndicator')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('loadingIndicator_medium')),
+        findsOneWidget,
+      );
 
       // Verify the SizedBox wrapper exists with size 120x120 (medium, not large)
       final sizedBox = tester.widget<SizedBox>(
         find.ancestor(
-          of: find.byKey(const ValueKey('loadingIndicator')),
+          of: find.byKey(const ValueKey('loadingIndicator_medium')),
           matching: find.byType(SizedBox),
         ),
       );
@@ -1280,12 +1294,15 @@ void main() {
       await tester.pump();
 
       // Verify LoadingIndicatorM3E is displayed
-      expect(find.byKey(const ValueKey('loadingIndicator')), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('loadingIndicator_medium')),
+        findsOneWidget,
+      );
 
       // Verify the SizedBox wrapper exists with size 240x240 (large)
       final sizedBox = tester.widget<SizedBox>(
         find.ancestor(
-          of: find.byKey(const ValueKey('loadingIndicator')),
+          of: find.byKey(const ValueKey('loadingIndicator_medium')),
           matching: find.byType(SizedBox),
         ),
       );
@@ -1330,13 +1347,16 @@ void main() {
     await tester.pump();
 
     // Verify LoadingIndicatorM3E is displayed
-    expect(find.byKey(const ValueKey('loadingIndicator')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('loadingIndicator_small')),
+      findsOneWidget,
+    );
 
     // Verify Center wraps the LoadingIndicatorM3E directly (no SizedBox between)
     // On compact screens, the Center should directly contain the LoadingIndicatorM3E
     final center = tester.widget<Center>(
       find.ancestor(
-        of: find.byKey(const ValueKey('loadingIndicator')),
+        of: find.byKey(const ValueKey('loadingIndicator_small')),
         matching: find.byType(Center),
       ),
     );

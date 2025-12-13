@@ -14,7 +14,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'detail_view_model.g.dart';
 
-@Riverpod()
+@Riverpod(dependencies: [detailRepository])
 class DetailScreenContent extends _$DetailScreenContent with LogMixin {
   NetworkImageService get _networkImageProvider =>
       ref.read(networkImageServiceProvider);

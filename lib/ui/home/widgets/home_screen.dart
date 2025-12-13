@@ -114,12 +114,12 @@ class _MainScreenState extends ConsumerState<HomeScreen> with LogMixin {
                 width: isLarge ? 240 : 120,
                 height: isLarge ? 240 : 120,
                 child: LoadingIndicatorM3E(
-                  key: const ValueKey('loadingIndicator'),
+                  key: const ValueKey('loadingIndicator_medium'),
                   semanticLabel: 'loading_stories',
                 ),
               )
             : LoadingIndicatorM3E(
-                key: const ValueKey('loadingIndicator'),
+                key: const ValueKey('loadingIndicator_small'),
                 semanticLabel: 'loading_stories',
               ),
       );
@@ -178,7 +178,7 @@ class _MainScreenState extends ConsumerState<HomeScreen> with LogMixin {
               delegate: SliverChildBuilderDelegate((context, index) {
                 final story = stories[index];
                 return StoryCard(
-                  key: ValueKey('storycard_$index'),
+                  key: ValueKey('StoryCard_${story.id}'),
                   story: story,
                   onTap: () => DetailRoute(
                     id: story.id,
