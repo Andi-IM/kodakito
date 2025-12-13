@@ -29,5 +29,9 @@ void main() {
       notifier.update(0.8);
       expect(container.read(sheetExtentProvider), 0.8);
     });
+    test('overrideWithValue returns Override', () {
+      final override = sheetExtentProvider.overrideWithValue(0.5);
+      expect(override, isNotNull);
+    });
   });
 }

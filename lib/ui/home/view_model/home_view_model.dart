@@ -102,7 +102,7 @@ Future<File?> getCroppedImageFromPicker(
   return file;
 }
 
-@Riverpod(dependencies: [listRepository])
+@Riverpod(keepAlive: false)
 class StoriesNotifier extends _$StoriesNotifier with LogMixin {
   ListRepository get _repository => ref.read(listRepositoryProvider);
   @override
@@ -179,7 +179,7 @@ class MockStories extends _$StoriesNotifier
   void setState(StoriesState newState) => state = newState;
 }
 
-@Riverpod(dependencies: [addStoryRepository])
+@Riverpod(keepAlive: false)
 class AddStoryNotifier extends _$AddStoryNotifier with LogMixin {
   AddStoryRepository get _repository => ref.read(addStoryRepositoryProvider);
   @override

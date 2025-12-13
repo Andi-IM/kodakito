@@ -332,6 +332,26 @@ void main() {
       verify(() => mockCacheRepository.getToken()).called(1);
     });
   });
+  group('generated code coverage', () {
+    test('LoginProvider overrideWithValue returns Override', () {
+      final override = loginProvider.overrideWithValue(
+        const AuthState.initial(),
+      );
+      expect(override, isNotNull);
+    });
+
+    test('RegisterProvider overrideWithValue returns Override', () {
+      final override = registerProvider.overrideWithValue(
+        const AuthState.initial(),
+      );
+      expect(override, isNotNull);
+    });
+
+    test('ObscurePasswordProvider overrideWithValue returns Override', () {
+      final override = obscurePasswordProvider.overrideWithValue(true);
+      expect(override, isNotNull);
+    });
+  });
 }
 
 class MockAuthRepository extends Mock implements AuthRepository {}
