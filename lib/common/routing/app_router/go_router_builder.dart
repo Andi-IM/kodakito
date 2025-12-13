@@ -161,7 +161,7 @@ class PostStoryRoute extends GoRouteData with $PostStoryRoute {
       );
     }
     _log.info('Building AddStoryDialog (desktop)');
-    return DialogPage(builder: (_) => AddStoryDialog());
+    return DialogPage(builder: (_) => const AddStoryDialog());
   }
 }
 
