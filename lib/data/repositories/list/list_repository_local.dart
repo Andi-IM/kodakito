@@ -1,8 +1,8 @@
-import 'package:dicoding_story/domain/repository/list_repository.dart';
-import 'package:dicoding_story/data/services/local/local_data_service.dart';
-import 'package:dicoding_story/domain/models/story/story.dart';
-import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:dartz/dartz.dart';
+import 'package:dicoding_story/data/services/api/local/local_data_service.dart';
+import 'package:dicoding_story/domain/models/story/story.dart';
+import 'package:dicoding_story/domain/repository/list_repository.dart';
+import 'package:dicoding_story/utils/http_exception.dart';
 
 /// Local data source with all possible stories
 class ListRepositoryLocal implements ListRepository {
@@ -12,7 +12,10 @@ class ListRepositoryLocal implements ListRepository {
   final LocalDataService _localDataService;
 
   @override
-  Future<Either<AppException, List<Story>>> getListStories() async {
+  Future<Either<AppException, List<Story>>> getListStories({
+    int page = 1,
+    int size = 10,
+  }) async {
     try {
       await Future.delayed(const Duration(seconds: 1));
       final stories = await _localDataService.getListStories();

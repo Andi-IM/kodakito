@@ -4,24 +4,21 @@ import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/auth_button.dart';
 import 'package:dicoding_story/ui/auth/widgets/auth_fields.dart';
 import 'package:dicoding_story/ui/auth/widgets/logo_widget.dart';
-import 'package:flutter/material.dart';
+import 'package:dicoding_story/utils/logger_mixin.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RegisterPage extends ConsumerStatefulWidget {
-  final Function() onRegisterSuccess;
-  final Function() goToLogin;
-  const RegisterPage({
-    super.key,
-    required this.onRegisterSuccess,
-    required this.goToLogin,
-  });
+class RegisterScreen extends ConsumerStatefulWidget {
+  final Function()? onRegisterSuccess;
+  final Function()? goToLogin;
+  const RegisterScreen({super.key, this.onRegisterSuccess, this.goToLogin});
 
   @override
-  ConsumerState<RegisterPage> createState() => _RegisterPageState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterPageState extends ConsumerState<RegisterPage> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> with LogMixin {
   late TapGestureRecognizer _tapRecognizer;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -31,7 +28,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   void initState() {
     super.initState();
-    _tapRecognizer = TapGestureRecognizer()..onTap = () => widget.goToLogin();
+    log.info('RegisterScreen initialized');
+    _tapRecognizer = TapGestureRecognizer()
+      ..onTap = () {
+        log.info('Navigating to login screen');
+        widget.goToLogin!();
+      };
   }
 
   @override
@@ -49,9 +51,11 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final scaffold = ScaffoldMessenger.of(context);
     ref.listen(registerProvider.select((value) => value), ((previous, next) {
       if (next is Failure) {
+        log.warning('Registration failed: ${next.exception.message}');
         scaffold.showSnackBar(SnackBar(content: Text(next.exception.message)));
       } else if (next is Loaded) {
-        widget.onRegisterSuccess();
+        log.info('Registration successful, navigating to home');
+        widget.onRegisterSuccess!();
       }
     }));
     return Scaffold(
@@ -110,6 +114,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               isLoading: isLoading,
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
+                                  log.info(
+                                    'Register button pressed, attempting registration',
+                                  );
                                   ref
                                       .read(registerProvider.notifier)
                                       .register(

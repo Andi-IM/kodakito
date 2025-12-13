@@ -2,7 +2,8 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_state.dart';
 import 'package:dicoding_story/ui/auth/view_models/auth_view_model.dart';
 import 'package:dicoding_story/ui/auth/widgets/auth_button.dart';
-import 'package:dicoding_story/ui/auth/widgets/login_page.dart';
+import 'package:dicoding_story/ui/auth/widgets/login_screen.dart';
+import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -19,7 +20,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: LoginPage(goToRegister: () {}, onLoginSuccess: () {}),
+          home: LoginScreen(),
         ),
       ),
     );
@@ -41,7 +42,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: LoginPage(goToRegister: () {}, onLoginSuccess: () {}),
+          home: LoginScreen(),
         ),
       ),
     );
@@ -77,7 +78,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: LoginPage(goToRegister: () {}, onLoginSuccess: () {}),
+          home: LoginScreen(),
         ),
       ),
     );
@@ -111,7 +112,7 @@ void main() {
         child: MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: LoginPage(goToRegister: () {}, onLoginSuccess: () {}),
+          home: LoginScreen(),
         ),
       ),
     );
@@ -137,4 +138,79 @@ void main() {
     expect(passwordFieldAfterTap.obscureText, isFalse);
     expect(find.byIcon(Icons.visibility_off_outlined), findsOneWidget);
   });
+
+  testWidgets('shows snackbar on login failure', (WidgetTester tester) async {
+    final mockNotifier = TestableLoginNotifier();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [loginProvider.overrideWith(() => mockNotifier)],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: LoginScreen(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Simulate a failure state transition
+    mockNotifier.setTestState(
+      AuthState.failure(
+        AppException(
+          message: 'Invalid credentials',
+          statusCode: 401,
+          identifier: 'login',
+        ),
+      ),
+    );
+    await tester.pump();
+
+    // Verify snackbar is shown with error message
+    expect(find.byType(SnackBar), findsOneWidget);
+    expect(find.text('Invalid credentials'), findsOneWidget);
+  });
+
+  testWidgets('calls onLoginSuccess when login succeeds', (
+    WidgetTester tester,
+  ) async {
+    final mockNotifier = TestableLoginNotifier();
+    var loginSuccessCalled = false;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [loginProvider.overrideWith(() => mockNotifier)],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: LoginScreen(
+            onLoginSuccess: () {
+              loginSuccessCalled = true;
+            },
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Verify callback not called yet
+    expect(loginSuccessCalled, isFalse);
+
+    // Simulate a loaded state transition
+    mockNotifier.setTestState(const AuthState.loaded());
+    await tester.pump();
+
+    // Verify onLoginSuccess callback was called
+    expect(loginSuccessCalled, isTrue);
+  });
+}
+
+/// Testable LoginNotifier that allows custom state updates
+class TestableLoginNotifier extends Login {
+  @override
+  AuthState build() => const AuthState.initial();
+
+  void setTestState(AuthState newState) {
+    state = newState;
+  }
 }

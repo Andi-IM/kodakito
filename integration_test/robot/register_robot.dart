@@ -1,4 +1,4 @@
-import 'package:dicoding_story/ui/auth/widgets/login_page.dart';
+import 'package:dicoding_story/ui/auth/widgets/login_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -87,7 +87,7 @@ class RegisterRobot {
   }
 
   Future<void> checkLoginPage() async {
-    final loginPageFinder = find.byType(LoginPage);
+    final loginPageFinder = find.byType(LoginScreen);
     expect(loginPageFinder, findsOneWidget);
     await tester.pumpAndSettle();
   }

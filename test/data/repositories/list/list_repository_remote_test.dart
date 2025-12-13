@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/repositories/list/list_repository_remote.dart';
-import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
+import 'package:dicoding_story/data/services/api/remote/story/story_data_source.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,7 +41,11 @@ void main() {
       () async {
         // arrange
         when(
-          () => mockStoryDataSource.getAllStories(),
+          () => mockStoryDataSource.getAllStories(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            location: any(named: 'location'),
+          ),
         ).thenAnswer((_) async => Right(tStories));
 
         // act
@@ -49,7 +53,13 @@ void main() {
 
         // assert
         expect(result, Right(tStories));
-        verify(() => mockStoryDataSource.getAllStories()).called(1);
+        verify(
+          () => mockStoryDataSource.getAllStories(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            location: any(named: 'location'),
+          ),
+        ).called(1);
       },
     );
 
@@ -63,7 +73,11 @@ void main() {
           identifier: 'test',
         );
         when(
-          () => mockStoryDataSource.getAllStories(),
+          () => mockStoryDataSource.getAllStories(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            location: any(named: 'location'),
+          ),
         ).thenAnswer((_) async => Left(tException));
 
         // act
@@ -71,7 +85,13 @@ void main() {
 
         // assert
         expect(result, Left(tException));
-        verify(() => mockStoryDataSource.getAllStories()).called(1);
+        verify(
+          () => mockStoryDataSource.getAllStories(
+            page: any(named: 'page'),
+            size: any(named: 'size'),
+            location: any(named: 'location'),
+          ),
+        ).called(1);
       },
     );
   });

@@ -14,6 +14,7 @@ abstract class WechatCameraPickerService {
   Future<AssetEntity?> pickImage(BuildContext context);
 }
 
+// coverage:ignore-start
 class WechatCameraPickerServiceImpl implements WechatCameraPickerService {
   ResolutionPreset get cameraResolutionPreset =>
       Platform.isAndroid ? ResolutionPreset.high : ResolutionPreset.max;
@@ -31,3 +32,5 @@ class WechatCameraPickerServiceImpl implements WechatCameraPickerService {
     );
   }
 }
+
+// coverage:ignore-end

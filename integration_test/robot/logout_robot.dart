@@ -1,4 +1,4 @@
-import 'package:dicoding_story/ui/auth/widgets/login_page.dart';
+import 'package:dicoding_story/ui/auth/widgets/login_screen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -28,7 +28,7 @@ class LogoutRobot {
   }
 
   Future<void> checkLogoutResult() async {
-    final loginPageFinder = find.byType(LoginPage);
+    final loginPageFinder = find.byType(LoginScreen);
     expect(loginPageFinder, findsOneWidget);
   }
 }

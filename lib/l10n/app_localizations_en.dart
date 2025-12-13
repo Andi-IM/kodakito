@@ -155,4 +155,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String validatorMinLength(int length) {
     return 'Password must be at least $length characters long';
   }
+
+  @override
+  String get addStoryAddLocation => 'Add Location';
+
+  @override
+  String get addStoryRemoveLocation => 'Remove Location';
+
+  @override
+  String get locationPickerTitle => 'Choose Location';
+
+  @override
+  String get locationPickerConfirm => 'Confirm';
+
+  @override
+  String get locationPickerHint =>
+      'Tap on the map to select a location, or drag the marker';
 }

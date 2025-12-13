@@ -10,4 +10,7 @@ bool mobilePlatform(Ref ref) =>
     !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
 @riverpod
+bool supportMaps(Ref ref) => kIsWeb || Platform.isAndroid || Platform.isIOS;
+
+@riverpod
 bool webPlatform(Ref ref) => kIsWeb;

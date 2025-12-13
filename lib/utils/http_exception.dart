@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/login_response/login_response.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/login_response/login_response.dart';
 import 'package:dicoding_story/domain/models/response.dart';
 import 'package:equatable/equatable.dart';
 

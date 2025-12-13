@@ -1,9 +1,9 @@
+import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/common/routing/app_router/app_router.dart';
 import 'package:dicoding_story/common/theme.dart';
 import 'package:dicoding_story/common/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dicoding_story/common/localizations.dart';
 import 'package:m3e_collection/m3e_collection.dart';
 
 class MyApp extends ConsumerWidget {

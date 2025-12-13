@@ -156,4 +156,20 @@ class AppLocalizationsId extends AppLocalizations {
   String validatorMinLength(int length) {
     return 'Password harus terdiri dari minimal $length karakter';
   }
+
+  @override
+  String get addStoryAddLocation => 'Tambah Lokasi';
+
+  @override
+  String get addStoryRemoveLocation => 'Hapus Lokasi';
+
+  @override
+  String get locationPickerTitle => 'Pilih Lokasi';
+
+  @override
+  String get locationPickerConfirm => 'Konfirmasi';
+
+  @override
+  String get locationPickerHint =>
+      'Ketuk peta untuk memilih lokasi, atau seret penanda';
 }

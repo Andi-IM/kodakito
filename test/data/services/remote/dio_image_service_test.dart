@@ -1,6 +1,6 @@
 import 'dart:typed_data' show Uint8List;
 
-import 'package:dicoding_story/data/services/remote/dio_network_service.dart';
+import 'package:dicoding_story/data/services/api/remote/dio_network_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

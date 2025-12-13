@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
+import 'package:dicoding_story/data/services/api/remote/story/story_data_source.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
@@ -12,7 +12,15 @@ class ListRepositoryRemote implements ListRepository {
     : _storyDataSource = storyDataSource;
 
   @override
-  Future<Either<AppException, List<Story>>> getListStories() async {
-    return await _storyDataSource.getAllStories();
+  Future<Either<AppException, List<Story>>> getListStories({
+    int page = 1,
+    int size = 10,
+    int location = 0,
+  }) async {
+    return await _storyDataSource.getAllStories(
+      page: page,
+      size: size,
+      location: location,
+    );
   }
 }

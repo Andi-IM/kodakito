@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/data/repositories/add/add_story_repository_local.dart';
-import 'package:dicoding_story/data/services/local/local_data_service.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
+import 'package:dicoding_story/data/services/api/local/local_data_service.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/default_response/default_response.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter_test/flutter_test.dart';

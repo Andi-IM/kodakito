@@ -1,28 +1,33 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter/foundation.dart';
 
-part 'app_env.g.dart';
+// coverage:ignore-file
+enum AppEnvironment { development, production, proDevelopment, pro }
 
-@riverpod
-EnvInfo envInfo(Ref ref) {
-  final env = dotenv.get("APP_ENV", fallback: "development");
-  final appEnvironment = switch (env) {
-    "production" => AppEnvironment.production,
-    _ => AppEnvironment.development,
-  };
-  return EnvInfo(appEnvironment);
-}
+abstract class EnvInfo {
+  static AppEnvironment _environment = AppEnvironment.development;
 
-enum AppEnvironment { development, production }
+  static AppEnvironment get environment => _environment;
 
-class EnvInfo {
-  final AppEnvironment environment;
+  static void initialize(AppEnvironment environment) {
+    EnvInfo._environment = environment;
+  }
 
-  const EnvInfo(this.environment);
+  static String get appName => _environment._appTitle;
 
-  String get appName => environment._appTitle;
-  String get env => environment._env;
-  bool get isProduction => environment == AppEnvironment.production;
+  static String get env => _environment._env;
+
+  static bool get isProduction =>
+      _environment == AppEnvironment.production ||
+      _environment == AppEnvironment.pro;
+
+  static bool get isDebug => kDebugMode;
+
+  static bool get isRelease => kReleaseMode;
+
+  static bool get isProfile => kProfileMode;
+
+  static String get apiKey =>
+      const String.fromEnvironment('APP_URL', defaultValue: 'app-url');
 }
 
 extension _EnvProperties on AppEnvironment {
@@ -37,5 +42,6 @@ extension _EnvProperties on AppEnvironment {
   };
 
   String get _appTitle => _appTitles[this]!;
+
   String get _env => _envs[this]!;
 }

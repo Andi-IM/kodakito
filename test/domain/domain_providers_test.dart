@@ -13,28 +13,17 @@ import 'package:dicoding_story/domain/repository/auth_repository.dart';
 import 'package:dicoding_story/domain/repository/cache_repository.dart';
 import 'package:dicoding_story/domain/repository/detail_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('Domain Providers', () {
-    setUpAll(() async {
-      // Load dotenv from the actual .env file
-      await dotenv.load(fileName: '.env');
-    });
-
     test('providers should exist and return correct repository types', () {
       // Arrange
+      EnvInfo.initialize(AppEnvironment.development);
       SharedPreferences.setMockInitialValues({});
-      final container = ProviderContainer(
-        overrides: [
-          envInfoProvider.overrideWithValue(
-            EnvInfo(AppEnvironment.development),
-          ),
-        ],
-      );
+      final container = ProviderContainer();
       addTearDown(container.dispose);
 
       // Act & Assert
@@ -54,12 +43,9 @@ void main() {
 
     test('providers should return remote repositories in production', () {
       // Arrange
+      EnvInfo.initialize(AppEnvironment.production);
       SharedPreferences.setMockInitialValues({});
-      final container = ProviderContainer(
-        overrides: [
-          envInfoProvider.overrideWithValue(EnvInfo(AppEnvironment.production)),
-        ],
-      );
+      final container = ProviderContainer();
       addTearDown(container.dispose);
 
       // Act & Assert
@@ -86,14 +72,9 @@ void main() {
 
     test('providers should return local/dev repositories in development', () {
       // Arrange
+      EnvInfo.initialize(AppEnvironment.development);
       SharedPreferences.setMockInitialValues({});
-      final container = ProviderContainer(
-        overrides: [
-          envInfoProvider.overrideWithValue(
-            EnvInfo(AppEnvironment.development),
-          ),
-        ],
-      );
+      final container = ProviderContainer();
       addTearDown(container.dispose);
 
       // Act & Assert

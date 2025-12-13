@@ -1,7 +1,7 @@
-import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/login_response/login_response.dart';
-import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:dartz/dartz.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/default_response/default_response.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/login_response/login_response.dart';
+import 'package:dicoding_story/utils/http_exception.dart';
 
 abstract class AuthRepository {
   /// Register a new user

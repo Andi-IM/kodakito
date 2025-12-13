@@ -20,18 +20,13 @@ import 'robot/view_story_robot.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  final overrideEnv = envInfoProvider.overrideWithValue(
-    EnvInfo(AppEnvironment.development),
-  );
+  // Initialize environment statically for tests
+  EnvInfo.initialize(AppEnvironment.development);
 
   group('end-to-end test with local data', () {
     testWidgets('should load app', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          overrides: [overrideEnv],
-          observers: [Observer()],
-          child: MyApp(),
-        ),
+        ProviderScope(observers: [Observer()], child: MyApp()),
       );
     });
 
@@ -40,11 +35,7 @@ void main() {
     ) async {
       final loginRobot = LoginRobot(tester);
       await loginRobot.loadUI(
-        ProviderScope(
-          overrides: [overrideEnv],
-          observers: [Observer()],
-          child: MyApp(),
-        ),
+        ProviderScope(observers: [Observer()], child: MyApp()),
       );
       await loginRobot.typeEmail('admin@example.com');
       await loginRobot.typePassword('password');
@@ -64,7 +55,7 @@ void main() {
       final overrideCache = cacheRepositoryProvider.overrideWithValue(repo);
       await logoutRobot.loadUI(
         ProviderScope(
-          overrides: [overrideCache, overrideEnv],
+          overrides: [overrideCache],
           observers: [Observer()],
           child: MyApp(),
         ),
@@ -80,11 +71,7 @@ void main() {
     ) async {
       final registerRobot = RegisterRobot(tester);
       await registerRobot.loadUI(
-        ProviderScope(
-          overrides: [overrideEnv],
-          observers: [Observer()],
-          child: MyApp(),
-        ),
+        ProviderScope(observers: [Observer()], child: MyApp()),
       );
 
       await registerRobot.findRegisterPage();
@@ -114,7 +101,7 @@ void main() {
 
           await viewStoryRobot.loadUI(
             ProviderScope(
-              overrides: [overrideEnv, overrideCache],
+              overrides: [overrideCache],
               observers: [Observer()],
               child: MyApp(),
             ),
@@ -143,7 +130,7 @@ void main() {
 
       await addStoryRobot.loadUI(
         ProviderScope(
-          overrides: [overrideEnv, overrideCache],
+          overrides: [overrideCache],
           observers: [Observer()],
           child: MyApp(),
         ),

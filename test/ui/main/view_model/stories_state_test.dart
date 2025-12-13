@@ -1,5 +1,5 @@
 import 'package:dicoding_story/domain/models/story/story.dart';
-import 'package:dicoding_story/ui/main/view_model/stories_state.dart';
+import 'package:dicoding_story/ui/home/view_model/stories_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -15,102 +15,75 @@ void main() {
     );
 
     test('initial state is correct', () {
-      const state = StoriesState.initial();
-      expect(state.state, StoriesConcreteState.initial);
+      final state = StoriesState.initial();
       expect(state.stories, isEmpty);
-      expect(state.message, isNull);
+      expect(state.isInitialLoading, isFalse);
+      expect(state.isLoadingMore, isFalse);
+      expect(state.hasError, isFalse);
+      expect(state.errorMessage, isNull);
+      expect(state.nextPage, 1);
+      expect(state.sizeItems, 10);
     });
 
     test('supports value equality', () {
-      const state1 = StoriesState(state: StoriesConcreteState.initial);
-      const state2 = StoriesState(state: StoriesConcreteState.initial);
-      const state3 = StoriesState(state: StoriesConcreteState.loading);
+      final state1 = StoriesState.initial();
+      final state2 = StoriesState.initial();
 
       expect(state1, equals(state2));
-      expect(state1, isNot(equals(state3)));
     });
 
-    test('copyWith updates state correctly', () {
-      const state = StoriesState.initial();
+    test('copyWith updates stories correctly', () {
+      final state = StoriesState.initial();
       final newState = state.copyWith(
-        state: StoriesConcreteState.loaded,
         stories: [tStory],
-        message: 'Success',
+        isInitialLoading: false,
       );
 
-      expect(newState.state, StoriesConcreteState.loaded);
       expect(newState.stories, [tStory]);
-      expect(newState.message, 'Success');
+      expect(newState.isInitialLoading, isFalse);
     });
 
-    test('copyWith with null values retains old values', () {
-      final state = StoriesState(
-        state: StoriesConcreteState.loaded,
-        stories: [tStory],
-        message: 'Success',
+    test('copyWith updates loading states correctly', () {
+      final state = StoriesState.initial();
+
+      final loadingMoreState = state.copyWith(
+        isInitialLoading: false,
+        isLoadingMore: true,
       );
 
-      final newState = state.copyWith();
-
-      expect(newState.state, state.state);
-      expect(newState.stories, state.stories);
-      expect(newState.message, state.message);
+      expect(loadingMoreState.isInitialLoading, isFalse);
+      expect(loadingMoreState.isLoadingMore, isTrue);
     });
 
-    test('toString returns correct string representation', () {
-      const state = StoriesState.initial();
-      expect(
-        state.toString(),
-        'StoriesState(state: StoriesConcreteState.initial, stories: [], message: null)',
+    test('copyWith updates error state correctly', () {
+      final state = StoriesState.initial();
+      final errorState = state.copyWith(
+        hasError: true,
+        errorMessage: 'Error message',
+        isInitialLoading: false,
       );
+
+      expect(errorState.hasError, isTrue);
+      expect(errorState.errorMessage, 'Error message');
     });
 
-    group('when', () {
-      test('returns loading when state is initial', () {
-        const state = StoriesState.initial();
-        final result = state.when(
-          data: (_) => 'data',
-          loading: () => 'loading',
-          error: (_, __) => 'error',
-        );
-        expect(result, 'loading');
-      });
+    test('copyWith updates pagination correctly', () {
+      final state = StoriesState.initial();
+      final paginatedState = state.copyWith(
+        nextPage: 2,
+        isInitialLoading: false,
+      );
 
-      test('returns loading when state is loading', () {
-        const state = StoriesState(state: StoriesConcreteState.loading);
-        final result = state.when(
-          data: (_) => 'data',
-          loading: () => 'loading',
-          error: (_, __) => 'error',
-        );
-        expect(result, 'loading');
-      });
+      expect(paginatedState.nextPage, 2);
+    });
 
-      test('returns data when state is loaded', () {
-        final state = StoriesState(
-          state: StoriesConcreteState.loaded,
-          stories: [tStory],
-        );
-        final result = state.when(
-          data: (stories) => stories,
-          loading: () => [],
-          error: (_, __) => [],
-        );
-        expect(result, [tStory]);
-      });
+    test('nextPage null indicates no more pages', () {
+      final state = StoriesState.initial().copyWith(
+        nextPage: null,
+        isInitialLoading: false,
+      );
 
-      test('returns error when state is failure', () {
-        const state = StoriesState(
-          state: StoriesConcreteState.failure,
-          message: 'Error message',
-        );
-        final result = state.when(
-          data: (_) => 'data',
-          loading: () => 'loading',
-          error: (msg, _) => msg,
-        );
-        expect(result, 'Error message');
-      });
+      expect(state.nextPage, isNull);
     });
   });
 }

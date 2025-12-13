@@ -55,8 +55,39 @@ void main() {
       expect(result, tCache);
     });
 
-    test('props should contain all fields', () {
-      expect(tCache.props, ['token', 'userName', 'userId']);
+    test('should support value equality', () {
+      // Arrange
+      const cache1 = Cache(
+        token: 'token',
+        userName: 'userName',
+        userId: 'userId',
+      );
+      const cache2 = Cache(
+        token: 'token',
+        userName: 'userName',
+        userId: 'userId',
+      );
+
+      // Assert
+      expect(cache1, cache2);
+      expect(cache1.hashCode, cache2.hashCode);
+    });
+
+    test('should not be equal when fields differ', () {
+      // Arrange
+      const cache1 = Cache(
+        token: 'token1',
+        userName: 'userName',
+        userId: 'userId',
+      );
+      const cache2 = Cache(
+        token: 'token2',
+        userName: 'userName',
+        userId: 'userId',
+      );
+
+      // Assert
+      expect(cache1, isNot(cache2));
     });
 
     test('toString should return correct string representation', () {

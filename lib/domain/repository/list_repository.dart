@@ -4,6 +4,9 @@ import 'package:dicoding_story/utils/http_exception.dart';
 
 /// Data source for list of stories
 abstract class ListRepository {
-  /// Get list of stories
-  Future<Either<AppException, List<Story>>> getListStories();
+  /// Get list of stories with pagination support
+  Future<Either<AppException, List<Story>>> getListStories({
+    int page = 1,
+    int size = 10,
+  });
 }

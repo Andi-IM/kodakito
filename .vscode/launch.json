@@ -1,0 +1,164 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "dev_debug",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "flutterMode": "debug",
+            "args": [
+                "--flavor",
+                "dev",
+                "--dart-define-from-file",
+                "env/keys.json"
+            ]
+        },
+        {
+            "name": "dev_profile",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "flutterMode": "profile",
+            "args": [
+                "--flavor",
+                "dev",
+                "--dart-define-from-file",
+                "env/keys.json"
+            ]
+        },
+        {
+            "name": "dev_release",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_dev.dart",
+            "flutterMode": "release",
+            "args": [
+                "--flavor",
+                "dev",
+                "--dart-define-from-file",
+                "env/keys.json"
+            ]
+        },
+         {
+            "name": "prod_debug",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prod.dart",
+            "flutterMode": "debug",
+            "args": [
+                "--flavor",
+                "prod",
+                "--dart-define-from-file",
+                "env/keys.json"
+            ]
+        },
+        {
+            "name": "prod_profile",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prod.dart",
+            "flutterMode": "profile",
+            "args": [
+                "--flavor",
+                "prod",
+                "--dart-define-from-file",
+                "env/keys.json"
+            ]
+        },
+        {
+            "name": "prod_release",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prod.dart",
+            "flutterMode": "release",
+            "args": [
+                "--flavor",
+                "prod",
+                "--dart-define-from-file",
+                "env/keys.json"
+            ]
+        },
+         {
+            "name": "pro_dev_debug",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prodev.dart",
+            "flutterMode": "debug",
+            "args": [
+                "--flavor",
+                "prodev",
+                "--dart-define-from-file",
+                "env/keys.json"
+            ]
+        },
+        {
+            "name": "pro_dev_profile",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prodev.dart",
+            "flutterMode": "profile",
+            "args": [
+                "--flavor",
+                "prodev",
+                "--dart-define-from-file",
+                "env/keys.json"
+            ]
+        },
+        {
+            "name": "pro_dev_release",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_prodev.dart",
+            "flutterMode": "release",
+            "args": [
+                "--flavor",
+                "prodev",
+                "--dart-define-from-file",
+                "env/keys.json"
+            ]
+        },
+         {
+            "name": "pro_debug",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_pro.dart",
+            "flutterMode": "debug",
+            "args": [
+                "--flavor",
+                "pro",
+                "--dart-define-from-file",
+                "env/keys.json"
+            ]
+        },
+        {
+            "name": "pro_profile",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_pro.dart",
+            "flutterMode": "profile",
+            "args": [
+                "--flavor",
+                "pro",
+                "--dart-define-from-file",
+                "env/keys.json"
+            ]
+        },
+        {
+            "name": "pro_release",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main_pro.dart",
+            "flutterMode": "release",
+            "args": [
+                "--flavor",
+                "pro",
+                "--dart-define-from-file",
+                "env/keys.json"
+            ]
+        }
+    ]
+}

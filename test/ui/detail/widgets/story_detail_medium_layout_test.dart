@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
-import 'package:dicoding_story/ui/detail/widgets/story_detail_medium_layout.dart';
+import 'package:dicoding_story/ui/detail/widgets/free/story_detail_medium_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail_image_network/mocktail_image_network.dart';

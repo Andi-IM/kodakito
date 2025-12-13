@@ -1,9 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
-import 'package:dicoding_story/ui/main/widgets/story_card.dart';
+import 'package:dicoding_story/ui/home/widgets/story_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 import 'package:mocktail_image_network/mocktail_image_network.dart';
 
 void main() {
@@ -126,9 +127,9 @@ void main() {
         MaterialApp(home: Scaffold(body: progressWidget)),
       );
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      final indicator = tester.widget<CircularProgressIndicator>(
-        find.byType(CircularProgressIndicator),
+      expect(find.byType(CircularProgressIndicatorM3E), findsOneWidget);
+      final indicator = tester.widget<CircularProgressIndicatorM3E>(
+        find.byType(CircularProgressIndicatorM3E),
       );
       expect(indicator.value, 0.5);
     });

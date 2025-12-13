@@ -1,8 +1,23 @@
+import groovy.json.JsonSlurper
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+// Load environment variables from env.json
+val envFile = rootProject.file("../env/keys.json")
+val envConfig: Map<String, String> = if (envFile.exists()) {
+    @Suppress("UNCHECKED_CAST")
+    JsonSlurper().parseText(envFile.readText()) as Map<String, String>
+} else {
+    emptyMap()
+}
+
+fun getEnvVariable(key: String): String {
+    return envConfig[key] ?: System.getenv(key) ?: ""
 }
 
 android {
@@ -32,17 +47,41 @@ android {
         multiDexEnabled = true
         testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
+
+        manifestPlaceholders["googleMapsApiKey"] = getEnvVariable("MAPS_APIKEY")
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
-        debug {
+        getByName("debug") {
             isMinifyEnabled = false
             isShrinkResources = false
+            applicationIdSuffix = ".debug"
+        }
+    }
+    flavorDimensions += "flavors"
+    productFlavors {
+        create("dev") {
+            dimension = "flavors"
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+        }
+        create("prod") {
+            dimension = "flavors"
+        }
+        create("prodev") {
+            dimension = "flavors"
+            applicationIdSuffix = ".pro.dev"
+            versionNameSuffix = "-pro-dev"
+        }
+        create("pro") {
+            dimension = "flavors"
+            applicationIdSuffix = ".pro"
+            versionNameSuffix = "-pro"
         }
     }
 
@@ -59,3 +98,10 @@ dependencies {
 flutter {
     source = "../.."
 }
+
+// tasks.register("printEnvVariables") {
+//     doLast {
+//         println("APP_URL: ${getEnvVariable("APP_URL")}")
+//         println("MAPS_APIKEY: ${getEnvVariable("MAPS_APIKEY")}")
+//     }
+// }

@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
-import 'package:dicoding_story/data/services/remote/story/story_data_source.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/default_response/default_response.dart';
+import 'package:dicoding_story/data/services/api/remote/story/story_data_source.dart';
 import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:image_picker/image_picker.dart';

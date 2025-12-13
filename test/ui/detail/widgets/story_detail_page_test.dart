@@ -2,12 +2,13 @@ import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/detail/view_models/detail_view_model.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
-import 'package:dicoding_story/ui/detail/widgets/story_detail_page.dart';
+import 'package:dicoding_story/ui/detail/widgets/free/story_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mocktail_image_network/mocktail_image_network.dart';
+import 'package:m3e_collection/m3e_collection.dart';
 import 'package:window_size_classes/window_size_classes.dart';
 
 class FakeDetailScreenContent extends DetailScreenContent {
@@ -49,13 +50,13 @@ void main() {
             child: const MaterialApp(
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
-              home: StoryDetailPage(id: 'story-1'),
+              home: StoryDetailScreen(id: 'story-1'),
             ),
           ),
         );
       });
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(LoadingIndicatorM3E), findsOneWidget);
     },
   );
 
@@ -76,7 +77,7 @@ void main() {
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: StoryDetailPage(id: 'story-1'),
+            home: StoryDetailScreen(id: 'story-1'),
           ),
         ),
       );
@@ -127,7 +128,7 @@ void main() {
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: StoryDetailPage(id: 'story-1'),
+            home: StoryDetailScreen(id: 'story-1'),
           ),
         ),
       );
@@ -175,7 +176,7 @@ void main() {
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: StoryDetailPage(id: 'story-1'),
+            home: StoryDetailScreen(id: 'story-1'),
           ),
         ),
       );

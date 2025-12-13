@@ -4,14 +4,14 @@ import 'package:crop_your_image/crop_your_image.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/common/localizations.dart';
 import 'package:dicoding_story/data/services/platform/platform_provider.dart';
-import 'package:dicoding_story/data/services/remote/auth/model/default_response/default_response.dart';
+import 'package:dicoding_story/data/services/api/remote/auth/model/default_response/default_response.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
-import 'package:dicoding_story/ui/main/view_model/main_view_model.dart';
-import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_dialog.dart';
-import 'package:dicoding_story/ui/main/widgets/add_story/wide/add_story_image_container.dart';
-import 'package:dicoding_story/ui/main/widgets/add_story/wide/story_crop_dialog.dart';
+import 'package:dicoding_story/ui/home/view_model/home_view_model.dart';
+import 'package:dicoding_story/ui/home/widgets/add_story/wide/add_story_dialog.dart';
+import 'package:dicoding_story/ui/home/widgets/add_story/wide/add_story_image_container.dart';
+import 'package:dicoding_story/ui/home/widgets/add_story/wide/story_crop_dialog.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -530,45 +530,6 @@ void main() {
       expect(find.text('Story posted successfully!'), findsOneWidget);
     });
 
-    // Skip: Requires mocking imagePickerServiceProvider implementation
-    testWidgets('opens crop dialog when image is picked', skip: true, (
-      tester,
-    ) async {
-      tester.view.physicalSize = const Size(1000, 2000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-
-      final container = ProviderContainer(
-        overrides: [
-          addStoryRepositoryProvider.overrideWithValue(mockAddStoryRepository),
-          listRepositoryProvider.overrideWithValue(mockListRepository),
-          imageFileProvider.overrideWith(() => SafeImageFile()),
-          webPlatformProvider.overrideWithValue(false),
-        ],
-      );
-      addTearDown(container.dispose);
-
-      await pumpTestWidget(
-        tester,
-        container: container,
-        child: const AddStoryDialog(),
-      );
-
-      // Verify Image Container exists
-      final imageContainer = find.byKey(
-        const ValueKey('addStoryImageContainer'),
-      );
-      expect(imageContainer, findsOneWidget);
-
-      // Tap Image Container to trigger pickImage
-      await tester.tap(imageContainer);
-      await tester.pump(); // Start async pick
-      await tester.pumpAndSettle(); // Wait for dialog to open
-
-      // Verify StoryCropDialog is shown
-      expect(find.byType(StoryCropDialog), findsOneWidget);
-    });
-
     group('AddStoryImageContainer', () {
       testWidgets(
         'pickImage navigates to add-story-crop when getImageFile returns bytes',
@@ -734,7 +695,6 @@ void main() {
           child: StoryCropDialog(
             imageBytes: validImageBytes,
             cropController: mockCropController,
-            onPop: () {},
           ),
         );
 
