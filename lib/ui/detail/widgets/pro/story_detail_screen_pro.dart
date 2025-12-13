@@ -62,7 +62,6 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
     log.info('StoryDetailScreenPro disposed');
     _sheetController.removeListener(_onSheetChanged);
     _sheetController.dispose();
-    // Only dispose if we created the service
     if (widget.mapControllerService == null) {
       _mapService.dispose();
     }
@@ -71,12 +70,11 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
 
   void _onSheetChanged() {
     if (_sheetController.isAttached) {
-      // Update provider state instead of using setState
       ref.read(sheetExtentProvider.notifier).update(_sheetController.size);
     }
   }
 
-  void _initializeMarkers(Story story) {
+  void _initializeMarkers(Story story, PlaceInfo? location) {
     if (_markersInitialized) return;
 
     if (story.lat != null && story.lon != null) {
@@ -86,7 +84,12 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
         Marker(
           markerId: MarkerId(story.id),
           position: storyPosition,
-          infoWindow: InfoWindow(title: story.name),
+          infoWindow: InfoWindow(
+            title: location != null
+                ? '${location.city}, ${location.state}'
+                : story.name,
+            snippet: location != null ? story.name : null,
+          ),
           onTap: () {
             log.info('Marker tapped, zooming to position');
             _mapService.animateToPosition(storyPosition, zoom: 18);
@@ -133,7 +136,7 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
               storyState.story.lon != null)
             Builder(
               builder: (context) {
-                _initializeMarkers(storyState.story);
+                _initializeMarkers(storyState.story, storyState.location);
                 return _buildGoogleMap(storyState.story);
               },
             )
@@ -366,45 +369,6 @@ class _StoryBottomSheet extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                const SizedBox(height: 12),
-
-                // Location chip (if location available)
-                if (story.lat != null && story.lon != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary.withValues(alpha: .15),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            size: 18,
-                            color: colorScheme.primary,
-                          ),
-                          const SizedBox(width: 6),
-                          Flexible(
-                            child: Text(
-                              '${location?.city}, ${location?.state}',
-                              style: TextStyle(
-                                color: colorScheme.primary,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
 
                 const SizedBox(height: 16),
 
