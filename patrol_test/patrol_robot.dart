@@ -1,12 +1,6 @@
-import 'package:dartz/dartz.dart';
-import 'package:dicoding_story/domain/domain_providers.dart';
-import 'package:dicoding_story/domain/models/cache/cache.dart';
 import 'package:dicoding_story/ui/home/widgets/home_screen.dart';
-import 'package:dicoding_story/ui/home/widgets/story_card.dart';
-import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
@@ -66,9 +60,8 @@ class PatrolAddStoryRobot {
     await $(#passwordField).enterText(password);
   }
 
-  Future<Either<AppException, Cache>> tapLoginButton() async {
+  Future<void> tapLoginButton() async {
     await $(#loginButton).tap(settlePolicy: SettlePolicy.settle);
-    return await $.tester.container().read(cacheRepositoryProvider).getToken();
   }
 
   Future<void> tapRegisterButton() async {
@@ -80,10 +73,9 @@ class PatrolAddStoryRobot {
     await $(#loginButton).waitUntilExists();
   }
 
-  Future<Either<AppException, Cache>> checkLoginResult() async {
+  Future<void> checkLoginResult() async {
     await $(HomeScreen).waitUntilExists();
     await $.tester.pumpAndSettle();
-    return await $.tester.container().read(cacheRepositoryProvider).getToken();
   }
 
   Future<void> tapAddStoryButton() async {
