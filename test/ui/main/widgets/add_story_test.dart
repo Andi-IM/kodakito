@@ -86,13 +86,12 @@ void main() {
     streamController.close();
   });
 
-  Widget createWidgetUnderTest({Function()? onSuccess}) {
-    return ProviderScope(
-      // ignore: scoped_providers_should_specify_dependencies
-      overrides: [
-        addStoryRepositoryProvider.overrideWithValue(mockRepository),
-        listRepositoryProvider.overrideWithValue(mockListRepository),
-      ],
+  Widget createWidgetUnderTest({
+    required ProviderContainer container,
+    Function()? onSuccess,
+  }) {
+    return UncontrolledProviderScope(
+      container: container,
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -116,7 +115,15 @@ void main() {
 
   group('AddStoryPage UI Tests', () {
     testWidgets('renders initial state correctly with no data', (tester) async {
-      await tester.pumpWidget(createWidgetUnderTest());
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(createWidgetUnderTest(container: container));
       await tester.pumpAndSettle();
 
       expect(find.text('Add Story'), findsOneWidget);
@@ -130,8 +137,16 @@ void main() {
     });
 
     testWidgets('renders image when stream emits data', (tester) async {
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
       await tester.runAsync(() async {
-        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpWidget(createWidgetUnderTest(container: container));
         await tester.pumpAndSettle();
 
         when(() => mockData.croppedFile).thenReturn(testFile);
@@ -148,8 +163,16 @@ void main() {
     });
 
     testWidgets('shows placeholder if stream emits empty data', (tester) async {
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
       await tester.runAsync(() async {
-        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpWidget(createWidgetUnderTest(container: container));
         await tester.pumpAndSettle();
 
         when(() => mockDetails.data).thenReturn([]);
@@ -167,7 +190,15 @@ void main() {
     });
 
     testWidgets('text field takes input', (tester) async {
-      await tester.pumpWidget(createWidgetUnderTest());
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(createWidgetUnderTest(container: container));
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);
@@ -181,7 +212,15 @@ void main() {
     testWidgets('post button is disabled when no file is selected', (
       tester,
     ) async {
-      await tester.pumpWidget(createWidgetUnderTest());
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(createWidgetUnderTest(container: container));
       await tester.pumpAndSettle();
 
       final postButton = find.byKey(const Key('postButton'));
@@ -206,8 +245,16 @@ void main() {
         (_) async => Right(DefaultResponse(error: false, message: 'Success')),
       );
 
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
       await tester.runAsync(() async {
-        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpWidget(createWidgetUnderTest(container: container));
         await tester.pumpAndSettle();
 
         // Add image via stream
@@ -242,8 +289,16 @@ void main() {
         () => mockRepository.addStory(any(), any()),
       ).thenAnswer((_) => completer.future);
 
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
       await tester.runAsync(() async {
-        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpWidget(createWidgetUnderTest(container: container));
         await tester.pumpAndSettle();
 
         // Add image via stream
@@ -290,9 +345,18 @@ void main() {
         (_) async => Right(DefaultResponse(error: false, message: 'Success')),
       );
 
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
       await tester.runAsync(() async {
         await tester.pumpWidget(
           createWidgetUnderTest(
+            container: container,
             onSuccess: () {
               successCalled = true;
             },
@@ -333,8 +397,16 @@ void main() {
         () => mockRepository.addStory(any(), any()),
       ).thenAnswer((_) async => Left(exception));
 
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
       await tester.runAsync(() async {
-        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpWidget(createWidgetUnderTest(container: container));
         await tester.pumpAndSettle();
 
         // Add image via stream
@@ -373,8 +445,16 @@ void main() {
         () => mockRepository.addStory(any(), any()),
       ).thenAnswer((_) => completer.future);
 
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
       await tester.runAsync(() async {
-        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpWidget(createWidgetUnderTest(container: container));
         await tester.pumpAndSettle();
 
         // Add image via stream
@@ -427,7 +507,15 @@ void main() {
       EnvInfo.initialize(AppEnvironment.development);
       addTearDown(() => EnvInfo.initialize(oldEnv));
 
-      await tester.pumpWidget(createWidgetUnderTest());
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(createWidgetUnderTest(container: container));
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('locationButton')), findsNothing);
@@ -439,7 +527,15 @@ void main() {
     testWidgets('displays location button initially without location', (
       tester,
     ) async {
-      await tester.pumpWidget(createWidgetUnderTest());
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(createWidgetUnderTest(container: container));
       await tester.pumpAndSettle();
 
       // Location button should show add location icon and text
@@ -454,20 +550,16 @@ void main() {
     testWidgets('displays location city and country when location is set', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            addStoryRepositoryProvider.overrideWithValue(mockRepository),
-            listRepositoryProvider.overrideWithValue(mockListRepository),
-            selectedLocationProvider.overrideWith(MockSelectedLocation.new),
-          ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: AddStoryPage(cropStream: streamController.stream),
-          ),
-        ),
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+          selectedLocationProvider.overrideWith(MockSelectedLocation.new),
+        ],
       );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(createWidgetUnderTest(container: container));
       await tester.pumpAndSettle();
 
       // Should display city and country (covers L202)
@@ -481,20 +573,16 @@ void main() {
     testWidgets('shows remove location button when location is selected', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            addStoryRepositoryProvider.overrideWithValue(mockRepository),
-            listRepositoryProvider.overrideWithValue(mockListRepository),
-            selectedLocationProvider.overrideWith(MockSelectedLocation.new),
-          ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: AddStoryPage(cropStream: streamController.stream),
-          ),
-        ),
+      final container = ProviderContainer(
+        overrides: [
+          addStoryRepositoryProvider.overrideWithValue(mockRepository),
+          listRepositoryProvider.overrideWithValue(mockListRepository),
+          selectedLocationProvider.overrideWith(MockSelectedLocation.new),
+        ],
       );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(createWidgetUnderTest(container: container));
       await tester.pumpAndSettle();
 
       // Remove location button should be visible (covers L209-219)
@@ -519,20 +607,16 @@ void main() {
       );
 
       await tester.runAsync(() async {
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              addStoryRepositoryProvider.overrideWithValue(mockRepository),
-              listRepositoryProvider.overrideWithValue(mockListRepository),
-              selectedLocationProvider.overrideWith(MockSelectedLocation.new),
-            ],
-            child: MaterialApp(
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              home: AddStoryPage(cropStream: streamController.stream),
-            ),
-          ),
+        final container = ProviderContainer(
+          overrides: [
+            addStoryRepositoryProvider.overrideWithValue(mockRepository),
+            listRepositoryProvider.overrideWithValue(mockListRepository),
+            selectedLocationProvider.overrideWith(MockSelectedLocation.new),
+          ],
         );
+        addTearDown(container.dispose);
+
+        await tester.pumpWidget(createWidgetUnderTest(container: container));
         await tester.pumpAndSettle();
 
         // Add image via stream

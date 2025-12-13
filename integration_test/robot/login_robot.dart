@@ -1,7 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/models/cache/cache.dart';
-import 'package:dicoding_story/ui/home/widgets/home_screen.dart' show HomeScreen;
+import 'package:dicoding_story/ui/home/widgets/home_screen.dart'
+    show HomeScreen;
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

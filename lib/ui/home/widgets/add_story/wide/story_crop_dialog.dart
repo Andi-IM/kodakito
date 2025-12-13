@@ -11,7 +11,7 @@ class StoryCropDialog extends ConsumerWidget {
     super.key,
     required this.imageBytes,
     required this.cropController,
-    this.onPop
+    this.onPop,
   });
 
   final Uint8List imageBytes;

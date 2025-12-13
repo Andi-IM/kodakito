@@ -11,37 +11,25 @@ import 'package:mocktail/mocktail.dart';
 
 class MockGoRouter extends Mock implements GoRouter {}
 
-class MockLocationPicker extends LocationPicker {
-  LocationPickerState _state;
-  bool updateLocationCalled = false;
-  LatLng? lastUpdatedLocation;
-  bool moveToCurrentLocationCalled = false;
-  LatLng? moveToCurrentLocationResult;
+class MockLocationPicker extends LocationPicker with Mock {
+  MockLocationPicker(this._initialState);
 
-  MockLocationPicker(this._state, {this.moveToCurrentLocationResult});
+  final LocationPickerState _initialState;
 
   @override
-  LocationPickerState build(PlaceInfo? initialLocation) => _state;
-
-  void setState(LocationPickerState newState) {
-    _state = newState;
-    state = newState;
+  LocationPickerState build(PlaceInfo? initialLocation) {
+    return _initialState;
   }
 
   @override
   Future<void> updateLocation(LatLng latLng) async {
-    updateLocationCalled = true;
-    lastUpdatedLocation = latLng;
+    return super.noSuchMethod(Invocation.method(#updateLocation, [latLng]));
   }
 
   @override
   Future<LatLng?> moveToCurrentLocation() async {
-    moveToCurrentLocationCalled = true;
-    return moveToCurrentLocationResult;
+    return super.noSuchMethod(Invocation.method(#moveToCurrentLocation, []));
   }
-
-  @override
-  Future<void> fetchCurrentLocation() async {}
 }
 
 void main() {
@@ -61,6 +49,7 @@ void main() {
         longitude: 0,
       ),
     );
+    registerFallbackValue(const LatLng(0, 0));
   });
 
   setUp(() {
@@ -312,6 +301,9 @@ void main() {
       );
       final mockPicker = MockLocationPicker(initialState);
 
+      // Stub updateLocation to do nothing
+      when(() => mockPicker.updateLocation(any())).thenAnswer((_) async {});
+
       final container = ProviderContainer(
         overrides: [
           locationPickerProvider(null).overrideWith(() => mockPicker),
@@ -327,8 +319,7 @@ void main() {
       googleMap.onTap!(const LatLng(1.0, 2.0));
       await tester.pump();
 
-      expect(mockPicker.updateLocationCalled, isTrue);
-      expect(mockPicker.lastUpdatedLocation, equals(const LatLng(1.0, 2.0)));
+      verify(() => mockPicker.updateLocation(const LatLng(1.0, 2.0))).called(1);
     });
 
     testWidgets('Marker onDragEnd calls updateLocation', (tester) async {
@@ -336,6 +327,9 @@ void main() {
         selectedLocation: LatLng(-6.2088, 106.8456),
       );
       final mockPicker = MockLocationPicker(initialState);
+
+      // Stub updateLocation
+      when(() => mockPicker.updateLocation(any())).thenAnswer((_) async {});
 
       final container = ProviderContainer(
         overrides: [
@@ -355,8 +349,7 @@ void main() {
       marker.onDragEnd!(const LatLng(3.0, 4.0));
       await tester.pump();
 
-      expect(mockPicker.updateLocationCalled, isTrue);
-      expect(mockPicker.lastUpdatedLocation, equals(const LatLng(3.0, 4.0)));
+      verify(() => mockPicker.updateLocation(const LatLng(3.0, 4.0))).called(1);
     });
 
     testWidgets('my location button calls moveToCurrentLocation', (
@@ -365,10 +358,10 @@ void main() {
       final initialState = const LocationPickerState(
         selectedLocation: LatLng(-6.2088, 106.8456),
       );
-      final mockPicker = MockLocationPicker(
-        initialState,
-        moveToCurrentLocationResult: const LatLng(5.0, 6.0),
-      );
+      final mockPicker = MockLocationPicker(initialState);
+      when(
+        () => mockPicker.moveToCurrentLocation(),
+      ).thenAnswer((_) async => const LatLng(5.0, 6.0));
 
       final container = ProviderContainer(
         overrides: [
@@ -384,7 +377,7 @@ void main() {
       await tester.tap(find.byIcon(Icons.my_location));
       await tester.pump();
 
-      expect(mockPicker.moveToCurrentLocationCalled, isTrue);
+      verify(() => mockPicker.moveToCurrentLocation()).called(1);
     });
 
     testWidgets('zoom in button can be tapped', (tester) async {
