@@ -147,31 +147,32 @@ class PatrolAddStoryRobot {
   }
 
   Future<void> scrollToBottom() async {
-    await $(find.byKey(const ValueKey('StoryCard_10'))).scrollTo(
+    await $(find.bySemanticsLabel('Story number 10')).scrollTo(
       scrollDirection: AxisDirection.down,
       step: 1500,
       dragDuration: Duration(milliseconds: 160),
     );
 
-    expect($(find.byKey(const ValueKey('StoryCard_10'))).visible, equals(true));
+    expect($(find.bySemanticsLabel('Story number 10')).visible, equals(true));
   }
 
   Future<void> scrollAgain() async {
-    await $(find.byKey(const ValueKey('StoryCard_20'))).scrollTo(
+    await $(find.bySemanticsLabel('Story number 20')).scrollTo(
       scrollDirection: AxisDirection.down,
       step: 200,
       dragDuration: Duration(milliseconds: 160),
     );
 
-    expect($(find.byKey(const ValueKey('StoryCard_20'))).visible, equals(true));
+    expect($(find.bySemanticsLabel('Story number 20')).visible, equals(true));
   }
 
   Future<void> scrollUp() async {
-    await $(find.byKey(const ValueKey('StoryCard_0'))).scrollTo(
+    await $(find.bySemanticsLabel('Story number 0')).scrollTo(
       scrollDirection: AxisDirection.up,
       step: 2000,
       dragDuration: Duration(milliseconds: 160),
     );
+    expect($(find.bySemanticsLabel('Story number 0')).visible, equals(true));
   }
 
   Future<void> tapAvatarButton() async {

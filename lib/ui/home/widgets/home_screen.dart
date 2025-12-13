@@ -177,13 +177,16 @@ class _MainScreenState extends ConsumerState<HomeScreen> with LogMixin {
               key: const ValueKey('list'),
               delegate: SliverChildBuilderDelegate((context, index) {
                 final story = stories[index];
-                return StoryCard(
-                  key: ValueKey('StoryCard_${story.id}'),
-                  story: story,
-                  onTap: () => DetailRoute(
-                    id: story.id,
-                    hasLocation: story.lat != null && story.lon != null,
-                  ).go(context),
+                return Semantics(
+                  label: 'Story number $index',
+                  child: StoryCard(
+                    key: ValueKey('StoryCard_${story.id}'),
+                    story: story,
+                    onTap: () => DetailRoute(
+                      id: story.id,
+                      hasLocation: story.lat != null && story.lon != null,
+                    ).go(context),
+                  ),
                 );
               }, childCount: stories.length),
             ),
