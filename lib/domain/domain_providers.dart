@@ -33,7 +33,7 @@ AuthRepository authRepository(Ref ref) {
 CacheRepository cacheRepository(Ref ref) =>
     CacheRepositoryImpl(datasource: ref.read(cacheDatasourceProvider));
 
-@riverpod
+@Riverpod(dependencies: [localDataService, storyDataSource])
 ListRepository listRepository(Ref ref) {
   if (EnvInfo.isProduction) {
     return ListRepositoryRemote(
@@ -46,7 +46,7 @@ ListRepository listRepository(Ref ref) {
   }
 }
 
-@riverpod
+@Riverpod(dependencies: [localDataService, storyDataSource])
 DetailRepository detailRepository(Ref ref) {
   if (EnvInfo.isProduction) {
     return DetailRepositoryRemote(
@@ -59,7 +59,7 @@ DetailRepository detailRepository(Ref ref) {
   }
 }
 
-@riverpod
+@Riverpod(dependencies: [localDataService, storyDataSource])
 AddStoryRepository addStoryRepository(Ref ref) {
   if (EnvInfo.isProduction) {
     return AddStoryRepositoryRemote(

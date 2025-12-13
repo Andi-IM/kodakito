@@ -12,8 +12,11 @@ import 'package:patrol/patrol.dart';
 
 class PatrolAddStoryRobot {
   final PatrolIntegrationTester $;
+  late WidgetTester tester;
 
-  PatrolAddStoryRobot(this.$);
+  PatrolAddStoryRobot(this.$) {
+    tester = $.tester;
+  }
 
   Future<void> loadUI(Widget widget) async {
     await $.pumpWidgetAndSettle(widget);
@@ -38,7 +41,7 @@ class PatrolAddStoryRobot {
   Future<void> goToRegister() async {
     TextSpan? registerSpan;
     final richTextFinder = find.byType(RichText);
-    final richTexts = $.tester.widgetList<RichText>(richTextFinder);
+    final richTexts = tester.widgetList<RichText>(richTextFinder);
 
     for (final richText in richTexts) {
       registerSpan = findSpanBySemantics(richText, 'Show Register');
@@ -89,16 +92,16 @@ class PatrolAddStoryRobot {
   }
 
   Future<void> grantPermissionWhenVisible() async {
-    if (await $.native.isPermissionDialogVisible()) {
-      await $.native.tap(Selector(text: 'Allow all'));
+    if (await $.platform.mobile.isPermissionDialogVisible()) {
+      await $.platform.mobile.tap(Selector(text: 'Allow all'));
     }
     await $.pumpAndSettle();
   }
 
   Future<void> selectImageMobile() async {
     /// using coordinates for sampling
-    await $.native.tapAt(Offset(0.370, 0.627));
-    await $.native.tapAt(Offset(0.919, 0.05));
+    await $.platform.mobile.tapAt(Offset(0.370, 0.627));
+    await $.platform.mobile.tapAt(Offset(0.919, 0.05));
   }
 
   Future<void> fillDescription(String description) async {
@@ -113,8 +116,8 @@ class PatrolAddStoryRobot {
   }
 
   Future<void> grantPermission() async {
-    if (await $.native.isPermissionDialogVisible()) {
-      await $.native.grantPermissionWhenInUse();
+    if (await $.platform.mobile.isPermissionDialogVisible()) {
+      await $.platform.mobile.grantPermissionWhenInUse();
     }
     await $.pumpAndSettle();
   }
@@ -132,7 +135,6 @@ class PatrolAddStoryRobot {
   }
 
   Future<void> checkAddStoryResult(String description) async {
-    // await $(HomeScreen).waitUntilExists();
     await $(description).waitUntilExists();
   }
 
@@ -143,40 +145,36 @@ class PatrolAddStoryRobot {
 
   Future<void> checkStoryDetailIsDisplayedWithStory(String description) async {
     await $(description).waitUntilExists();
-    await $.native.pressBack();
+    await $.platform.mobile.swipeBack();
     await $.pumpAndSettle();
   }
 
   Future<void> scrollToBottom() async {
-    // count story list
-    final storyList = $.tester.widgetList<StoryCard>(find.byType(StoryCard));
-    // Verify we can find some cards
-    expect(storyList, isNotEmpty);
-
-    // Scroll CustomScrollView until target is visible
-    await $.tester.scrollUntilVisible(
-      find.byKey(const ValueKey('storycard_9')),
-      500.0,
+    await $(#storycard_10).scrollTo(
+      scrollDirection: AxisDirection.down,
+      step: 1000,
+      dragDuration: Duration(milliseconds: 160),
     );
-    await $(const ValueKey('storycard_9')).waitUntilVisible();
+
+    expect($(#storycard_10).visible, equals(true));
   }
 
   Future<void> scrollAgain() async {
-    await $(
-      #storycard_10,
-    ).scrollTo(scrollDirection: AxisDirection.down, step: 500);
-    expect($(#storycard_10).visible, equals(true));
+    await $(#storycard_20).scrollTo(
+      scrollDirection: AxisDirection.down,
+      step: 1000,
+      dragDuration: Duration(milliseconds: 160),
+    );
 
-    await Future.delayed(const Duration(seconds: 3));
-    // check list count
-    final storyList = $.tester.widgetList<StoryCard>(find.byType(StoryCard));
-    expect(storyList.length, moreOrLessEquals(20));
+    expect($(#storycard_20).visible, equals(true));
   }
 
   Future<void> scrollUp() async {
-    await $(
-      #storycard_0,
-    ).scrollTo(scrollDirection: AxisDirection.up, step: 500);
+    await $(#storycard_0).scrollTo(
+      scrollDirection: AxisDirection.up,
+      step: 2000,
+      dragDuration: Duration(milliseconds: 160),
+    );
   }
 
   Future<void> tapAvatarButton() async {
@@ -225,7 +223,6 @@ class PatrolAddStoryRobot {
 
   Future<void> tapLogoutButton() async {
     await $(#logoutButton).tap();
-    await $.pumpAndSettle();
   }
 
   Future<void> checkLogoutResult() async {
