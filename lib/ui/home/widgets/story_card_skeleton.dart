@@ -20,18 +20,16 @@ class StoryCardSkeleton extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image placeholder with same aspect ratio as StoryCard
             AspectRatio(
               aspectRatio: 16 / 9,
               child: Container(color: baseColor),
             ),
-            // Content padding matching StoryCard
+
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Name placeholder
                   Container(
                     width: 120,
                     height: 16,
@@ -41,7 +39,7 @@ class StoryCardSkeleton extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  // Description placeholder
+
                   Container(
                     width: double.infinity,
                     height: 14,
@@ -60,7 +58,7 @@ class StoryCardSkeleton extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  // Date placeholder
+
                   Row(
                     children: [
                       Container(

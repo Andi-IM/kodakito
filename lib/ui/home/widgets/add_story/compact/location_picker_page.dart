@@ -87,7 +87,7 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage>
             myLocationButtonEnabled: true,
             zoomControlsEnabled: false,
           ),
-          // Instructions overlay
+
           Positioned(
             top: 16,
             left: 16,
@@ -103,13 +103,12 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage>
               ),
             ),
           ),
-          // Zoom controls
+
           Positioned(
             bottom: 100,
             right: 16,
             child: Column(
               children: [
-                // My location button
                 FloatingActionButton.small(
                   heroTag: 'my-location',
                   onPressed: () async {
@@ -147,7 +146,7 @@ class _LocationPickerPageState extends ConsumerState<LocationPickerPage>
               ],
             ),
           ),
-          // Coordinates display
+
           Positioned(
             bottom: 16,
             left: 16,

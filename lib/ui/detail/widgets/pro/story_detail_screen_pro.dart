@@ -45,7 +45,6 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
   Set<Marker> _markers = {};
   bool _markersInitialized = false;
 
-  // Controller for bottom sheet to track position
   final DraggableScrollableController _sheetController =
       DraggableScrollableController();
 
@@ -103,7 +102,6 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
   Widget _buildGoogleMap(Story story) {
     final storyPosition = LatLng(story.lat!, story.lon!);
 
-    // Use mapOverride if provided (for widget tests)
     if (widget.mapOverride != null) {
       return widget.mapOverride!;
     }
@@ -130,7 +128,6 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
     return Scaffold(
       body: Stack(
         children: [
-          // Google Map - only show when loaded with correct initial position
           if (storyState is Loaded &&
               storyState.story.lat != null &&
               storyState.story.lon != null)
@@ -141,7 +138,6 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
               },
             )
           else if (storyState is Loaded)
-            // Story loaded but no coordinates - show placeholder
             Container(
               color: colorScheme.surfaceContainerHighest,
               child: Center(
@@ -163,10 +159,8 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
               ),
             )
           else
-            // Loading/Initial state - show placeholder background
             Container(color: colorScheme.surfaceContainerHighest),
 
-          // Back button (top left)
           Positioned(
             top: MediaQuery.of(context).padding.top + 16,
             left: 16,
@@ -181,7 +175,6 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
             ),
           ),
 
-          // Zoom controls (follows bottom sheet position) - only show when loaded
           if (storyState is Loaded)
             Positioned(
               bottom: screenHeight * sheetExtent + 16,
@@ -207,7 +200,6 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
               ),
             ),
 
-          // Overlay loading indicator
           if (storyState is Initial || storyState is Loading)
             Container(
               color: Colors.black.withValues(alpha: .3),
@@ -218,7 +210,6 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
               ),
             ),
 
-          // Error state overlay
           if (storyState is Error)
             Container(
               color: Colors.black.withValues(alpha: .3),
@@ -257,7 +248,6 @@ class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
               ),
             ),
 
-          // Draggable Bottom Sheet - only show when loaded
           if (storyState is Loaded)
             _StoryBottomSheet(
               story: storyState.story,
@@ -312,7 +302,6 @@ class _StoryBottomSheet extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Drag handle
                 Center(
                   child: Container(
                     margin: const EdgeInsets.only(top: 12, bottom: 16),
@@ -327,7 +316,6 @@ class _StoryBottomSheet extends StatelessWidget {
                   ),
                 ),
 
-                // User info row
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
@@ -372,7 +360,6 @@ class _StoryBottomSheet extends StatelessWidget {
 
                 const SizedBox(height: 16),
 
-                // Story image (visible when expanded)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: ClipRRect(
@@ -407,7 +394,6 @@ class _StoryBottomSheet extends StatelessWidget {
 
                 const SizedBox(height: 16),
 
-                // Description
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(

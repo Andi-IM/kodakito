@@ -23,7 +23,6 @@ class StoryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image
             Hero(
               tag: story.id,
               child: AspectRatio(
@@ -58,7 +57,6 @@ class StoryCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Name
                   Text(
                     story.name,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -66,7 +64,7 @@ class StoryCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  // Description
+
                   Text(
                     story.description,
                     maxLines: 3,
@@ -74,7 +72,7 @@ class StoryCard extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 16),
-                  // Date
+
                   Row(
                     children: [
                       const Icon(
