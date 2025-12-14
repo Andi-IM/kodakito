@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 
 // coverage:ignore-file
-enum AppEnvironment { development, production, proDevelopment, pro }
+enum AppEnvironment { freeDev, freeProd, paidDev, paidProd }
 
 abstract class EnvInfo {
-  static AppEnvironment _environment = AppEnvironment.development;
+  static AppEnvironment _environment = AppEnvironment.freeDev;
 
   static AppEnvironment get environment => _environment;
 
@@ -17,8 +17,8 @@ abstract class EnvInfo {
   static String get env => _environment._env;
 
   static bool get isProduction =>
-      _environment == AppEnvironment.production ||
-      _environment == AppEnvironment.pro;
+      _environment == AppEnvironment.freeProd ||
+      _environment == AppEnvironment.paidProd;
 
   static bool get isDebug => kDebugMode;
 
@@ -32,13 +32,13 @@ abstract class EnvInfo {
 
 extension _EnvProperties on AppEnvironment {
   static const _appTitles = {
-    AppEnvironment.development: 'Dicoding Story - Development',
-    AppEnvironment.production: 'Dicoding Story',
+    AppEnvironment.freeDev: 'Dicoding Story - Development',
+    AppEnvironment.freeProd: 'Dicoding Story',
   };
 
   static const _envs = {
-    AppEnvironment.development: 'development',
-    AppEnvironment.production: 'production',
+    AppEnvironment.freeDev: 'development',
+    AppEnvironment.freeProd: 'production',
   };
 
   String get _appTitle => _appTitles[this]!;

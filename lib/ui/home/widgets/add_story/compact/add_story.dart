@@ -185,8 +185,8 @@ class _AddStoryPageState extends ConsumerState<AddStoryPage> with LogMixin {
             ),
             const SizedBox(height: 16),
             // Location picker button
-            if (EnvInfo.environment == AppEnvironment.pro ||
-                EnvInfo.environment == AppEnvironment.proDevelopment) ...[
+            if (EnvInfo.environment == AppEnvironment.paidProd ||
+                EnvInfo.environment == AppEnvironment.paidDev) ...[
               Consumer(
                 builder: (context, ref, child) {
                   final addStoryState = ref.watch(addStoryProvider);

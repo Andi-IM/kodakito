@@ -8,8 +8,8 @@ import 'package:dicoding_story/data/services/api/remote/auth/model/default_respo
 import 'package:dicoding_story/domain/domain_providers.dart';
 import 'package:dicoding_story/domain/repository/add_story_repository.dart';
 import 'package:dicoding_story/domain/repository/list_repository.dart';
-import 'package:dicoding_story/ui/home/widgets/add_story/compact/add_story.dart';
 import 'package:dicoding_story/ui/home/view_model/home_view_model.dart';
+import 'package:dicoding_story/ui/home/widgets/add_story/compact/add_story.dart';
 import 'package:dicoding_story/utils/http_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -59,7 +59,7 @@ void main() {
     testFile = File('${tempDir.path}/test_image.png');
     await testFile.create();
     registerFallbackValue(FakeXFile()); // For repository calls
-    EnvInfo.initialize(AppEnvironment.pro);
+    EnvInfo.initialize(AppEnvironment.paidProd);
   });
 
   tearDownAll(() async {
@@ -504,7 +504,7 @@ void main() {
       tester,
     ) async {
       final oldEnv = EnvInfo.environment;
-      EnvInfo.initialize(AppEnvironment.development);
+      EnvInfo.initialize(AppEnvironment.freeDev);
       addTearDown(() => EnvInfo.initialize(oldEnv));
 
       final container = ProviderContainer(

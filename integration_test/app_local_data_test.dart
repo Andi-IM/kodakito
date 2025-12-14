@@ -21,7 +21,7 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   // Initialize environment statically for tests
-  EnvInfo.initialize(AppEnvironment.development);
+  EnvInfo.initialize(AppEnvironment.freeDev);
 
   group('end-to-end test with local data', () {
     testWidgets('should load app', (tester) async {

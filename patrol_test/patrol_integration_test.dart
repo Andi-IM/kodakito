@@ -1,11 +1,12 @@
 import 'package:dicoding_story/app/app.dart';
 import 'package:dicoding_story/app/app_env.dart';
 import 'package:dicoding_story/main.dart';
+import 'package:faker/faker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+
 import 'patrol_robot.dart';
-import 'package:faker/faker.dart';
 
 void main() {
   patrolTest(
@@ -13,7 +14,7 @@ void main() {
     framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
     config: PatrolTesterConfig(printLogs: true),
     ($) async {
-      await initApp(AppEnvironment.production);
+      await initApp(AppEnvironment.freeProd);
       final robot = PatrolAddStoryRobot($);
 
       await robot.loadUI(ProviderScope(child: MyApp()));

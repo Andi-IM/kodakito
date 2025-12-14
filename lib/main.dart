@@ -9,12 +9,13 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:window_manager/window_manager.dart';
+
 import 'app/app_env.dart';
 
 final logger = Logger('DEBUGLogger');
 
 void main() {
-  initApp(AppEnvironment.production);
+  initApp(AppEnvironment.freeProd);
   runApp(ProviderScope(child: MyApp()));
 }
 

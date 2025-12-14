@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="free-prod-release" type="FlutterRunConfigurationType" factoryName="Flutter">
+    <option name="additionalArgs" value="--release --dart-define-from-file=env/keys.json" />
+    <option name="buildFlavor" value="free-prod" />
+    <option name="filePath" value="$PROJECT_DIR$/lib/main_prod.dart" />
+    <method v="2" />
+  </configuration>
+</component>
