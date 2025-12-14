@@ -65,20 +65,20 @@ android {
     }
     flavorDimensions += "flavors"
     productFlavors {
-        create("dev") {
+        create("free-dev") {
             dimension = "flavors"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
         }
-        create("prod") {
+        create("free-prod") {
             dimension = "flavors"
         }
-        create("prodev") {
+        create("paid-dev") {
             dimension = "flavors"
             applicationIdSuffix = ".pro.dev"
             versionNameSuffix = "-pro-dev"
         }
-        create("pro") {
+        create("paid-prod") {
             dimension = "flavors"
             applicationIdSuffix = ".pro"
             versionNameSuffix = "-pro"
@@ -99,6 +99,7 @@ flutter {
     source = "../.."
 }
 
+// unnecessary but need for debugging
 // tasks.register("printEnvVariables") {
 //     doLast {
 //         println("APP_URL: ${getEnvVariable("APP_URL")}")

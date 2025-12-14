@@ -22,7 +22,7 @@ Future<void> main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   // Initialize environment statically for tests
-  EnvInfo.initialize(AppEnvironment.production);
+  EnvInfo.initialize(AppEnvironment.freeProd);
 
   String token = '';
 

@@ -48,6 +48,22 @@ class PatrolAddStoryRobot {
     await $.tester.pumpAndSettle();
   }
 
+  Future<void> goToLogin() async {
+    TextSpan? loginSpan;
+    final richTextFinder = find.byType(RichText);
+    final richTexts = tester.widgetList<RichText>(richTextFinder);
+
+    for (final richText in richTexts) {
+      loginSpan = findSpanBySemantics(richText, 'Show Login');
+      if (loginSpan != null) break;
+    }
+
+    expect(loginSpan, isNotNull, reason: 'Could not find login span');
+
+    (loginSpan!.recognizer as TapGestureRecognizer).onTap!();
+    await $.tester.pumpAndSettle();
+  }
+
   Future<void> typeName(String name) async {
     await $(#nameField).enterText(name);
   }

@@ -5,85 +5,85 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "dev_debug",
+            "name": "free_dev_debug",
             "request": "launch",
             "type": "dart",
             "program": "lib/main_dev.dart",
             "flutterMode": "debug",
             "args": [
                 "--flavor",
-                "dev",
+                "free-dev",
                 "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
         {
-            "name": "dev_profile",
+            "name": "free_dev_profile",
             "request": "launch",
             "type": "dart",
             "program": "lib/main_dev.dart",
             "flutterMode": "profile",
             "args": [
                 "--flavor",
-                "dev",
+                "free-dev",
                 "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
         {
-            "name": "dev_release",
+            "name": "free_dev_release",
             "request": "launch",
             "type": "dart",
             "program": "lib/main_dev.dart",
             "flutterMode": "release",
             "args": [
                 "--flavor",
-                "dev",
+                "free-dev",
                 "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
          {
-            "name": "prod_debug",
+            "name": "free_prod_debug",
             "request": "launch",
             "type": "dart",
             "program": "lib/main_prod.dart",
             "flutterMode": "debug",
             "args": [
                 "--flavor",
-                "prod",
+                "free-prod",
                 "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
         {
-            "name": "prod_profile",
+            "name": "free_prod_profile",
             "request": "launch",
             "type": "dart",
             "program": "lib/main_prod.dart",
             "flutterMode": "profile",
             "args": [
                 "--flavor",
-                "prod",
+                "free-prod",
                 "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
         {
-            "name": "prod_release",
+            "name": "free_prod_release",
             "request": "launch",
             "type": "dart",
             "program": "lib/main_prod.dart",
             "flutterMode": "release",
             "args": [
                 "--flavor",
-                "prod",
+                "free-prod",
                 "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
          {
-            "name": "pro_dev_debug",
+            "name": "paid_dev_debug",
             "request": "launch",
             "type": "dart",
             "program": "lib/main_prodev.dart",
@@ -96,7 +96,7 @@
             ]
         },
         {
-            "name": "pro_dev_profile",
+            "name": "paid_dev_profile",
             "request": "launch",
             "type": "dart",
             "program": "lib/main_prodev.dart",
@@ -109,7 +109,7 @@
             ]
         },
         {
-            "name": "pro_dev_release",
+            "name": "paid_dev_release",
             "request": "launch",
             "type": "dart",
             "program": "lib/main_prodev.dart",
@@ -122,27 +122,27 @@
             ]
         },
          {
-            "name": "pro_debug",
+            "name": "paid_prod_debug",
             "request": "launch",
             "type": "dart",
             "program": "lib/main_pro.dart",
             "flutterMode": "debug",
             "args": [
                 "--flavor",
-                "pro",
+                "pro-prod",
                 "--dart-define-from-file",
                 "env/keys.json"
             ]
         },
         {
-            "name": "pro_profile",
+            "name": "paid_prod_profile",
             "request": "launch",
             "type": "dart",
             "program": "lib/main_pro.dart",
             "flutterMode": "profile",
             "args": [
                 "--flavor",
-                "pro",
+                "pro-prod",
                 "--dart-define-from-file",
                 "env/keys.json"
             ]

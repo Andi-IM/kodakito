@@ -14,7 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:latlong_to_place/latlong_to_place.dart';
 import 'package:m3e_collection/m3e_collection.dart';
 
-class StoryDetailScreenPro extends ConsumerStatefulWidget {
+class StoryDetailWithMapScreen extends ConsumerStatefulWidget {
   final String id;
   final Function onBack;
 
@@ -26,7 +26,7 @@ class StoryDetailScreenPro extends ConsumerStatefulWidget {
   /// If not provided, a default [MapControllerServiceImpl] is created.
   final MapControllerService? mapControllerService;
 
-  const StoryDetailScreenPro({
+  const StoryDetailWithMapScreen({
     super.key,
     required this.id,
     required this.onBack,
@@ -35,11 +35,11 @@ class StoryDetailScreenPro extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<StoryDetailScreenPro> createState() =>
+  ConsumerState<StoryDetailWithMapScreen> createState() =>
       _StoryDetailPageProState();
 }
 
-class _StoryDetailPageProState extends ConsumerState<StoryDetailScreenPro>
+class _StoryDetailPageProState extends ConsumerState<StoryDetailWithMapScreen>
     with LogMixin {
   late final MapControllerService _mapService;
   Set<Marker> _markers = {};

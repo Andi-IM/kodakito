@@ -21,7 +21,7 @@ void main() {
   group('Domain Providers', () {
     test('providers should exist and return correct repository types', () {
       // Arrange
-      EnvInfo.initialize(AppEnvironment.development);
+      EnvInfo.initialize(AppEnvironment.freeDev);
       SharedPreferences.setMockInitialValues({});
       final container = ProviderContainer();
       addTearDown(container.dispose);
@@ -43,7 +43,7 @@ void main() {
 
     test('providers should return remote repositories in production', () {
       // Arrange
-      EnvInfo.initialize(AppEnvironment.production);
+      EnvInfo.initialize(AppEnvironment.freeProd);
       SharedPreferences.setMockInitialValues({});
       final container = ProviderContainer();
       addTearDown(container.dispose);
@@ -72,7 +72,7 @@ void main() {
 
     test('providers should return local/dev repositories in development', () {
       // Arrange
-      EnvInfo.initialize(AppEnvironment.development);
+      EnvInfo.initialize(AppEnvironment.freeDev);
       SharedPreferences.setMockInitialValues({});
       final container = ProviderContainer();
       addTearDown(container.dispose);

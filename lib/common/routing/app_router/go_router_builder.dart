@@ -1,13 +1,12 @@
 import 'dart:io';
 
 import 'package:crop_your_image/crop_your_image.dart';
-import 'package:dicoding_story/app/app_env.dart';
 import 'package:dicoding_story/common/routing/dialog_page.dart';
 import 'package:dicoding_story/data/services/platform/platform_provider.dart';
 import 'package:dicoding_story/ui/auth/widgets/login_screen.dart';
-import 'package:dicoding_story/ui/auth/widgets/register_page.dart';
+import 'package:dicoding_story/ui/auth/widgets/register_screen.dart';
 import 'package:dicoding_story/ui/detail/widgets/free/story_detail_screen.dart';
-import 'package:dicoding_story/ui/detail/widgets/pro/story_detail_screen_pro.dart';
+import 'package:dicoding_story/ui/detail/widgets/pro/story_detail_with_map_screen.dart';
 import 'package:dicoding_story/ui/home/widgets/add_story/compact/add_story.dart';
 import 'package:dicoding_story/ui/home/widgets/add_story/compact/location_picker_page.dart';
 import 'package:dicoding_story/ui/home/widgets/add_story/wide/add_story_dialog.dart';
@@ -84,17 +83,14 @@ class DetailRoute extends GoRouteData with $DetailRoute {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     _log.info('Navigating to DetailRoute: id=$id, hasLocation=$hasLocation');
-    final isProEnvironment =
-        EnvInfo.environment == AppEnvironment.pro ||
-        EnvInfo.environment == AppEnvironment.proDevelopment;
 
     return Consumer(
       builder: (context, ref, child) {
-        final isSuport = ref.watch(supportMapsProvider);
-        final showProDetail = isProEnvironment && isSuport && hasLocation;
+        final isSupport = ref.watch(supportMapsProvider);
+        final showProDetail = isSupport && hasLocation;
         if (showProDetail) {
           _log.info('Showing StoryDetailScreenPro');
-          return StoryDetailScreenPro(id: id, onBack: () => context.pop());
+          return StoryDetailWithMapScreen(id: id, onBack: () => context.pop());
         }
         _log.info('Showing StoryDetailScreen');
         return StoryDetailScreen(id: id);
@@ -224,7 +220,7 @@ class RegisterRoute extends GoRouteData with $RegisterRoute {
   Widget build(BuildContext context, GoRouterState state) {
     _log.info('Navigating to RegisterRoute');
     return RegisterScreen(
-      goToLogin: () => context.go(Routing.login),
+      goToLogin: () => context.pop(),
       onRegisterSuccess: () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Register success, please login')),

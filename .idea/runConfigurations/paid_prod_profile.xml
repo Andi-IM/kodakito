@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="pro-profile" type="FlutterRunConfigurationType" factoryName="Flutter">
+  <configuration default="false" name="paid-prod-profile" type="FlutterRunConfigurationType" factoryName="Flutter">
     <option name="additionalArgs" value="--profile --dart-define-from-file=env/keys.json" />
-    <option name="buildFlavor" value="pro" />
+    <option name="buildFlavor" value="paid-prod" />
     <option name="filePath" value="$PROJECT_DIR$/lib/main_pro.dart" />
     <method v="2" />
   </configuration>

@@ -6,7 +6,7 @@ import 'package:dicoding_story/domain/models/story/story.dart';
 import 'package:dicoding_story/ui/detail/view_models/detail_view_model.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_detail_pro_view_model.dart';
 import 'package:dicoding_story/ui/detail/view_models/story_state.dart';
-import 'package:dicoding_story/ui/detail/widgets/pro/story_detail_screen_pro.dart';
+import 'package:dicoding_story/ui/detail/widgets/pro/story_detail_with_map_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -110,7 +110,7 @@ void main() {
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: StoryDetailScreenPro(
+        home: StoryDetailWithMapScreen(
           id: storyId,
           onBack: onBack,
           mapOverride: mapOverride,
@@ -644,7 +644,7 @@ void main() {
 
         // Manually invoke the errorBuilder to verify its output
         final errorWidget = image.errorBuilder!(
-          tester.element(find.byType(StoryDetailScreenPro)),
+          tester.element(find.byType(StoryDetailWithMapScreen)),
           Exception('Test Error'),
           StackTrace.empty,
         );
