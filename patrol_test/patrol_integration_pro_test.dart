@@ -26,7 +26,7 @@ void main() {
 
       final fakeName = faker.person.name();
       final fakeEmail = faker.internet.email();
-      final fakePassword = faker.internet.password(length: 8);
+      final fakePassword = faker.internet.password();
 
       await robot.typeName(fakeName);
       await robot.typeEmail(fakeEmail);
