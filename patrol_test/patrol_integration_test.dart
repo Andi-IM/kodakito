@@ -20,6 +20,8 @@ void main() {
       await robot.loadUI(ProviderScope(child: MyApp()));
 
       await robot.goToRegister();
+      await robot.goToLogin();
+      await robot.goToRegister();
 
       final fakeName = faker.person.name();
       final fakeEmail = faker.internet.email();
