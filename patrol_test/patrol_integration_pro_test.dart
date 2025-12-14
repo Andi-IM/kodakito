@@ -21,7 +21,7 @@ void main() {
 
       await robot.goToRegister();
       await robot.goToLogin();
-      
+
       await robot.goToRegister();
 
       final fakeName = faker.person.name();

@@ -148,6 +148,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> with LogMixin {
                               fontWeight: FontWeight.bold,
                             ),
                             recognizer: _tapRecognizer,
+                            semanticsIdentifier: 'to_login_button',
+                            semanticsLabel: 'Show Login',
                           ),
                         ],
                       ),
